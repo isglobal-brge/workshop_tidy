@@ -1,0 +1,937 @@
+---
+title: "Chapter 4: Data Tidying with tidyr"
+author: "Workshop Materials"
+date: today
+format:
+  html:
+    code-fold: false
+    code-tools: true
+---
+
+## Learning Objectives
+
+By the end of this chapter, you will master:
+
+- Understanding tidy data principles
+- Pivoting data between wide and long formats
+- Separating and uniting columns
+- Handling missing values systematically
+- Nesting and unnesting data
+- Working with list-columns
+- Expanding and completing data
+- Advanced tidying techniques
+
+## Setup
+
+```{r}
+#| message: true
+library(tidyverse)
+library(gapminder)
+library(palmerpenguins)
+
+# We'll create various messy datasets to practice tidying
+set.seed(123)  # For reproducibility
+```
+
+## Tidy Data Principles
+
+### What Makes Data Tidy?
+
+Tidy data follows three interrelated rules:
+
+1. **Each variable forms a column**
+2. **Each observation forms a row**
+3. **Each type of observational unit forms a table**
+
+### Why Tidy Data?
+
+- Consistent structure makes tools easier to learn
+- R's vectorized operations work naturally with tidy data
+- Supports the grammar of data manipulation
+
+### Common Problems with Messy Data
+
+```{r}
+# Problem 1: Column headers are values, not variable names
+messy1 <- tibble(
+  country = c("Afghanistan", "Brazil", "China"),
+  `1999` = c(745, 37737, 212258),
+  `2000` = c(2666, 80488, 213766)
+)
+print("Messy data - years as columns:")
+messy1
+
+# Tidy version
+tidy1 <- messy1 %>%
+  pivot_longer(
+    cols = `1999`:`2000`,
+    names_to = "year",
+    values_to = "cases"
+  ) %>%
+  mutate(year = as.integer(year))
+print("Tidy version:")
+tidy1
+
+# Problem 2: Multiple variables in one column
+messy2 <- tibble(
+  country = c("Afghanistan", "Brazil", "China"),
+  rate = c("745/19987071", "37737/172006362", "212258/1272915272")
+)
+print("Messy data - multiple values in one column:")
+messy2
+
+# Tidy version
+tidy2 <- messy2 %>%
+  separate(rate, into = c("cases", "population"), sep = "/", convert = TRUE) %>%
+  mutate(rate_per_10k = cases / population * 10000)
+print("Tidy version:")
+tidy2
+```
+
+## Pivoting Data
+
+### pivot_longer(): Wide to Long
+
+```{r}
+# Example: Wide format data
+wide_data <- tibble(
+  student = c("Alice", "Bob", "Charlie"),
+  math_score = c(85, 92, 78),
+  science_score = c(90, 88, 85),
+  english_score = c(88, 85, 90),
+  history_score = c(92, 90, 88)
+)
+print("Wide format:")
+wide_data
+
+# Basic pivot_longer
+long_data <- wide_data %>%
+  pivot_longer(
+    cols = ends_with("_score"),
+    names_to = "subject",
+    values_to = "score"
+  )
+print("Long format:")
+long_data
+
+# Advanced: Extract parts of column names
+long_data_clean <- wide_data %>%
+  pivot_longer(
+    cols = ends_with("_score"),
+    names_to = "subject",
+    names_pattern = "(.*)_score",  # Extract subject name without "_score"
+    values_to = "score"
+  )
+print("Long format with cleaned names:")
+long_data_clean
+
+# Multiple value columns
+quarterly_sales <- tibble(
+  company = c("A", "B", "C"),
+  revenue_q1 = c(100, 200, 150),
+  revenue_q2 = c(110, 210, 160),
+  costs_q1 = c(80, 150, 120),
+  costs_q2 = c(85, 155, 125)
+)
+
+quarterly_long <- quarterly_sales %>%
+  pivot_longer(
+    cols = -company,
+    names_to = c(".value", "quarter"),
+    names_sep = "_"
+  )
+print("Multiple value columns:")
+quarterly_long
+```
+
+### pivot_wider(): Long to Wide
+
+```{r}
+# Basic pivot_wider
+wide_again <- long_data_clean %>%
+  pivot_wider(
+    names_from = subject,
+    values_from = score
+  )
+print("Back to wide format:")
+wide_again
+
+# With custom column names
+wide_custom <- long_data_clean %>%
+  pivot_wider(
+    names_from = subject,
+    values_from = score,
+    names_prefix = "score_"
+  )
+print("Wide with custom names:")
+wide_custom
+
+# Handling multiple values
+multi_observations <- tibble(
+  day = c(1, 1, 2, 2, 3, 3),
+  measurement = c("temp", "humidity", "temp", "humidity", "temp", "humidity"),
+  value = c(20, 60, 22, 55, 21, 58)
+)
+
+wide_multi <- multi_observations %>%
+  pivot_wider(
+    names_from = measurement,
+    values_from = value
+  )
+print("Multiple measurements to wide:")
+wide_multi
+```
+
+### Complex Pivoting Examples
+
+```{r}
+# Real-world example with gapminder
+gapminder_wide <- gapminder %>%
+  select(country, continent, year, lifeExp) %>%
+  pivot_wider(
+    names_from = year,
+    names_prefix = "year_",
+    values_from = lifeExp
+  ) %>%
+  head()
+print("Gapminder in wide format:")
+gapminder_wide
+
+# Creating a correlation matrix format
+penguins_corr <- penguins %>%
+  select(where(is.numeric)) %>%
+  drop_na() %>%
+  cor() %>%
+  as.data.frame() %>%
+  rownames_to_column("var1") %>%
+  pivot_longer(
+    cols = -var1,
+    names_to = "var2",
+    values_to = "correlation"
+  ) %>%
+  filter(var1 < var2)  # Keep only upper triangle
+print("Correlation matrix in long format:")
+penguins_corr
+```
+
+## Separating and Uniting Columns
+
+### separate(): Split One Column into Multiple
+
+```{r}
+# Basic separation
+dates_data <- tibble(
+  date = c("2023-01-15", "2023-02-20", "2023-03-25"),
+  value = c(100, 120, 115)
+)
+
+separated_dates <- dates_data %>%
+  separate(date, into = c("year", "month", "day"), sep = "-", convert = TRUE)
+print("Separated date components:")
+separated_dates
+
+# Separation with regular expressions
+complex_data <- tibble(
+  code = c("USA-NY-001", "CAN-ON-002", "MEX-DF-003"),
+  sales = c(1000, 1500, 800)
+)
+
+separated_complex <- complex_data %>%
+  separate(
+    code, 
+    into = c("country", "state", "id"),
+    sep = "-"
+  )
+print("Complex separation:")
+separated_complex
+
+# Keep original column
+with_original <- complex_data %>%
+  separate(
+    code,
+    into = c("country", "state", "id"),
+    sep = "-",
+    remove = FALSE  # Keep original column
+  )
+print("With original column:")
+with_original
+```
+
+### separate_rows(): Create Multiple Rows
+
+```{r}
+# Data with multiple values in cells
+multi_value_data <- tibble(
+  person = c("Alice", "Bob", "Charlie"),
+  languages = c("R,Python,SQL", "R,JavaScript", "Python,SQL,Julia"),
+  years_exp = c(5, 3, 7)
+)
+
+separated_rows <- multi_value_data %>%
+  separate_rows(languages, sep = ",")
+print("Multiple values to rows:")
+separated_rows
+
+# Count languages per person
+language_counts <- separated_rows %>%
+  group_by(person) %>%
+  summarise(
+    num_languages = n(),
+    languages_list = paste(languages, collapse = ", ")
+  )
+print("Language summary:")
+language_counts
+```
+
+### unite(): Combine Multiple Columns
+
+```{r}
+# Basic unite
+address_data <- tibble(
+  street_num = c("123", "456", "789"),
+  street_name = c("Main St", "Oak Ave", "Park Rd"),
+  city = c("Boston", "New York", "Chicago"),
+  state = c("MA", "NY", "IL")
+)
+
+united_address <- address_data %>%
+  unite(full_address, street_num, street_name, city, state, sep = ", ")
+print("United address:")
+united_address
+
+# Unite with custom separator
+date_parts <- tibble(
+  year = c(2023, 2023, 2023),
+  month = c(1, 2, 3),
+  day = c(15, 20, 25)
+)
+
+united_dates <- date_parts %>%
+  unite(date, year, month, day, sep = "-") %>%
+  mutate(date = as.Date(date))
+print("United dates:")
+united_dates
+```
+
+## Handling Missing Values
+
+### Explicit vs Implicit Missing Values
+
+```{r}
+# Dataset with implicit missing values
+stocks <- tibble(
+  year = c(2020, 2020, 2021, 2022, 2022),
+  quarter = c(1, 4, 2, 1, 3),
+  revenue = c(100, 120, 110, 130, 125)
+)
+print("Data with implicit missing values:")
+stocks
+
+# Make implicit missing values explicit
+complete_stocks <- stocks %>%
+  complete(year, quarter)
+print("After complete():")
+complete_stocks
+
+# Fill missing values
+filled_stocks <- complete_stocks %>%
+  arrange(year, quarter) %>%
+  fill(revenue, .direction = "down")
+print("After filling:")
+filled_stocks
+```
+
+### drop_na() and replace_na()
+
+```{r}
+# Sample data with NAs
+messy_data <- tibble(
+  x = c(1, 2, NA, 4, 5),
+  y = c("a", NA, "c", "d", NA),
+  z = c(10, 20, 30, NA, 50)
+)
+print("Data with NAs:")
+messy_data
+
+# Drop rows with any NA
+clean_all <- messy_data %>%
+  drop_na()
+print("Drop all NAs:")
+clean_all
+
+# Drop NAs from specific columns
+clean_x <- messy_data %>%
+  drop_na(x)
+print("Drop NAs from x only:")
+clean_x
+
+# Replace NAs with specific values
+replaced_data <- messy_data %>%
+  replace_na(list(
+    x = 0,
+    y = "missing",
+    z = mean(messy_data$z, na.rm = TRUE)
+  ))
+print("Replaced NAs:")
+replaced_data
+```
+
+### Advanced Missing Value Patterns
+
+```{r}
+# Create time series with gaps
+time_series <- tibble(
+  date = as.Date(c("2023-01-01", "2023-01-03", "2023-01-07", "2023-01-08")),
+  value = c(100, 105, 115, 118)
+)
+
+# Complete the time series
+complete_series <- time_series %>%
+  complete(date = seq.Date(min(date), max(date), by = "day"))
+print("Complete time series:")
+complete_series
+
+# Forward fill (last observation carried forward)
+filled_series <- complete_series %>%
+  fill(value, .direction = "down")
+print("Forward filled:")
+filled_series
+
+# Interpolation (requires zoo package)
+if (require(zoo, quietly = TRUE)) {
+  interpolated <- complete_series %>%
+    mutate(value_interpolated = zoo::na.approx(value, na.rm = FALSE))
+  print("Linear interpolation:")
+  interpolated
+}
+```
+
+## Nesting and Unnesting
+
+### Creating Nested Data
+
+```{r}
+# Group and nest
+nested_penguins <- penguins %>%
+  group_by(species, island) %>%
+  nest()
+print("Nested penguins data:")
+nested_penguins
+
+# Access nested data
+print("First nested tibble:")
+nested_penguins$data[[1]]
+
+# Nested with custom columns
+custom_nest <- penguins %>%
+  group_by(species) %>%
+  nest(
+    bill_data = c(bill_length_mm, bill_depth_mm),
+    body_data = c(flipper_length_mm, body_mass_g)
+  )
+print("Custom nested columns:")
+custom_nest
+```
+
+### Working with Nested Data
+
+```{r}
+# Apply functions to nested data
+nested_summary <- nested_penguins %>%
+  mutate(
+    n_obs = map_int(data, nrow),
+    avg_mass = map_dbl(data, ~ mean(.$body_mass_g, na.rm = TRUE)),
+    mass_range = map_dbl(data, ~ diff(range(.$body_mass_g, na.rm = TRUE)))
+  )
+print("Summary of nested data:")
+nested_summary %>% select(-data)
+
+# Fit models to nested data
+nested_models <- nested_penguins %>%
+  mutate(
+    model = map(data, ~ lm(body_mass_g ~ flipper_length_mm, data = .)),
+    r_squared = map_dbl(model, ~ summary(.)$r.squared)
+  )
+print("Models fitted to nested data:")
+nested_models %>% select(-data, -model)
+```
+
+### Unnesting
+
+```{r}
+# Basic unnest
+unnested <- nested_penguins %>%
+  unnest(data)
+print("Unnested data (first 10 rows):")
+head(unnested, 10)
+
+# Unnest with selection
+partial_unnest <- custom_nest %>%
+  unnest(bill_data) %>%
+  head(10)
+print("Partial unnest:")
+partial_unnest
+
+# Unnest wider (for list columns with consistent structure)
+summary_data <- nested_penguins %>%
+  mutate(
+    summary = map(data, ~ tibble(
+      mean_mass = mean(.$body_mass_g, na.rm = TRUE),
+      sd_mass = sd(.$body_mass_g, na.rm = TRUE),
+      n = n()
+    ))
+  ) %>%
+  select(-data) %>%
+  unnest_wider(summary)
+print("Unnest wider:")
+summary_data
+```
+
+## List Columns
+
+### Creating and Working with List Columns
+
+```{r}
+# Create list columns
+list_col_data <- tibble(
+  id = 1:3,
+  values = list(
+    c(1, 2, 3),
+    c(4, 5),
+    c(6, 7, 8, 9)
+  ),
+  metadata = list(
+    list(type = "A", quality = "high"),
+    list(type = "B", quality = "medium"),
+    list(type = "A", quality = "low")
+  )
+)
+print("Data with list columns:")
+list_col_data
+
+# Extract from list columns
+extracted <- list_col_data %>%
+  mutate(
+    n_values = map_int(values, length),
+    sum_values = map_dbl(values, sum),
+    type = map_chr(metadata, "type"),
+    quality = map_chr(metadata, "quality")
+  )
+print("Extracted values:")
+extracted %>% select(-values, -metadata)
+
+# Unnest list columns
+unnested_values <- list_col_data %>%
+  unnest(values) %>%
+  group_by(id) %>%
+  mutate(value_index = row_number())
+print("Unnested values:")
+unnested_values
+```
+
+### Advanced List Column Operations
+
+```{r}
+# Store complex objects
+model_data <- penguins %>%
+  drop_na() %>%
+  group_by(species) %>%
+  nest() %>%
+  mutate(
+    # Fit different models
+    lm_model = map(data, ~ lm(body_mass_g ~ flipper_length_mm + bill_length_mm, data = .)),
+    # Extract coefficients
+    coefficients = map(lm_model, broom::tidy),
+    # Get predictions
+    predictions = map2(lm_model, data, ~ broom::augment(.x, newdata = .y))
+  )
+
+# View coefficients
+coefficients_df <- model_data %>%
+  select(species, coefficients) %>%
+  unnest(coefficients)
+print("Model coefficients:")
+coefficients_df
+
+# Extract R-squared values
+r_squared <- model_data %>%
+  mutate(r_squared = map_dbl(lm_model, ~ summary(.)$r.squared)) %>%
+  select(species, r_squared)
+print("R-squared values:")
+r_squared
+```
+
+## Expanding and Completing Data
+
+### expand(): All Combinations
+
+```{r}
+# Create all combinations
+experiment_design <- expand_grid(
+  treatment = c("Control", "Drug A", "Drug B"),
+  dose = c(0, 10, 20, 50),
+  replicate = 1:3
+)
+print("Experimental design:")
+head(experiment_design, 12)
+
+# Expand existing data
+sales_data <- tibble(
+  store = c("A", "A", "B"),
+  product = c("X", "Y", "X"),
+  sales = c(100, 150, 120)
+)
+
+all_combinations <- sales_data %>%
+  expand(store, product)
+print("All store-product combinations:")
+all_combinations
+
+# Complete with defaults
+complete_sales <- sales_data %>%
+  complete(store, product, fill = list(sales = 0))
+print("Complete sales data:")
+complete_sales
+```
+
+### crossing() and nesting()
+
+```{r}
+# Crossing - all combinations
+colors <- c("red", "blue", "green")
+sizes <- c("S", "M", "L")
+
+inventory <- crossing(
+  color = colors,
+  size = sizes
+) %>%
+  mutate(stock = sample(0:50, n(), replace = TRUE))
+print("Inventory matrix:")
+inventory
+
+# Nesting - only observed combinations
+observed_data <- tibble(
+  city = c("NYC", "NYC", "LA", "LA", "Chicago"),
+  year = c(2020, 2021, 2020, 2021, 2021),
+  value = c(100, 110, 95, 105, 115)
+)
+
+nested_combos <- observed_data %>%
+  expand(nesting(city, year))
+print("Nested combinations (only observed):")
+nested_combos
+```
+
+## Real-World Tidying Examples
+
+### Example 1: Survey Data
+
+```{r}
+# Messy survey data
+survey_messy <- tibble(
+  respondent = c("R001", "R002", "R003"),
+  `Q1_satisfied` = c(4, 5, 3),
+  `Q2_satisfied` = c(3, 4, 4),
+  `Q1_importance` = c(5, 5, 4),
+  `Q2_importance` = c(4, 3, 5),
+  age_gender = c("25_M", "30_F", "28_M")
+)
+
+# Tidy the survey data
+survey_tidy <- survey_messy %>%
+  # Separate age and gender
+  separate(age_gender, into = c("age", "gender"), sep = "_", convert = TRUE) %>%
+  # Pivot questions
+  pivot_longer(
+    cols = starts_with("Q"),
+    names_to = c("question", "measure"),
+    names_pattern = "(.*)_(.*)",
+    values_to = "value"
+  ) %>%
+  # Reshape to have satisfaction and importance as columns
+  pivot_wider(
+    names_from = measure,
+    values_from = value
+  )
+
+print("Tidied survey data:")
+survey_tidy
+```
+
+### Example 2: Time Series Data
+
+```{r}
+# Messy time series
+ts_messy <- tibble(
+  date_time = c("2023-01-15 10:30", "2023-01-15 14:45", "2023-01-16 09:15"),
+  sensor_readings = c("temp:22.5;humidity:60", "temp:23.1;humidity:58", "temp:21.8;humidity:62")
+)
+
+# Tidy the time series
+ts_tidy <- ts_messy %>%
+  # Separate date and time
+  separate(date_time, into = c("date", "time"), sep = " ") %>%
+  # Separate sensor readings
+  separate_rows(sensor_readings, sep = ";") %>%
+  separate(sensor_readings, into = c("sensor", "value"), sep = ":", convert = TRUE) %>%
+  # Convert date
+  mutate(date = as.Date(date))
+
+print("Tidied time series:")
+ts_tidy
+
+# Reshape for analysis
+ts_wide <- ts_tidy %>%
+  pivot_wider(
+    names_from = sensor,
+    values_from = value
+  )
+print("Wide format for analysis:")
+ts_wide
+```
+
+### Example 3: Hierarchical Data
+
+```{r}
+# Hierarchical organization data
+org_data <- tibble(
+  employee = c("Alice", "Bob", "Charlie", "Diana"),
+  department_division = c("Sales/North", "Sales/South", "IT/Infrastructure", "IT/Development"),
+  metrics = c("revenue:1000000;satisfaction:4.5", 
+              "revenue:800000;satisfaction:4.2",
+              "tickets:450;uptime:99.9",
+              "features:12;bugs:3")
+)
+
+# Tidy hierarchical data
+org_tidy <- org_data %>%
+  # Separate hierarchy
+  separate(department_division, into = c("department", "division"), sep = "/") %>%
+  # Separate metrics
+  separate_rows(metrics, sep = ";") %>%
+  separate(metrics, into = c("metric", "value"), sep = ":", convert = TRUE)
+
+print("Tidied organizational data:")
+org_tidy
+
+# Summarize by department
+dept_summary <- org_tidy %>%
+  group_by(department, metric) %>%
+  summarise(
+    total = sum(value),
+    avg = mean(value),
+    .groups = "drop"
+  ) %>%
+  pivot_wider(
+    names_from = metric,
+    values_from = c(total, avg),
+    names_glue = "{metric}_{.value}"
+  )
+
+print("Department summary:")
+dept_summary
+```
+
+## Exercises
+
+### Exercise 1: Complex Pivoting
+
+Transform this gradebook data into a tidy format suitable for analysis:
+
+```{r}
+# Given messy gradebook
+gradebook <- tibble(
+  student = c("Alice", "Bob", "Charlie"),
+  `Math_Midterm` = c(85, 90, 78),
+  `Math_Final` = c(88, 85, 82),
+  `Science_Midterm` = c(92, 88, 90),
+  `Science_Final` = c(90, 92, 88),
+  `attendance_days` = c("45/50", "48/50", "42/50")
+)
+
+# Your solution
+tidy_gradebook <- gradebook %>%
+  # Separate attendance
+  separate(attendance_days, into = c("days_present", "total_days"), 
+           sep = "/", convert = TRUE) %>%
+  # Calculate attendance rate
+  mutate(attendance_rate = days_present / total_days) %>%
+  # Pivot grades
+  pivot_longer(
+    cols = matches("_Midterm|_Final"),
+    names_to = c("subject", "exam"),
+    names_sep = "_",
+    values_to = "score"
+  ) %>%
+  # Calculate average by subject
+  group_by(student, subject) %>%
+  mutate(subject_avg = mean(score)) %>%
+  ungroup()
+
+print("Tidied gradebook:")
+tidy_gradebook
+```
+
+### Exercise 2: Nested Data Analysis
+
+Work with nested gapminder data to calculate decade-wise trends:
+
+```{r}
+# Your solution
+gapminder_nested <- gapminder %>%
+  mutate(decade = floor(year / 10) * 10) %>%
+  group_by(continent, decade) %>%
+  nest() %>%
+  mutate(
+    # Calculate trends within each group
+    avg_lifeExp = map_dbl(data, ~ mean(.$lifeExp)),
+    gdp_growth = map_dbl(data, ~ {
+      if(nrow(.) > 1) {
+        model <- lm(log(gdpPercap) ~ I(year - min(year)), data = .)
+        coef(model)[2] * 100  # Percent growth per year
+      } else {
+        NA_real_
+      }
+    }),
+    pop_total = map_dbl(data, ~ sum(.$pop) / 1e9),  # In billions
+    n_countries = map_int(data, ~ n_distinct(.$country))
+  )
+
+gapminder_summary <- gapminder_nested %>%
+  select(-data) %>%
+  arrange(continent, decade)
+
+print("Decade-wise trends by continent:")
+gapminder_summary
+```
+
+### Exercise 3: Complex Missing Data
+
+Handle this dataset with various types of missing data:
+
+```{r}
+# Dataset with complex missing patterns
+complex_missing <- tibble(
+  date = as.Date(c("2023-01-01", "2023-01-02", "2023-01-04", "2023-01-07")),
+  store_a = c(100, NA, 120, 130),
+  store_b = c(200, 210, NA, NA),
+  store_c = c(150, 160, 170, 180)
+)
+
+# Your solution
+# Complete the date sequence
+complete_data <- complex_missing %>%
+  complete(date = seq.Date(min(date), max(date), by = "day"))
+
+# Different filling strategies
+filled_data <- complete_data %>%
+  # Forward fill for store_a
+  fill(store_a, .direction = "down") %>%
+  # Interpolate store_b
+  mutate(
+    store_b = zoo::na.approx(store_b, na.rm = FALSE)
+  ) %>%
+  # Average fill for store_c
+  mutate(
+    store_c = if_else(is.na(store_c), 
+                      mean(store_c, na.rm = TRUE), 
+                      store_c)
+  )
+
+print("Original data:")
+complex_missing
+print("After handling missing values:")
+filled_data
+
+# Convert to long format for analysis
+long_filled <- filled_data %>%
+  pivot_longer(
+    cols = starts_with("store"),
+    names_to = "store",
+    names_prefix = "store_",
+    values_to = "sales"
+  )
+
+print("Long format for analysis:")
+long_filled
+```
+
+### Exercise 4: Real-World Data Cleaning
+
+Clean and reshape this messy real-world dataset:
+
+```{r}
+# Messy real-world data
+messy_sales <- tibble(
+  id = c("US-2023-001", "UK-2023-002", "CA-2023-003"),
+  jan_feb_mar = c("100,120,115", "200,210,205", "150,145,160"),
+  apr_may_jun = c("125,130,135", "215,220,225", "165,170,175"),
+  customer_info = c("John Doe|Premium", "Jane Smith|Standard", "Bob Johnson|Premium"),
+  notes = c("Q1: Good performance", "Q1: Steady growth", "Q1: Meeting targets")
+)
+
+# Your solution
+clean_sales <- messy_sales %>%
+  # Separate ID components
+  separate(id, into = c("country", "year", "customer_id"), sep = "-", remove = FALSE) %>%
+  # Separate customer info
+  separate(customer_info, into = c("customer_name", "tier"), sep = "\\|") %>%
+  # Pivot quarters
+  pivot_longer(
+    cols = c(jan_feb_mar, apr_may_jun),
+    names_to = "quarter",
+    values_to = "monthly_sales"
+  ) %>%
+  # Separate monthly sales
+  separate(monthly_sales, into = c("month1", "month2", "month3"), sep = ",", convert = TRUE) %>%
+  # Create proper quarter labels
+  mutate(
+    quarter = case_when(
+      quarter == "jan_feb_mar" ~ "Q1",
+      quarter == "apr_may_jun" ~ "Q2"
+    )
+  ) %>%
+  # Pivot months to long format
+  pivot_longer(
+    cols = starts_with("month"),
+    names_to = "month_num",
+    names_prefix = "month",
+    values_to = "sales"
+  ) %>%
+  # Calculate month
+  mutate(
+    month_num = as.integer(month_num),
+    month = case_when(
+      quarter == "Q1" ~ month_num,
+      quarter == "Q2" ~ month_num + 3
+    ),
+    date = as.Date(paste(year, month, "01", sep = "-"))
+  ) %>%
+  select(id, country, date, customer_name, tier, sales, notes)
+
+print("Cleaned sales data:")
+clean_sales
+```
+
+## Summary
+
+You've mastered tidyr essentials:
+
+✅ Understanding tidy data principles  
+✅ Pivoting between wide and long formats  
+✅ Separating and uniting columns  
+✅ Handling missing values systematically  
+✅ Working with nested data and list columns  
+✅ Expanding and completing datasets  
+✅ Real-world data tidying techniques  
+
+## What's Next?
+
+In [Chapter 5](05-visualization.qmd), we'll explore data visualization with ggplot2, creating beautiful and informative graphics.
+
+## Additional Resources
+
+- [tidyr Documentation](https://tidyr.tidyverse.org/)
+- [Tidy Data Paper](https://www.jstatsoft.org/article/view/v059i10)
+- [tidyr Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/main/tidyr.pdf)
+- [R for Data Science - Tidy Data](https://r4ds.had.co.nz/tidy-data.html)

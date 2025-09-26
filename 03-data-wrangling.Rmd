@@ -1,0 +1,754 @@
+---
+title: "Chapter 3: Data Wrangling with dplyr"
+author: "Workshop Materials"
+date: today
+format:
+  html:
+    code-fold: false
+    code-tools: true
+---
+
+## Learning Objectives
+
+By the end of this chapter, you will master:
+
+- The five key dplyr verbs: `filter()`, `select()`, `mutate()`, `arrange()`, `summarise()`
+- Grouped operations with `group_by()`
+- Joining tables with `*_join()` functions
+- Window functions and ranking
+- Advanced selection helpers
+- Row-wise operations
+- Working with databases using dplyr
+
+## Setup
+
+```{r}
+#| message: true
+library(tidyverse)
+library(palmerpenguins)
+library(nycflights13)
+library(gapminder)
+
+# We'll use these datasets throughout
+glimpse(penguins)
+glimpse(flights)
+glimpse(gapminder)
+```
+
+## The Core dplyr Verbs
+
+### 1. filter() - Keep Rows That Match Conditions
+
+```{r}
+# Simple filtering
+penguins %>%
+  filter(species == "Adelie")
+
+# Multiple conditions (AND)
+penguins %>%
+  filter(species == "Adelie", bill_length_mm > 40)
+
+# OR conditions
+penguins %>%
+  filter(species == "Adelie" | species == "Gentoo")
+
+# Using %in% for multiple values
+penguins %>%
+  filter(species %in% c("Adelie", "Gentoo"))
+
+# Complex conditions
+penguins %>%
+  filter(
+    bill_length_mm > 45,
+    flipper_length_mm < 210,
+    !is.na(sex)
+  )
+
+# Filter with between
+flights %>%
+  filter(between(dep_delay, 10, 30)) %>%
+  select(dep_delay, carrier, flight) %>%
+  head(10)
+```
+
+### 2. select() - Choose Columns
+
+```{r}
+# Select specific columns
+penguins %>%
+  select(species, island, bill_length_mm)
+
+# Select range of columns
+penguins %>%
+  select(species:body_mass_g) %>%
+  head(3)
+
+# Exclude columns
+penguins %>%
+  select(-year, -sex) %>%
+  head(3)
+
+# Select with helpers
+penguins %>%
+  select(starts_with("bill")) %>%
+  head(3)
+
+penguins %>%
+  select(ends_with("mm")) %>%
+  head(3)
+
+penguins %>%
+  select(contains("length")) %>%
+  head(3)
+
+# Select and rename
+penguins %>%
+  select(
+    penguin_species = species,
+    island_name = island,
+    bill_len = bill_length_mm
+  ) %>%
+  head(3)
+
+# Reorder columns
+penguins %>%
+  select(island, species, everything()) %>%
+  head(3)
+```
+
+### 3. mutate() - Create or Transform Columns
+
+```{r}
+# Create new columns
+penguins %>%
+  mutate(
+    bill_ratio = bill_length_mm / bill_depth_mm,
+    body_mass_kg = body_mass_g / 1000,
+    size_category = case_when(
+      body_mass_g < 3500 ~ "Small",
+      body_mass_g < 4500 ~ "Medium",
+      TRUE ~ "Large"
+    )
+  ) %>%
+  select(species, bill_ratio, body_mass_kg, size_category) %>%
+  head(10)
+
+# Modify existing columns
+penguins %>%
+  mutate(
+    species = str_to_upper(species),
+    island = factor(island, levels = c("Biscoe", "Dream", "Torgersen"))
+  ) %>%
+  head(3)
+
+# Multiple transformations
+flights %>%
+  mutate(
+    speed = distance / air_time * 60,  # miles per hour
+    dep_delay_hours = dep_delay / 60,
+    on_time = if_else(dep_delay <= 0, "On Time", "Delayed"),
+    delay_category = cut(
+      dep_delay,
+      breaks = c(-Inf, 0, 15, 60, Inf),
+      labels = c("Early", "On Time", "Minor Delay", "Major Delay")
+    )
+  ) %>%
+  select(carrier, flight, speed, on_time, delay_category) %>%
+  drop_na() %>%
+  head(10)
+```
+
+### 4. arrange() - Sort Rows
+
+```{r}
+# Simple sorting
+penguins %>%
+  arrange(bill_length_mm) %>%
+  select(species, bill_length_mm) %>%
+  head(5)
+
+# Descending order
+penguins %>%
+  arrange(desc(body_mass_g)) %>%
+  select(species, body_mass_g) %>%
+  head(5)
+
+# Multiple columns
+penguins %>%
+  arrange(species, desc(body_mass_g)) %>%
+  select(species, island, body_mass_g) %>%
+  head(10)
+
+# Handle NAs
+penguins %>%
+  arrange(desc(is.na(sex)), sex, body_mass_g) %>%
+  select(sex, body_mass_g) %>%
+  head(10)
+```
+
+### 5. summarise() - Aggregate Data
+
+```{r}
+# Basic summary
+penguins %>%
+  summarise(
+    count = n(),
+    avg_mass = mean(body_mass_g, na.rm = TRUE),
+    sd_mass = sd(body_mass_g, na.rm = TRUE),
+    min_mass = min(body_mass_g, na.rm = TRUE),
+    max_mass = max(body_mass_g, na.rm = TRUE)
+  )
+
+# Multiple statistics
+flights %>%
+  summarise(
+    total_flights = n(),
+    total_distance = sum(distance, na.rm = TRUE),
+    avg_delay = mean(dep_delay, na.rm = TRUE),
+    median_delay = median(dep_delay, na.rm = TRUE),
+    pct_delayed = mean(dep_delay > 0, na.rm = TRUE) * 100
+  )
+```
+
+## Grouped Operations
+
+### group_by() - The Power of Groups
+
+```{r}
+# Group by single variable
+penguins %>%
+  group_by(species) %>%
+  summarise(
+    count = n(),
+    avg_bill_length = mean(bill_length_mm, na.rm = TRUE),
+    avg_body_mass = mean(body_mass_g, na.rm = TRUE)
+  )
+
+# Group by multiple variables
+penguins %>%
+  group_by(species, island) %>%
+  summarise(
+    count = n(),
+    avg_flipper_length = mean(flipper_length_mm, na.rm = TRUE),
+    .groups = "drop"  # Avoid warning about grouping
+  ) %>%
+  arrange(species, island)
+
+# Grouped mutate (keep all rows)
+penguins %>%
+  group_by(species) %>%
+  mutate(
+    mass_z_score = (body_mass_g - mean(body_mass_g, na.rm = TRUE)) / 
+                   sd(body_mass_g, na.rm = TRUE),
+    mass_pct_rank = percent_rank(body_mass_g)
+  ) %>%
+  select(species, body_mass_g, mass_z_score, mass_pct_rank) %>%
+  arrange(species, desc(body_mass_g)) %>%
+  head(10)
+
+# Complex grouped operations
+flights %>%
+  group_by(carrier, month) %>%
+  summarise(
+    flights = n(),
+    avg_delay = mean(dep_delay, na.rm = TRUE),
+    pct_on_time = mean(dep_delay <= 0, na.rm = TRUE) * 100,
+    .groups = "drop"
+  ) %>%
+  filter(flights >= 100) %>%  # Only carriers with 100+ flights per month
+  arrange(desc(pct_on_time)) %>%
+  head(10)
+```
+
+### Advanced Grouping Techniques
+
+```{r}
+# Group by computed values
+penguins %>%
+  group_by(
+    size_class = cut(body_mass_g, 
+                     breaks = quantile(body_mass_g, probs = 0:4/4, na.rm = TRUE),
+                     labels = c("Q1", "Q2", "Q3", "Q4"),
+                     include.lowest = TRUE)
+  ) %>%
+  summarise(
+    count = n(),
+    species_diversity = n_distinct(species),
+    avg_bill_length = mean(bill_length_mm, na.rm = TRUE)
+  )
+
+# Multiple grouping sets
+gapminder %>%
+  filter(year %in% c(1952, 2007)) %>%
+  group_by(continent, year) %>%
+  summarise(
+    countries = n(),
+    total_pop = sum(pop) / 1e9,  # in billions
+    avg_lifeExp = weighted.mean(lifeExp, pop),
+    median_gdpPercap = median(gdpPercap),
+    .groups = "drop"
+  ) %>%
+  arrange(continent, year)
+```
+
+## Joining Tables
+
+### Creating Sample Data for Joins
+
+```{r}
+# Create sample datasets
+customers <- tibble(
+  customer_id = 1:5,
+  name = c("Alice", "Bob", "Charlie", "Diana", "Eve"),
+  city = c("NYC", "LA", "Chicago", "Houston", "Phoenix")
+)
+
+orders <- tibble(
+  order_id = 101:108,
+  customer_id = c(1, 2, 1, 3, 4, 2, 5, 6),  # Note: customer 6 doesn't exist
+  product = c("Widget", "Gadget", "Widget", "Doohickey", 
+              "Gadget", "Widget", "Doohickey", "Widget"),
+  amount = c(100, 200, 150, 300, 250, 175, 400, 125)
+)
+
+customer_categories <- tibble(
+  customer_id = c(1, 2, 3, 5),  # Note: missing customer 4
+  category = c("Premium", "Standard", "Premium", "Standard")
+)
+
+print("Customers:")
+customers
+print("Orders:")
+orders
+print("Categories:")
+customer_categories
+```
+
+### Types of Joins
+
+```{r}
+# Inner join - only matching records
+inner_join(customers, orders, by = "customer_id")
+
+# Left join - all from left, matching from right
+left_join(customers, orders, by = "customer_id")
+
+# Right join - all from right, matching from left
+right_join(customers, orders, by = "customer_id")
+
+# Full join - all records from both
+full_join(customers, orders, by = "customer_id")
+
+# Semi join - filter left table to matching records
+semi_join(customers, orders, by = "customer_id")
+
+# Anti join - filter left table to non-matching records
+anti_join(customers, orders, by = "customer_id")
+```
+
+### Complex Joins
+
+```{r}
+# Multiple join keys
+flights_weather <- flights %>%
+  select(year, month, day, hour, origin, dep_delay) %>%
+  left_join(
+    weather %>% select(year, month, day, hour, origin, temp, wind_speed),
+    by = c("year", "month", "day", "hour", "origin")
+  ) %>%
+  drop_na() %>%
+  head(10)
+
+flights_weather
+
+# Chain multiple joins
+customer_summary <- customers %>%
+  left_join(orders, by = "customer_id") %>%
+  left_join(customer_categories, by = "customer_id") %>%
+  group_by(customer_id, name, city, category) %>%
+  summarise(
+    total_orders = sum(!is.na(order_id)),
+    total_amount = sum(amount, na.rm = TRUE),
+    avg_order_value = mean(amount, na.rm = TRUE),
+    .groups = "drop"
+  ) %>%
+  mutate(
+    category = replace_na(category, "Unassigned"),
+    customer_value = case_when(
+      total_amount >= 500 ~ "High",
+      total_amount >= 200 ~ "Medium",
+      total_amount > 0 ~ "Low",
+      TRUE ~ "No Orders"
+    )
+  )
+
+customer_summary
+```
+
+## Window Functions
+
+```{r}
+# Ranking functions
+penguins %>%
+  drop_na() %>%
+  group_by(species) %>%
+  mutate(
+    mass_rank = rank(body_mass_g),
+    mass_dense_rank = dense_rank(body_mass_g),
+    mass_row_number = row_number(body_mass_g),
+    mass_percent = percent_rank(body_mass_g),
+    mass_ntile = ntile(body_mass_g, 4)
+  ) %>%
+  select(species, body_mass_g, starts_with("mass_")) %>%
+  arrange(species, body_mass_g) %>%
+  head(15)
+
+# Lead and lag
+gapminder %>%
+  filter(country == "United States") %>%
+  arrange(year) %>%
+  mutate(
+    prev_gdp = lag(gdpPercap),
+    next_gdp = lead(gdpPercap),
+    gdp_growth = (gdpPercap - prev_gdp) / prev_gdp * 100,
+    gdp_change_5yr = gdpPercap - lag(gdpPercap, 2)  # 10 year change (data is every 5 years)
+  ) %>%
+  select(year, gdpPercap, prev_gdp, gdp_growth, gdp_change_5yr)
+
+# Cumulative functions
+flights %>%
+  filter(carrier == "AA", month == 1, day == 1) %>%
+  arrange(dep_time) %>%
+  mutate(
+    cumulative_flights = row_number(),
+    cumulative_distance = cumsum(distance),
+    cumulative_avg_distance = cummean(distance),
+    cumulative_max_delay = cummax(coalesce(dep_delay, 0))
+  ) %>%
+  select(dep_time, distance, dep_delay, starts_with("cumulative")) %>%
+  head(10)
+```
+
+## Advanced Selection Techniques
+
+```{r}
+# Using where() for type-based selection
+penguins %>%
+  select(where(is.numeric)) %>%
+  head(3)
+
+penguins %>%
+  select(where(is.factor)) %>%
+  head(3)
+
+# Custom selection functions
+penguins %>%
+  select(where(~ is.numeric(.) && mean(., na.rm = TRUE) > 100)) %>%
+  head(3)
+
+# Combining selection helpers
+penguins %>%
+  select(
+    species,  # Specific column
+    starts_with("bill"),  # Pattern matching
+    where(is.numeric) & contains("mm")  # Combination
+  ) %>%
+  head(3)
+
+# Using all_of() and any_of()
+important_cols <- c("species", "island", "body_mass_g")
+optional_cols <- c("sex", "year", "nonexistent_col")
+
+penguins %>%
+  select(all_of(important_cols)) %>%  # Will error if column doesn't exist
+  head(3)
+
+penguins %>%
+  select(any_of(optional_cols)) %>%  # Won't error for missing columns
+  head(3)
+```
+
+## Row-wise Operations
+
+```{r}
+# Create sample data with list columns
+student_scores <- tibble(
+  student = c("Alice", "Bob", "Charlie"),
+  math = c(85, 92, 78),
+  science = c(90, 88, 85),
+  english = c(88, 85, 90)
+)
+
+# Row-wise operations
+student_scores %>%
+  rowwise() %>%
+  mutate(
+    avg_score = mean(c(math, science, english)),
+    max_score = max(c(math, science, english)),
+    min_score = min(c(math, science, english)),
+    score_range = max_score - min_score
+  ) %>%
+  ungroup()  # Important to ungroup after rowwise
+
+# Working with list columns
+nested_data <- tibble(
+  group = c("A", "B", "C"),
+  values = list(
+    c(1, 2, 3, 4, 5),
+    c(10, 20, 30),
+    c(100, 200, 300, 400)
+  )
+)
+
+nested_data %>%
+  rowwise() %>%
+  mutate(
+    mean_value = mean(values),
+    sum_value = sum(values),
+    n_values = length(values)
+  ) %>%
+  ungroup()
+```
+
+## Combining Multiple Operations
+
+```{r}
+# Complex data pipeline
+penguins %>%
+  # Remove missing values
+  drop_na() %>%
+  # Add computed columns
+  mutate(
+    bill_ratio = bill_length_mm / bill_depth_mm,
+    flipper_body_ratio = flipper_length_mm / (body_mass_g / 100)
+  ) %>%
+  # Group and summarize
+  group_by(species, island) %>%
+  summarise(
+    n_penguins = n(),
+    avg_bill_ratio = mean(bill_ratio),
+    sd_bill_ratio = sd(bill_ratio),
+    avg_flipper_ratio = mean(flipper_body_ratio),
+    .groups = "drop"
+  ) %>%
+  # Filter results
+  filter(n_penguins >= 5) %>%
+  # Add rankings
+  mutate(
+    bill_ratio_rank = dense_rank(desc(avg_bill_ratio)),
+    flipper_ratio_rank = dense_rank(desc(avg_flipper_ratio))
+  ) %>%
+  # Sort results
+  arrange(bill_ratio_rank)
+```
+
+## Working with Databases
+
+```{r}
+# Create in-memory SQLite database
+library(DBI)
+library(RSQLite)
+
+con <- dbConnect(RSQLite::SQLite(), ":memory:")
+
+# Copy data to database
+copy_to(con, penguins, "penguins", overwrite = TRUE)
+copy_to(con, flights, "flights", overwrite = TRUE)
+
+# Create table references
+penguins_db <- tbl(con, "penguins")
+flights_db <- tbl(con, "flights")
+
+# dplyr operations are translated to SQL
+penguins_db %>%
+  filter(species == "Adelie") %>%
+  group_by(island) %>%
+  summarise(
+    count = n(),
+    avg_mass = mean(body_mass_g, na.rm = TRUE)
+  ) %>%
+  show_query()  # Show the SQL query
+
+# Execute and collect results
+result <- penguins_db %>%
+  filter(bill_length_mm > 45) %>%
+  select(species, island, bill_length_mm, body_mass_g) %>%
+  collect()  # Bring into R
+
+result
+
+# Disconnect
+dbDisconnect(con)
+```
+
+## Performance Tips
+
+```{r}
+# Use data.table for very large datasets
+# install.packages("dtplyr")
+library(dtplyr)
+
+# Convert to data.table backend
+penguins_dt <- lazy_dt(penguins)
+
+# Operations are optimized for speed
+result <- penguins_dt %>%
+  filter(species == "Adelie") %>%
+  group_by(island) %>%
+  summarise(avg_mass = mean(body_mass_g, na.rm = TRUE)) %>%
+  as_tibble()  # Convert back to tibble
+
+result
+
+# Benchmarking example
+if (require(microbenchmark, quietly = TRUE)) {
+  # Create larger dataset
+  big_data <- penguins %>%
+    slice_sample(n = 10000, replace = TRUE)
+  
+  microbenchmark(
+    dplyr = big_data %>%
+      group_by(species) %>%
+      summarise(mean_mass = mean(body_mass_g, na.rm = TRUE)),
+    
+    dtplyr = lazy_dt(big_data) %>%
+      group_by(species) %>%
+      summarise(mean_mass = mean(body_mass_g, na.rm = TRUE)) %>%
+      as_tibble(),
+    
+    times = 10
+  )
+}
+```
+
+## Exercises
+
+### Exercise 1: Complex Filtering
+
+Using the flights dataset, find all flights that:
+- Departed from JFK
+- Were delayed by more than 30 minutes
+- Flew more than 1000 miles
+- Occurred in summer months (June, July, August)
+
+```{r}
+# Your solution
+flights %>%
+  filter(
+    origin == "JFK",
+    dep_delay > 30,
+    distance > 1000,
+    month %in% c(6, 7, 8)
+  ) %>%
+  select(carrier, flight, dest, dep_delay, distance, month) %>%
+  arrange(desc(dep_delay)) %>%
+  head(10)
+```
+
+### Exercise 2: Advanced Grouping
+
+Using gapminder data, calculate for each continent and decade:
+- Number of countries
+- Total population
+- Average life expectancy (weighted by population)
+- GDP per capita range (max - min)
+
+```{r}
+# Your solution
+gapminder %>%
+  mutate(decade = floor(year / 10) * 10) %>%
+  group_by(continent, decade) %>%
+  summarise(
+    n_countries = n_distinct(country),
+    total_pop = sum(pop) / 1e9,  # in billions
+    avg_lifeExp = weighted.mean(lifeExp, pop),
+    gdp_range = max(gdpPercap) - min(gdpPercap),
+    .groups = "drop"
+  ) %>%
+  arrange(continent, decade)
+```
+
+### Exercise 3: Window Functions
+
+For each penguin species, identify the top 3 heaviest penguins and show their rank within their species:
+
+```{r}
+# Your solution
+penguins %>%
+  drop_na(body_mass_g) %>%
+  group_by(species) %>%
+  mutate(
+    mass_rank = dense_rank(desc(body_mass_g))
+  ) %>%
+  filter(mass_rank <= 3) %>%
+  select(species, island, body_mass_g, mass_rank) %>%
+  arrange(species, mass_rank)
+```
+
+### Exercise 4: Complex Joins
+
+Create a summary showing:
+- Each airline carrier
+- Total number of flights
+- Average delay
+- Most common destination
+- Weather conditions for their most delayed flight
+
+```{r}
+# Your solution
+carrier_summary <- flights %>%
+  group_by(carrier) %>%
+  summarise(
+    total_flights = n(),
+    avg_delay = mean(dep_delay, na.rm = TRUE),
+    .groups = "drop"
+  )
+
+most_common_dest <- flights %>%
+  count(carrier, dest) %>%
+  group_by(carrier) %>%
+  slice_max(n, n = 1) %>%
+  select(carrier, most_common_dest = dest)
+
+most_delayed <- flights %>%
+  group_by(carrier) %>%
+  slice_max(dep_delay, n = 1) %>%
+  select(carrier, year, month, day, hour, origin, max_delay = dep_delay)
+
+# Combine all information
+final_summary <- carrier_summary %>%
+  left_join(most_common_dest, by = "carrier") %>%
+  left_join(most_delayed, by = "carrier") %>%
+  left_join(
+    weather %>% 
+      select(year, month, day, hour, origin, temp, wind_speed, precip),
+    by = c("year", "month", "day", "hour", "origin")
+  ) %>%
+  select(carrier, total_flights, avg_delay, most_common_dest, 
+         max_delay, temp, wind_speed, precip) %>%
+  arrange(desc(avg_delay))
+
+head(final_summary, 10)
+```
+
+## Summary
+
+You've mastered the essential dplyr functions:
+
+✅ Core verbs: filter, select, mutate, arrange, summarise  
+✅ Grouped operations with group_by  
+✅ All types of joins  
+✅ Window functions for advanced calculations  
+✅ Row-wise operations  
+✅ Database connections with dplyr  
+
+## What's Next?
+
+In [Chapter 4](04-data-tidying.qmd), we'll learn how to reshape and tidy messy data using tidyr, including pivoting, nesting, and handling missing values.
+
+## Additional Resources
+
+- [dplyr Documentation](https://dplyr.tidyverse.org/)
+- [dplyr Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/main/data-transformation.pdf)
+- [R for Data Science - Data Transformation](https://r4ds.had.co.nz/transform.html)
+- [Window Functions Vignette](https://dplyr.tidyverse.org/articles/window-functions.html)

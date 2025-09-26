@@ -1,0 +1,1043 @@
+---
+title: "Chapter 6: Functional Programming with purrr - Iteration and Mapping Made Elegant"
+author: "Workshop Materials"
+date: today
+format:
+  html:
+    code-fold: false
+    code-tools: true
+---
+
+## Learning Objectives
+
+By the end of this chapter, you will master:
+
+- The philosophy of functional programming in R
+- The map family of functions
+- Working with lists and nested data
+- Safe function execution and error handling
+- Parallel iteration with map2 and pmap
+- Functional programming patterns
+- Integration with tidyverse workflows
+- Performance optimization techniques
+
+## Why Functional Programming?
+
+Functional programming (FP) is a programming paradigm that treats computation as the evaluation of mathematical functions. In data science, FP principles help us write:
+- **Cleaner code**: Less repetition, more abstraction
+- **Safer code**: Fewer side effects, predictable behavior
+- **More maintainable code**: Modular, testable functions
+- **Scalable code**: Easy to parallelize and optimize
+
+The `purrr` package brings functional programming to the tidyverse, replacing loops with elegant, expressive functions.
+
+### The Problem with Loops
+
+Let's start by understanding why we need functional programming:
+
+```{r}
+#| message: true
+library(tidyverse)
+library(purrr)
+library(broom)
+
+# Set seed for reproducibility
+set.seed(123)
+
+# Traditional approach with loops
+data_list <- list(
+  group_a = rnorm(100, mean = 10, sd = 2),
+  group_b = rnorm(100, mean = 15, sd = 3),
+  group_c = rnorm(100, mean = 12, sd = 2.5)
+)
+
+# Calculate mean with a for loop (the old way)
+means_loop <- numeric(length(data_list))
+names(means_loop) <- names(data_list)
+
+for (i in seq_along(data_list)) {
+  means_loop[i] <- mean(data_list[[i]])
+}
+
+print("Means calculated with loop:")
+print(means_loop)
+
+# The functional approach with map
+means_map <- map_dbl(data_list, mean)
+
+print("Means calculated with map:")
+print(means_map)
+
+# Are they the same?
+identical(means_loop, means_map)
+```
+
+While both approaches give the same result, the functional approach is:
+- **More concise**: One line instead of four
+- **More readable**: Intent is clear
+- **Less error-prone**: No index management
+- **Vectorized**: Can be easily parallelized
+
+## The map() Family
+
+The `map()` functions are the workhorses of purrr. They apply a function to each element of a list or vector.
+
+### Basic map() Function
+
+The basic `map()` function always returns a list:
+
+```{r}
+# Apply a function to each element
+numbers <- list(
+  small = 1:5,
+  medium = 10:15,
+  large = 100:105
+)
+
+# Calculate summary statistics for each group
+summaries <- map(numbers, summary)
+print(summaries)
+
+# The beauty of map: it preserves names and structure
+str(summaries)
+```
+
+### Type-Specific map Variants
+
+Often we want a specific type of output. Purrr provides typed variants:
+
+```{r}
+# map_dbl returns a numeric vector
+means <- map_dbl(numbers, mean)
+print(means)
+
+# map_chr returns a character vector
+descriptions <- map_chr(numbers, ~ paste("Range:", min(.), "-", max(.)))
+print(descriptions)
+
+# map_lgl returns a logical vector
+has_even_length <- map_lgl(numbers, ~ length(.) %% 2 == 0)
+print(has_even_length)
+
+# map_int returns an integer vector
+lengths <- map_int(numbers, length)
+print(lengths)
+
+# Demonstrate type safety
+# This would error: map_dbl(numbers, class)
+# Because class returns a character, not a double
+```
+
+The typed variants are important because they:
+- Ensure type consistency
+- Catch errors early
+- Make code more predictable
+- Enable further vectorized operations
+
+### Anonymous Functions and Shortcuts
+
+Purrr provides multiple ways to specify functions, making code more concise:
+
+```{r}
+# Sample data
+values <- list(
+  a = 1:10,
+  b = 11:20,
+  c = 21:30
+)
+
+# Method 1: Named function
+result1 <- map_dbl(values, mean)
+
+# Method 2: Anonymous function (traditional)
+result2 <- map_dbl(values, function(x) mean(x))
+
+# Method 3: Formula notation (purrr style)
+result3 <- map_dbl(values, ~ mean(.))
+
+# Method 4: Even more concise for simple extractions
+# Extract the 3rd element from each vector
+third_elements <- map_dbl(values, 3)  # Same as ~ .[[3]]
+
+print("All methods produce the same result:")
+print(all(result1 == result2, result2 == result3))
+print("Third elements:")
+print(third_elements)
+
+# More complex anonymous functions
+custom_summary <- map(values, ~ {
+  tibble(
+    min = min(.),
+    median = median(.),
+    max = max(.),
+    range = max(.) - min(.),
+    cv = sd(.) / mean(.)  # Coefficient of variation
+  )
+})
+
+# Combine into a single data frame
+bind_rows(custom_summary, .id = "group")
+```
+
+The `~` notation is particularly elegant:
+- `~` starts an anonymous function
+- `.` represents the current element
+- Can include complex expressions
+
+## Working with Data Frames
+
+One of purrr's strengths is working with data frames and nested data:
+
+```{r}
+# Create a nested data frame
+nested_data <- tibble(
+  group = c("A", "B", "C"),
+  n = c(50, 75, 100)
+) %>%
+  mutate(
+    # Generate data for each group
+    data = map2(n, group, ~ {
+      tibble(
+        value = rnorm(.x, mean = match(.y, LETTERS) * 10, sd = 2),
+        category = sample(c("Type1", "Type2"), .x, replace = TRUE)
+      )
+    })
+  )
+
+print("Nested data structure:")
+print(nested_data)
+
+# Work with nested data
+analysis_results <- nested_data %>%
+  mutate(
+    # Calculate statistics for each nested data frame
+    n_obs = map_int(data, nrow),
+    mean_value = map_dbl(data, ~ mean(.$value)),
+    sd_value = map_dbl(data, ~ sd(.$value)),
+    
+    # Fit models to each group
+    model = map(data, ~ lm(value ~ category, data = .)),
+    
+    # Extract model information
+    model_summary = map(model, broom::glance),
+    coefficients = map(model, broom::tidy)
+  )
+
+# View the results
+analysis_results %>%
+  select(group, n_obs, mean_value, sd_value)
+
+# Unnest model summaries
+analysis_results %>%
+  select(group, model_summary) %>%
+  unnest(model_summary) %>%
+  select(group, r.squared, p.value, AIC, BIC)
+```
+
+This pattern of nest-map-unnest is incredibly powerful for:
+- Group-wise analysis
+- Multiple model fitting
+- Simulation studies
+- Bootstrap procedures
+
+## map2() and pmap() for Multiple Inputs
+
+Sometimes we need to iterate over multiple inputs simultaneously:
+
+### map2() for Two Inputs
+
+```{r}
+# Two vectors to iterate over
+means <- c(10, 20, 30)
+sds <- c(1, 2, 3)
+sample_sizes <- c(100, 200, 300)
+
+# Generate samples with different parameters
+samples <- map2(means, sds, ~ rnorm(100, mean = .x, sd = .y))
+
+# Visualize
+samples_df <- tibble(
+  group = rep(c("A", "B", "C"), each = 100),
+  value = unlist(samples)
+)
+
+ggplot(samples_df, aes(x = value, fill = group)) +
+  geom_density(alpha = 0.5) +
+  labs(
+    title = "Distributions Generated with map2()",
+    subtitle = "Different means and standard deviations"
+  ) +
+  theme_minimal()
+
+# More complex map2 example
+x_values <- list(1:5, 6:10, 11:15)
+y_values <- list(2:6, 7:11, 12:16)
+
+# Calculate correlations between paired lists
+correlations <- map2_dbl(x_values, y_values, cor)
+print(paste("Correlations:", paste(correlations, collapse = ", ")))
+```
+
+### pmap() for Multiple Inputs
+
+When you have more than two inputs, use `pmap()`:
+
+```{r}
+# Multiple parameters for simulation
+params <- tibble(
+  n = c(100, 200, 150),
+  mean = c(10, 15, 12),
+  sd = c(2, 3, 2.5),
+  distribution = c("normal", "uniform", "exponential")
+)
+
+# Generate samples based on parameters
+simulated_data <- pmap(params, function(n, mean, sd, distribution) {
+  switch(distribution,
+    normal = rnorm(n, mean, sd),
+    uniform = runif(n, mean - sd, mean + sd),
+    exponential = rexp(n, rate = 1/mean)
+  )
+})
+
+# Add to our data frame
+params_with_data <- params %>%
+  mutate(
+    data = simulated_data,
+    actual_mean = map_dbl(data, mean),
+    actual_sd = map_dbl(data, sd)
+  )
+
+params_with_data %>%
+  select(-data)
+
+# Visualize all distributions
+params_with_data %>%
+  mutate(data = map2(data, distribution, ~ {
+    tibble(value = .x, distribution = .y)
+  })) %>%
+  select(distribution, data) %>%
+  unnest(data) %>%
+  ggplot(aes(x = value, fill = distribution)) +
+  geom_histogram(bins = 30, alpha = 0.7) +
+  facet_wrap(~distribution, scales = "free") +
+  theme_minimal() +
+  labs(title = "Different Distributions Generated with pmap()")
+```
+
+The power of `pmap()`:
+- Handles any number of inputs
+- Works with data frames naturally
+- Maintains alignment of inputs
+- Enables complex parameterized operations
+
+## Error Handling with safely() and possibly()
+
+Real-world data is messy. Functions fail. Purrr helps us handle errors gracefully:
+
+### safely() - Capture Errors
+
+```{r}
+# Create data with potential problems
+messy_list <- list(
+  good = 1:10,
+  bad = c(1, 2, "three", 4),  # Contains a string
+  empty = numeric(0),
+  null = NULL,
+  also_good = 11:20
+)
+
+# This would fail:
+# map_dbl(messy_list, mean)
+
+# Use safely to capture errors
+safe_mean <- safely(mean)
+results <- map(messy_list, safe_mean)
+
+# Examine structure
+str(results[[1]])  # Good result
+str(results[[2]])  # Error result
+
+# Extract results and errors
+extracted_results <- tibble(
+  name = names(messy_list),
+  result = map(results, "result"),
+  error = map(results, "error")
+) %>%
+  mutate(
+    has_error = map_lgl(error, ~ !is.null(.)),
+    error_message = map_chr(error, ~ ifelse(is.null(.), "No error", as.character(.)))
+  )
+
+extracted_results %>%
+  select(name, has_error, error_message)
+```
+
+### possibly() - Provide Default Values
+
+```{r}
+# possibly() is simpler when you just want a default
+possible_mean <- possibly(mean, otherwise = NA_real_)
+
+# Apply to messy list
+means_with_default <- map_dbl(messy_list, possible_mean)
+print(means_with_default)
+
+# More complex example with custom function
+calculate_cv <- function(x) {
+  if (length(x) < 2) stop("Need at least 2 values")
+  sd(x) / mean(x)
+}
+
+safe_cv <- possibly(calculate_cv, otherwise = NA_real_)
+
+# Test data with edge cases
+test_data <- list(
+  normal = rnorm(100, 10, 2),
+  single = 5,
+  empty = numeric(0),
+  zeros = rep(0, 10),
+  negative = c(-1, -2, -3)
+)
+
+cv_results <- map_dbl(test_data, safe_cv)
+print(cv_results)
+```
+
+### quietly() - Capture Warnings and Messages
+
+```{r}
+# Function that produces warnings
+noisy_function <- function(x) {
+  if (any(x < 0)) warning("Negative values detected")
+  if (length(x) > 100) message("Large dataset")
+  mean(x)
+}
+
+# Capture all output
+quiet_function <- quietly(noisy_function)
+
+# Test with various inputs
+test_inputs <- list(
+  clean = 1:10,
+  negative = c(-5, 0, 5),
+  large = 1:150
+)
+
+quiet_results <- map(test_inputs, quiet_function)
+
+# Extract components
+output_summary <- tibble(
+  name = names(test_inputs),
+  result = map_dbl(quiet_results, "result"),
+  warnings = map(quiet_results, "warnings"),
+  messages = map(quiet_results, "messages")
+) %>%
+  mutate(
+    has_warnings = map_lgl(warnings, ~ length(.) > 0),
+    has_messages = map_lgl(messages, ~ length(.) > 0)
+  )
+
+output_summary %>%
+  select(name, result, has_warnings, has_messages)
+```
+
+## Advanced Functional Patterns
+
+### Function Factories
+
+Create functions that return other functions:
+
+```{r}
+# Create a function factory for power functions
+make_power <- function(n) {
+  function(x) x^n
+}
+
+# Create specific power functions
+square <- make_power(2)
+cube <- make_power(3)
+
+# Use them
+print(square(5))
+print(cube(3))
+
+# Apply to data
+values <- 1:5
+powers <- 2:4
+
+# Create multiple power functions
+power_functions <- map(powers, make_power)
+
+# Apply each to our values
+power_results <- map(power_functions, ~ .(values))
+names(power_results) <- paste0("power_", powers)
+
+# Convert to data frame
+as_tibble(power_results) %>%
+  mutate(original = values)
+```
+
+### Function Composition
+
+Combine multiple functions into pipelines:
+
+```{r}
+# Create a data processing pipeline
+process_data <- compose(
+  ~ mutate(., z_score = (value - mean(value)) / sd(value)),
+  ~ filter(., !is.na(value)),
+  ~ select(., -unwanted_column),
+  .dir = "forward"  # Apply left to right
+)
+
+# Test data
+test_df <- tibble(
+  value = c(1, 2, NA, 4, 5, 100),
+  unwanted_column = "remove me"
+)
+
+# This won't work directly with compose, so let's do it manually
+pipeline <- . %>%
+  select(-unwanted_column) %>%
+  filter(!is.na(value)) %>%
+  mutate(z_score = (value - mean(value)) / sd(value))
+
+result <- test_df %>% pipeline
+print(result)
+
+# More practical: Create reusable statistical transformations
+standardize <- function(x) (x - mean(x, na.rm = TRUE)) / sd(x, na.rm = TRUE)
+winsorize <- function(x, probs = c(0.05, 0.95)) {
+  limits <- quantile(x, probs, na.rm = TRUE)
+  x[x < limits[1]] <- limits[1]
+  x[x > limits[2]] <- limits[2]
+  x
+}
+
+# Apply transformations to multiple columns
+data_to_transform <- tibble(
+  a = rnorm(100, 10, 5),
+  b = rexp(100, 0.1),
+  c = runif(100, 0, 100)
+)
+
+transformed_data <- data_to_transform %>%
+  mutate(across(everything(), list(
+    standardized = standardize,
+    winsorized = winsorize
+  )))
+
+glimpse(transformed_data)
+```
+
+### Reduce and Accumulate
+
+Combine elements of a list iteratively:
+
+```{r}
+# reduce() combines all elements into one
+numbers_list <- list(
+  c(1, 2, 3),
+  c(4, 5, 6),
+  c(7, 8, 9)
+)
+
+# Sum all vectors element-wise
+total <- reduce(numbers_list, `+`)
+print(total)
+
+# Find intersection of multiple sets
+sets <- list(
+  set1 = c("a", "b", "c", "d"),
+  set2 = c("b", "c", "d", "e"),
+  set3 = c("c", "d", "e", "f")
+)
+
+common_elements <- reduce(sets, intersect)
+print(paste("Common elements:", paste(common_elements, collapse = ", ")))
+
+# accumulate() keeps intermediate results
+cumulative_sums <- accumulate(1:5, `+`)
+print(cumulative_sums)
+
+# More complex: Merge multiple data frames
+df_list <- list(
+  tibble(id = 1:3, a = letters[1:3]),
+  tibble(id = 2:4, b = letters[2:4]),
+  tibble(id = 3:5, c = letters[3:5])
+)
+
+merged_df <- reduce(df_list, full_join, by = "id")
+print(merged_df)
+```
+
+## Real-World Applications
+
+### Bootstrap Analysis
+
+Use purrr for bootstrap confidence intervals:
+
+```{r}
+# Original data
+original_data <- rnorm(100, mean = 50, sd = 10)
+
+# Bootstrap function
+bootstrap_mean <- function(data, n_boot = 1000) {
+  # Generate bootstrap samples
+  boot_samples <- map_dbl(1:n_boot, ~ {
+    sample(data, replace = TRUE) %>% mean()
+  })
+  
+  # Calculate confidence interval
+  ci <- quantile(boot_samples, c(0.025, 0.975))
+  
+  tibble(
+    mean = mean(data),
+    boot_mean = mean(boot_samples),
+    boot_sd = sd(boot_samples),
+    ci_lower = ci[1],
+    ci_upper = ci[2]
+  )
+}
+
+# Apply bootstrap
+boot_result <- bootstrap_mean(original_data)
+print(boot_result)
+
+# Visualize bootstrap distribution
+boot_samples <- map_dbl(1:1000, ~ mean(sample(original_data, replace = TRUE)))
+
+ggplot(tibble(x = boot_samples), aes(x = x)) +
+  geom_histogram(bins = 30, fill = "steelblue", alpha = 0.7) +
+  geom_vline(xintercept = mean(original_data), color = "red", linewidth = 1) +
+  geom_vline(xintercept = boot_result$ci_lower, color = "red", linetype = "dashed") +
+  geom_vline(xintercept = boot_result$ci_upper, color = "red", linetype = "dashed") +
+  labs(
+    title = "Bootstrap Distribution of Sample Mean",
+    subtitle = "Red lines show original mean and 95% CI",
+    x = "Bootstrap Mean",
+    y = "Count"
+  ) +
+  theme_minimal()
+```
+
+### Multiple Model Fitting
+
+Fit and compare multiple models efficiently:
+
+```{r}
+# Generate sample data
+set.seed(123)
+model_data <- tibble(
+  x1 = rnorm(100),
+  x2 = rnorm(100),
+  x3 = rnorm(100),
+  y = 2 * x1 + 3 * x2 - x3 + rnorm(100, sd = 0.5)
+)
+
+# Define model formulas
+formulas <- list(
+  simple = y ~ x1,
+  additive = y ~ x1 + x2,
+  full = y ~ x1 + x2 + x3,
+  interaction = y ~ x1 * x2 + x3,
+  quadratic = y ~ poly(x1, 2) + x2 + x3
+)
+
+# Fit all models
+models <- map(formulas, ~ lm(., data = model_data))
+
+# Extract model metrics
+model_comparison <- tibble(
+  model_name = names(formulas),
+  formula = map_chr(formulas, deparse),
+  model = models
+) %>%
+  mutate(
+    glance = map(model, broom::glance),
+    tidy = map(model, broom::tidy),
+    augment = map(model, broom::augment)
+  ) %>%
+  unnest(glance) %>%
+  select(model_name, formula, r.squared, adj.r.squared, AIC, BIC) %>%
+  arrange(desc(adj.r.squared))
+
+print(model_comparison)
+
+# Visualize model performance
+model_comparison %>%
+  pivot_longer(cols = c(r.squared, adj.r.squared, AIC, BIC),
+               names_to = "metric", values_to = "value") %>%
+  ggplot(aes(x = model_name, y = value, fill = model_name)) +
+  geom_col() +
+  facet_wrap(~metric, scales = "free_y") +
+  theme_minimal() +
+  theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
+  labs(title = "Model Comparison Metrics") +
+  guides(fill = "none")
+```
+
+### Simulation Study
+
+Use purrr for Monte Carlo simulations:
+
+```{r}
+# Simulation parameters
+n_simulations <- 1000
+sample_sizes <- c(10, 30, 100, 300)
+
+# Function to simulate one t-test
+simulate_t_test <- function(n, true_diff = 0.5) {
+  group1 <- rnorm(n, mean = 0, sd = 1)
+  group2 <- rnorm(n, mean = true_diff, sd = 1)
+  
+  test_result <- t.test(group1, group2)
+  
+  tibble(
+    p_value = test_result$p.value,
+    significant = test_result$p.value < 0.05,
+    estimate = test_result$estimate[1] - test_result$estimate[2],
+    ci_lower = test_result$conf.int[1],
+    ci_upper = test_result$conf.int[2]
+  )
+}
+
+# Run simulation for different sample sizes
+simulation_results <- map_df(sample_sizes, function(n) {
+  map_df(1:n_simulations, ~ simulate_t_test(n), .id = "sim") %>%
+    mutate(sample_size = n)
+})
+
+# Calculate power for each sample size
+power_analysis <- simulation_results %>%
+  group_by(sample_size) %>%
+  summarise(
+    power = mean(significant),
+    mean_estimate = mean(estimate),
+    sd_estimate = sd(estimate),
+    coverage = mean(ci_lower < -0.5 & ci_upper > -0.5),
+    .groups = "drop"
+  )
+
+print(power_analysis)
+
+# Visualize power curve
+ggplot(power_analysis, aes(x = sample_size, y = power)) +
+  geom_line(linewidth = 1.5, color = "darkblue") +
+  geom_point(size = 4, color = "darkblue") +
+  geom_hline(yintercept = 0.8, linetype = "dashed", color = "red") +
+  scale_x_log10() +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    title = "Statistical Power vs Sample Size",
+    subtitle = "True effect size = 0.5, α = 0.05",
+    x = "Sample Size (log scale)",
+    y = "Statistical Power"
+  ) +
+  theme_minimal()
+```
+
+## Performance Considerations
+
+### Benchmarking map vs loops
+
+```{r}
+# Create test data
+test_list <- map(1:1000, ~ rnorm(100))
+
+# Benchmark different approaches
+library(microbenchmark)
+
+benchmark_results <- microbenchmark(
+  for_loop = {
+    results <- numeric(length(test_list))
+    for (i in seq_along(test_list)) {
+      results[i] <- mean(test_list[[i]])
+    }
+  },
+  
+  map_dbl = map_dbl(test_list, mean),
+  
+  vapply = vapply(test_list, mean, numeric(1)),
+  
+  lapply = unlist(lapply(test_list, mean)),
+  
+  times = 100
+)
+
+print(benchmark_results)
+
+# Visualize results
+autoplot(benchmark_results) +
+  labs(title = "Performance Comparison: Iteration Methods") +
+  theme_minimal()
+```
+
+### Parallel Processing with furrr
+
+For large-scale operations, use parallel processing:
+
+```{r}
+# Note: furrr requires the future package
+library(furrr)
+library(future)
+
+# Set up parallel processing
+plan(multisession, workers = 2)  # Use 2 cores
+
+# Large simulation
+large_simulation <- function(n = 10000) {
+  # Simulate expensive computation
+  data <- rnorm(n)
+  tibble(
+    mean = mean(data),
+    sd = sd(data),
+    median = median(data),
+    mad = mad(data)
+  )
+}
+
+# Sequential processing
+system.time({
+  sequential_results <- map_df(1:100, ~ large_simulation())
+})
+
+# Parallel processing
+system.time({
+  parallel_results <- future_map_df(1:100, ~ large_simulation())
+})
+
+# Reset to sequential processing
+plan(sequential)
+
+print("Results are identical:")
+print(identical(sequential_results, parallel_results))
+```
+
+## Exercises
+
+### Exercise 1: Nested Data Analysis
+
+Work with nested data frames to perform group-wise analysis:
+
+```{r}
+# Your solution
+# Create nested data
+sales_data <- tibble(
+  region = rep(c("North", "South", "East", "West"), each = 50),
+  month = rep(1:12, length.out = 200),
+  sales = c(
+    rnorm(50, 1000, 200),  # North
+    rnorm(50, 1200, 250),  # South
+    rnorm(50, 900, 150),   # East
+    rnorm(50, 1100, 300)   # West
+  )
+)
+
+# Nest and analyze
+sales_analysis <- sales_data %>%
+  nest(data = c(month, sales)) %>%
+  mutate(
+    # Calculate statistics
+    total_sales = map_dbl(data, ~ sum(.$sales)),
+    avg_sales = map_dbl(data, ~ mean(.$sales)),
+    cv = map_dbl(data, ~ sd(.$sales) / mean(.$sales)),
+    
+    # Fit trend model
+    model = map(data, ~ lm(sales ~ month, data = .)),
+    
+    # Extract slope (trend)
+    trend = map_dbl(model, ~ coef(.)[2]),
+    
+    # Model quality
+    r_squared = map_dbl(model, ~ summary(.)$r.squared)
+  )
+
+sales_analysis %>%
+  select(-data, -model) %>%
+  arrange(desc(total_sales))
+```
+
+### Exercise 2: Safe Data Cleaning
+
+Create a robust data cleaning pipeline that handles errors:
+
+```{r}
+# Your solution
+# Messy data with various problems
+messy_data <- list(
+  clean = tibble(x = 1:5, y = 2:6),
+  missing_col = tibble(x = 1:5),
+  wrong_type = tibble(x = letters[1:5], y = 2:6),
+  empty = tibble(),
+  null = NULL
+)
+
+# Create safe cleaning function
+safe_clean <- possibly(function(df) {
+  df %>%
+    mutate(
+      z = x + y,
+      category = if_else(z > 5, "high", "low")
+    )
+}, otherwise = tibble(error = "Processing failed"))
+
+# Apply to all data
+cleaned_results <- map(messy_data, safe_clean)
+
+# Check which ones succeeded
+success_status <- map_lgl(cleaned_results, ~ !("error" %in% names(.)))
+names(success_status) <- names(messy_data)
+print(success_status)
+```
+
+### Exercise 3: Bootstrap Confidence Intervals
+
+Implement bootstrap for multiple statistics:
+
+```{r}
+# Your solution
+# Sample data
+sample_data <- rgamma(100, shape = 2, rate = 0.5)
+
+# Bootstrap function for multiple statistics
+bootstrap_stats <- function(data, n_boot = 1000, conf_level = 0.95) {
+  alpha <- 1 - conf_level
+  
+  # Generate bootstrap samples
+  boot_results <- map_df(1:n_boot, function(i) {
+    boot_sample <- sample(data, replace = TRUE)
+    tibble(
+      mean = mean(boot_sample),
+      median = median(boot_sample),
+      sd = sd(boot_sample),
+      iqr = IQR(boot_sample)
+    )
+  })
+  
+  # Calculate confidence intervals
+  stats_summary <- boot_results %>%
+    pivot_longer(everything(), names_to = "statistic", values_to = "value") %>%
+    group_by(statistic) %>%
+    summarise(
+      estimate = mean(value),
+      se = sd(value),
+      ci_lower = quantile(value, alpha/2),
+      ci_upper = quantile(value, 1 - alpha/2),
+      .groups = "drop"
+    )
+  
+  return(stats_summary)
+}
+
+# Apply bootstrap
+boot_ci <- bootstrap_stats(sample_data)
+print(boot_ci)
+
+# Visualize bootstrap distributions
+boot_samples <- map_df(1:1000, function(i) {
+  boot_sample <- sample(sample_data, replace = TRUE)
+  tibble(
+    iteration = i,
+    mean = mean(boot_sample),
+    median = median(boot_sample)
+  )
+})
+
+boot_samples %>%
+  pivot_longer(c(mean, median), names_to = "statistic", values_to = "value") %>%
+  ggplot(aes(x = value, fill = statistic)) +
+  geom_density(alpha = 0.5) +
+  facet_wrap(~statistic, scales = "free") +
+  theme_minimal() +
+  labs(title = "Bootstrap Distributions")
+```
+
+### Exercise 4: Simulation Power Analysis
+
+Simulate power for different effect sizes:
+
+```{r}
+# Your solution
+# Simulation parameters
+effect_sizes <- seq(0, 1, by = 0.1)
+n_sims <- 500
+sample_size <- 50
+
+# Power simulation function
+calculate_power <- function(effect_size, n = sample_size, n_sim = n_sims) {
+  p_values <- map_dbl(1:n_sim, function(i) {
+    control <- rnorm(n, mean = 0, sd = 1)
+    treatment <- rnorm(n, mean = effect_size, sd = 1)
+    t.test(treatment, control)$p.value
+  })
+  
+  mean(p_values < 0.05)
+}
+
+# Calculate power for each effect size
+power_results <- tibble(
+  effect_size = effect_sizes,
+  power = map_dbl(effect_sizes, calculate_power)
+)
+
+# Visualize power curve
+ggplot(power_results, aes(x = effect_size, y = power)) +
+  geom_line(linewidth = 1.5) +
+  geom_point(size = 3) +
+  geom_hline(yintercept = 0.8, linetype = "dashed", color = "red") +
+  geom_vline(xintercept = 0.5, linetype = "dashed", color = "blue") +
+  scale_y_continuous(limits = c(0, 1)) +
+  labs(
+    title = "Power Analysis: Effect Size vs Statistical Power",
+    subtitle = paste("n =", sample_size, "per group, α = 0.05"),
+    x = "Effect Size (Cohen's d)",
+    y = "Statistical Power"
+  ) +
+  theme_minimal()
+```
+
+## Summary
+
+In this comprehensive chapter, you've mastered:
+
+✅ **Functional programming concepts**
+  - Replacing loops with map functions
+  - Type-safe iterations
+  - Anonymous functions and shortcuts
+
+✅ **Advanced purrr techniques**
+  - map2() and pmap() for multiple inputs
+  - Nested data manipulation
+  - Error handling with safely() and possibly()
+
+✅ **Functional patterns**
+  - Function factories and composition
+  - Reduce and accumulate operations
+  - Parallel processing with furrr
+
+✅ **Real-world applications**
+  - Bootstrap analysis
+  - Multiple model fitting
+  - Simulation studies
+  - Performance optimization
+
+Key takeaways:
+- Functional programming makes code more readable and maintainable
+- purrr integrates seamlessly with tidyverse workflows
+- Error handling is crucial for robust data pipelines
+- Vectorization and parallelization improve performance
+- Think in terms of functions, not loops
+
+## What's Next?
+
+In [Chapter 7](07-strings-dates.qmd), we'll explore string manipulation and date/time handling with stringr and lubridate.
+
+## Additional Resources
+
+- [purrr Documentation](https://purrr.tidyverse.org/)
+- [Advanced R - Functionals](https://adv-r.hadley.nz/functionals.html)
+- [R for Data Science - Iteration](https://r4ds.had.co.nz/iteration.html)
+- [Jenny Bryan's purrr Tutorial](https://jennybc.github.io/purrr-tutorial/)
+- [furrr Documentation](https://furrr.futureverse.org/)

@@ -1,0 +1,69 @@
+project:
+  type: website
+
+website:
+  title: "Complete Tidyverse & Machine Learning Workshop"
+  navbar:
+    left:
+      - href: index.qmd
+        text: Home
+      - text: "Part 1: Tidyverse"
+        menu:
+          - href: 01-introduction.Rmd
+            text: "Ch 1: Introduction to Tidyverse"
+          - href: 02-data-import.Rmd
+            text: "Ch 2: Data Import with readr"
+          - href: 03-data-wrangling.Rmd
+            text: "Ch 3: Data Wrangling with dplyr"
+          - href: 04-data-tidying.Rmd
+            text: "Ch 4: Data Tidying with tidyr"
+          - href: 05-visualization.Rmd
+            text: "Ch 5: Visualization with ggplot2"
+          - href: 06-functional-programming.Rmd
+            text: "Ch 6: Functional Programming with purrr"
+          - href: 07-strings-dates.Rmd
+            text: "Ch 7: Strings and Dates"
+      - text: "Part 2: Tidymodels"
+        menu:
+          - href: 08-tidymodels-intro.Rmd
+            text: "Ch 8: Introduction to Tidymodels"
+          - href: 09-data-splitting.Rmd
+            text: "Ch 9: Data Splitting & Resampling"
+          - href: 10-feature-engineering.Rmd
+            text: "Ch 10: Feature Engineering"
+          - href: 11-model-specification.Rmd
+            text: "Ch 11: Model Specification"
+          - href: 12-workflows-evaluation.Rmd
+            text: "Ch 12: Workflows & Evaluation"
+          - href: 13-hyperparameter-tuning.Rmd
+            text: "Ch 13: Hyperparameter Tuning"
+      - text: "Part 3: Machine Learning"
+        menu:
+          - href: 14-classification.Rmd
+            text: "Ch 14: Classification Models"
+          - href: 15-regression.Rmd
+            text: "Ch 15: Regression Models"
+          - href: 16-ensemble-methods.Rmd
+            text: "Ch 16: Ensemble Methods"
+          - href: 17-unsupervised-learning.Rmd
+            text: "Ch 17: Unsupervised Learning"
+          - href: 18-model-deployment.Rmd
+            text: "Ch 18: Model Deployment"
+      - href: about.qmd
+        text: About
+
+format:
+  html:
+    theme: cosmo
+    css: styles.css
+    toc: true
+    code-fold: false
+    code-tools: true
+    code-copy: true
+    highlight-style: github
+
+execute:
+  freeze: auto
+  echo: true
+  warning: false
+  message: false

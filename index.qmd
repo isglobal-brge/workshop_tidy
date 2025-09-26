@@ -1,0 +1,119 @@
+---
+title: "Complete Tidyverse & Machine Learning Workshop"
+author: "Workshop Materials"
+date: today
+---
+
+# Welcome to the Complete Tidyverse & Machine Learning Workshop
+
+## Course Overview
+
+This comprehensive workshop provides a complete journey through data science in R, from basic data manipulation with the tidyverse to advanced machine learning with tidymodels. Whether you're new to R or looking to expand your skills, this course offers practical, hands-on learning with real-world datasets.
+
+## What You'll Learn
+
+### Part 1: Tidyverse Fundamentals (Chapters 1-7)
+Master the core packages of the tidyverse ecosystem:
+
+- **Data Import & Export**: Read and write various file formats efficiently
+- **Data Wrangling**: Transform and manipulate data with dplyr
+- **Data Tidying**: Reshape and organize messy data with tidyr
+- **Data Visualization**: Create publication-ready plots with ggplot2
+- **Functional Programming**: Apply functions efficiently with purrr
+- **Text & Date Processing**: Handle strings and temporal data
+
+### Part 2: Tidymodels Framework (Chapters 8-13)
+Build a solid foundation in modern machine learning workflows:
+
+- **Tidymodels Ecosystem**: Understand the framework and its components
+- **Data Preparation**: Split data and create resampling schemes
+- **Feature Engineering**: Preprocess data with recipes
+- **Model Building**: Specify and train models with parsnip
+- **Workflows**: Create reproducible modeling pipelines
+- **Model Tuning**: Optimize hyperparameters systematically
+
+### Part 3: Machine Learning Applications (Chapters 14-18)
+Apply your skills to real-world problems:
+
+- **Classification**: Build and evaluate classification models
+- **Regression**: Develop predictive regression models
+- **Ensemble Methods**: Combine models for better performance
+- **Unsupervised Learning**: Discover patterns with clustering and PCA
+- **Model Deployment**: Put models into production
+
+## Prerequisites
+
+- Basic R knowledge is helpful but not required
+- RStudio or another R IDE installed
+- Internet connection for package installation
+
+## Required Packages
+
+To get started with this workshop, you'll need to install several R packages. Run the following code to install everything you need:
+
+```{r}
+#| eval: false
+# Core tidyverse packages
+install.packages("tidyverse")
+
+# Tidymodels packages
+install.packages("tidymodels")
+
+# Additional packages for specific chapters
+install.packages(c(
+  "palmerpenguins",  # Dataset for examples
+  "gapminder",        # Dataset for examples
+  "nycflights13",     # Dataset for examples
+  "modeldata",        # Additional datasets
+  "vip",              # Variable importance plots
+  "ranger",           # Random forests
+  "xgboost",          # Gradient boosting
+  "glmnet",           # Regularized regression
+  "kknn",             # K-nearest neighbors
+  "discrim",          # Discriminant analysis
+  "baguette",         # Bagging
+  "stacks",           # Model stacking
+  "vetiver",          # Model deployment
+  "plumber",          # API creation
+  "pins",             # Model versioning
+  "corrplot",         # Correlation plots
+  "GGally",           # Extended ggplot2
+  "skimr",            # Data summaries
+  "janitor",          # Data cleaning
+  "lubridate",        # Date handling
+  "stringr",          # String manipulation
+  "forcats",          # Factor handling
+  "broom",            # Model tidying
+  "yardstick",        # Model metrics
+  "probably",         # Uncertainty estimation
+  "butcher",          # Model size reduction
+  "bundle"            # Model bundling
+))
+```
+
+## How to Use This Workshop
+
+1. **Sequential Learning**: Chapters build upon each other, especially within each part
+2. **Hands-on Practice**: Each chapter includes practical examples and exercises
+3. **Code Along**: All code is provided and tested - run it yourself!
+4. **Exercises**: Complete the exercises to reinforce your learning
+5. **Projects**: Apply your skills to the capstone projects
+
+## Getting Started
+
+Ready to begin? Start with [Chapter 1: Introduction to the Tidyverse](01-introduction.qmd)!
+
+## Support and Resources
+
+- [Tidyverse Documentation](https://www.tidyverse.org/)
+- [Tidymodels Documentation](https://www.tidymodels.org/)
+- [R for Data Science Book](https://r4ds.had.co.nz/)
+- [Tidy Modeling with R](https://www.tmwr.org/)
+
+## About This Workshop
+
+This workshop was created as a comprehensive resource for learning modern data science in R. It combines best practices from the tidyverse and tidymodels communities with practical machine learning applications.
+
+---
+
+*Happy Learning! 🚀*
