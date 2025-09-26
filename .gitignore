@@ -1,0 +1,77 @@
+# R and RStudio files
+.Rhistory
+.RData
+.Rproj.user/
+*.Rproj
+
+# Quarto
+/.quarto/
+_site/
+_book/
+*.knit.md
+*_cache/
+*_files/
+
+# R package files
+*.tar.gz
+
+# Temporary files
+*.log
+*.aux
+*.out
+*.toc
+*.bak
+*~
+.DS_Store
+Thumbs.db
+
+# Output files
+*.html
+*.pdf
+*.docx
+*.epub
+
+# Data files (if you want to exclude large datasets)
+# *.csv
+# *.xlsx
+# *.rds
+
+# API keys and credentials
+api/
+config/api_keys.rds
+.env
+
+# Model files (if they're large)
+models/pins/
+models/*.rds
+!models/README.md
+
+# Logs
+logs/
+*.log
+
+# Docker
+docker/models/
+docker/logs/
+
+# Shiny apps
+apps/rsconnect/
+apps/*.dcf
+
+# Python (if using reticulate)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# IDE
+.vscode/
+.idea/
+
+# OS files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
