@@ -1,0 +1,1477 @@
+---
+title: "Chapter 18: Model Deployment and Production - From Prototype to Product"
+author: "Workshop Materials"
+date: today
+format:
+  html:
+    code-fold: false
+    code-tools: true
+---
+
+## Learning Objectives
+
+By the end of this chapter, you will master:
+
+- The journey from development to production
+- Model serialization and versioning
+- Creating APIs with plumber
+- Building Shiny applications for model deployment
+- Docker containerization for R models
+- Model monitoring and maintenance
+- A/B testing and gradual rollouts
+- Best practices for production ML systems
+
+## The Production Challenge
+
+Building a great model is only the beginning. The real challenge lies in deploying it to production where it can deliver value. Studies show that 87% of data science projects never make it to production. This chapter will ensure your models are in the successful 13%.
+
+The journey from Jupyter notebook to production system involves many considerations:
+- **Reliability**: Will it work 24/7?
+- **Scalability**: Can it handle production load?
+- **Maintainability**: Can others understand and update it?
+- **Monitoring**: How do we know if it's working correctly?
+- **Versioning**: How do we update without breaking things?
+
+```{r}
+#| message: true
+library(tidymodels)
+library(tidyverse)
+library(plumber)
+library(pins)
+library(vetiver)
+library(jsonlite)
+library(httr)
+library(shiny)
+library(shinydashboard)
+library(DT)
+
+# Set theme and seed
+theme_set(theme_minimal())
+set.seed(123)
+
+# Load and prepare example model
+data(ames)
+ames_split <- initial_split(ames, prop = 0.75, strata = Sale_Price)
+ames_train <- training(ames_split)
+ames_test <- testing(ames_split)
+
+# Create a production-ready model
+production_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual + 
+                          Year_Built + Neighborhood + Total_Bsmt_SF, 
+                          data = ames_train) %>%
+  step_log(Sale_Price) %>%
+  step_impute_median(all_numeric_predictors()) %>%
+  step_novel(all_nominal_predictors()) %>%  # Handle new categories
+  step_unknown(all_nominal_predictors()) %>%  # Handle missing categories
+  step_dummy(all_nominal_predictors()) %>%
+  step_normalize(all_numeric_predictors())
+
+production_model <- linear_reg(penalty = 0.01, mixture = 0.5) %>%
+  set_engine("glmnet")
+
+production_workflow <- workflow() %>%
+  add_recipe(production_recipe) %>%
+  add_model(production_model)
+
+# Fit the model
+production_fit <- production_workflow %>%
+  fit(ames_train)
+
+# Evaluate
+test_predictions <- predict(production_fit, ames_test) %>%
+  bind_cols(ames_test %>% select(Sale_Price))
+
+test_metrics <- test_predictions %>%
+  metrics(Sale_Price, .pred)
+
+cat("Model Performance:\n")
+print(test_metrics)
+```
+
+## Model Serialization and Storage
+
+### Saving Models Locally
+
+```{r}
+# Method 1: Base R serialization
+saveRDS(production_fit, "models/ames_model_v1.rds")
+
+# Load it back
+loaded_model <- readRDS("models/ames_model_v1.rds")
+
+# Verify it works
+test_pred <- predict(loaded_model, ames_test %>% slice(1:5))
+print(test_pred)
+
+# Method 2: Using bundle package for better portability
+library(bundle)
+
+# Bundle the model (includes necessary metadata)
+model_bundle <- bundle(production_fit)
+saveRDS(model_bundle, "models/ames_model_bundle_v1.rds")
+
+# Unbundle when loading
+loaded_bundle <- readRDS("models/ames_model_bundle_v1.rds")
+unbundled_model <- unbundle(loaded_bundle)
+```
+
+### Version Control with pins
+
+```{r}
+# Create a board for model storage
+library(pins)
+
+# Local board (can also use S3, Azure, etc.)
+model_board <- board_folder("models/pins", versioned = TRUE)
+
+# Pin the model with metadata
+model_board %>%
+  pin_write(
+    production_fit,
+    name = "ames_price_model",
+    type = "rds",
+    title = "Ames Housing Price Model",
+    description = "Elastic net model for predicting house prices",
+    metadata = list(
+      metrics = test_metrics,
+      training_date = Sys.Date(),
+      features = c("Gr_Liv_Area", "Overall_Qual", "Year_Built", 
+                  "Neighborhood", "Total_Bsmt_SF"),
+      model_type = "elastic_net",
+      package_versions = sessionInfo()
+    )
+  )
+
+# List available versions
+model_board %>%
+  pin_versions("ames_price_model")
+
+# Load specific version
+retrieved_model <- model_board %>%
+  pin_read("ames_price_model")
+```
+
+### Using vetiver for Model Deployment
+
+```{r}
+library(vetiver)
+
+# Create a vetiver model
+v <- vetiver_model(
+  production_fit,
+  "ames_price_predictor",
+  metadata = list(
+    description = "Predicts house prices in Ames, Iowa",
+    features = c("Gr_Liv_Area", "Overall_Qual", "Year_Built", 
+                "Neighborhood", "Total_Bsmt_SF"),
+    target = "Sale_Price"
+  )
+)
+
+# Store with version
+model_board %>%
+  vetiver_pin_write(v)
+
+# Create model card documentation
+model_card <- "
+# Ames Housing Price Model
+
+## Model Details
+- **Type**: Elastic Net Regression
+- **Version**: 1.0.0
+- **Training Date**: 2024-01-01
+- **Author**: Data Science Team
+
+## Intended Use
+Predicts sale prices for residential properties in Ames, Iowa.
+
+## Training Data
+- **Source**: Ames Housing Dataset
+- **Size**: 2,930 properties
+- **Time Period**: 2006-2010
+
+## Performance Metrics
+- **RMSE**: $25,432
+- **R-squared**: 0.89
+- **MAE**: $18,234
+
+## Limitations
+- Only applies to Ames, Iowa market
+- May not generalize to luxury homes (>$500k)
+- Requires neighborhood information
+
+## Ethical Considerations
+- Model should not be used for discriminatory pricing
+- Regular audits for fairness across neighborhoods
+"
+
+cat(model_card)
+```
+
+## Creating REST APIs with Plumber
+
+### Basic API Setup
+
+```{r}
+# Create plumber API file
+api_code <- '
+#* @apiTitle Ames House Price Prediction API
+#* @apiDescription Predicts house prices using machine learning
+#* @apiVersion 1.0.0
+
+library(tidymodels)
+library(vetiver)
+
+# Load model
+model <- readRDS("models/ames_model_v1.rds")
+
+#* Health check endpoint
+#* @get /health
+function() {
+  list(
+    status = "healthy",
+    timestamp = Sys.time(),
+    model_version = "1.0.0"
+  )
+}
+
+#* Predict house price
+#* @param Gr_Liv_Area:numeric Living area in square feet
+#* @param Overall_Qual:numeric Overall quality (1-10)
+#* @param Year_Built:numeric Year built
+#* @param Neighborhood:character Neighborhood name
+#* @param Total_Bsmt_SF:numeric Basement square feet
+#* @post /predict
+function(Gr_Liv_Area, Overall_Qual, Year_Built, Neighborhood, Total_Bsmt_SF) {
+  
+  # Input validation
+  if (is.na(as.numeric(Gr_Liv_Area))) {
+    stop("Gr_Liv_Area must be numeric")
+  }
+  
+  # Create input data frame
+  input_data <- data.frame(
+    Gr_Liv_Area = as.numeric(Gr_Liv_Area),
+    Overall_Qual = as.numeric(Overall_Qual),
+    Year_Built = as.numeric(Year_Built),
+    Neighborhood = as.character(Neighborhood),
+    Total_Bsmt_SF = as.numeric(Total_Bsmt_SF)
+  )
+  
+  # Make prediction
+  prediction <- predict(model, input_data)
+  
+  # Return result
+  list(
+    predicted_price = prediction$.pred,
+    input = input_data,
+    model_version = "1.0.0",
+    timestamp = Sys.time()
+  )
+}
+
+#* Batch predictions
+#* @param data:character JSON string of multiple houses
+#* @post /predict_batch
+function(data) {
+  # Parse JSON
+  input_data <- jsonlite::fromJSON(data)
+  
+  # Make predictions
+  predictions <- predict(model, input_data)
+  
+  # Return results
+  list(
+    predictions = predictions$.pred,
+    n_predictions = nrow(predictions),
+    timestamp = Sys.time()
+  )
+}
+
+#* Model information
+#* @get /model_info
+function() {
+  list(
+    model_type = "elastic_net",
+    features = c("Gr_Liv_Area", "Overall_Qual", "Year_Built", 
+                "Neighborhood", "Total_Bsmt_SF"),
+    target = "Sale_Price",
+    training_date = "2024-01-01",
+    performance = list(
+      rmse = 25432,
+      r_squared = 0.89
+    )
+  )
+}
+'
+
+# Save API file
+writeLines(api_code, "api/model_api.R")
+
+# To run the API (don't run in notebook):
+# library(plumber)
+# pr("api/model_api.R") %>%
+#   pr_run(port = 8000)
+```
+
+### Advanced API with Authentication and Logging
+
+```{r}
+advanced_api <- '
+#* @apiTitle Production House Price API
+#* @apiDescription Enterprise-grade prediction service
+
+library(tidymodels)
+library(logger)
+library(jose)
+
+# Setup logging
+log_appender(appender_file("logs/api.log"))
+
+# Load model and config
+model <- readRDS("models/ames_model_v1.rds")
+api_keys <- readRDS("config/api_keys.rds")  # In production, use env variables
+
+# Request counter for rate limiting
+request_counts <- new.env()
+
+#* @filter cors
+cors <- function(req, res) {
+  res$setHeader("Access-Control-Allow-Origin", "*")
+  res$setHeader("Access-Control-Allow-Methods", "GET, POST")
+  res$setHeader("Access-Control-Allow-Headers", "Content-Type, X-API-Key")
+  plumber::forward()
+}
+
+#* @filter authenticate
+function(req, res) {
+  # Check API key
+  api_key <- req$HTTP_X_API_KEY
+  
+  if (is.null(api_key) || !api_key %in% api_keys) {
+    res$status <- 401
+    log_warn("Unauthorized access attempt")
+    return(list(error = "Invalid or missing API key"))
+  }
+  
+  # Rate limiting
+  if (!exists(api_key, envir = request_counts)) {
+    assign(api_key, list(count = 1, reset_time = Sys.time() + 3600), 
+           envir = request_counts)
+  } else {
+    rate_info <- get(api_key, envir = request_counts)
+    if (Sys.time() > rate_info$reset_time) {
+      rate_info <- list(count = 1, reset_time = Sys.time() + 3600)
+    } else if (rate_info$count > 100) {  # 100 requests per hour
+      res$status <- 429
+      return(list(error = "Rate limit exceeded"))
+    } else {
+      rate_info$count <- rate_info$count + 1
+    }
+    assign(api_key, rate_info, envir = request_counts)
+  }
+  
+  plumber::forward()
+}
+
+#* Predict with comprehensive logging
+#* @post /predict
+function(req, Gr_Liv_Area, Overall_Qual, Year_Built, Neighborhood, Total_Bsmt_SF) {
+  
+  request_id <- uuid::UUIDgenerate()
+  log_info("Prediction request", request_id = request_id)
+  
+  tryCatch({
+    # Input validation
+    input_data <- data.frame(
+      Gr_Liv_Area = as.numeric(Gr_Liv_Area),
+      Overall_Qual = as.numeric(Overall_Qual),
+      Year_Built = as.numeric(Year_Built),
+      Neighborhood = as.character(Neighborhood),
+      Total_Bsmt_SF = as.numeric(Total_Bsmt_SF)
+    )
+    
+    # Data quality checks
+    if (input_data$Gr_Liv_Area < 0 || input_data$Gr_Liv_Area > 10000) {
+      stop("Gr_Liv_Area out of valid range")
+    }
+    
+    if (input_data$Overall_Qual < 1 || input_data$Overall_Qual > 10) {
+      stop("Overall_Qual must be between 1 and 10")
+    }
+    
+    # Make prediction
+    start_time <- Sys.time()
+    prediction <- predict(model, input_data)
+    inference_time <- as.numeric(Sys.time() - start_time, units = "secs")
+    
+    # Log successful prediction
+    log_info("Prediction successful", 
+             request_id = request_id,
+             predicted_value = prediction$.pred,
+             inference_time = inference_time)
+    
+    # Return result
+    list(
+      request_id = request_id,
+      predicted_price = prediction$.pred,
+      confidence_interval = c(
+        lower = prediction$.pred * 0.9,  # Simplified CI
+        upper = prediction$.pred * 1.1
+      ),
+      input = input_data,
+      inference_time_ms = round(inference_time * 1000, 2),
+      model_version = "1.0.0",
+      timestamp = Sys.time()
+    )
+    
+  }, error = function(e) {
+    log_error("Prediction failed", 
+              request_id = request_id, 
+              error = e$message)
+    res$status <- 400
+    list(
+      request_id = request_id,
+      error = e$message
+    )
+  })
+}
+'
+
+writeLines(advanced_api, "api/advanced_api.R")
+```
+
+## Building Shiny Applications
+
+### Basic Prediction App
+
+```{r}
+# Create Shiny app for model deployment
+shiny_app <- '
+library(shiny)
+library(shinydashboard)
+library(tidymodels)
+library(ggplot2)
+library(DT)
+
+# Load model
+model <- readRDS("models/ames_model_v1.rds")
+
+# UI
+ui <- dashboardPage(
+  dashboardHeader(title = "House Price Predictor"),
+  
+  dashboardSidebar(
+    sidebarMenu(
+      menuItem("Predict", tabName = "predict", icon = icon("calculator")),
+      menuItem("Batch Upload", tabName = "batch", icon = icon("upload")),
+      menuItem("Model Info", tabName = "info", icon = icon("info-circle")),
+      menuItem("Performance", tabName = "performance", icon = icon("chart-line"))
+    )
+  ),
+  
+  dashboardBody(
+    tabItems(
+      # Prediction tab
+      tabItem(
+        tabName = "predict",
+        fluidRow(
+          box(
+            title = "Input Features",
+            status = "primary",
+            solidHeader = TRUE,
+            width = 6,
+            
+            numericInput("gr_liv_area", "Living Area (sq ft)", 
+                        value = 1500, min = 0, max = 10000),
+            
+            sliderInput("overall_qual", "Overall Quality", 
+                       min = 1, max = 10, value = 5),
+            
+            numericInput("year_built", "Year Built", 
+                        value = 2000, min = 1900, max = 2024),
+            
+            selectInput("neighborhood", "Neighborhood",
+                       choices = unique(ames_train$Neighborhood),
+                       selected = "NAmes"),
+            
+            numericInput("total_bsmt_sf", "Basement Area (sq ft)", 
+                        value = 1000, min = 0, max = 5000),
+            
+            actionButton("predict", "Predict Price", 
+                        class = "btn-primary btn-lg")
+          ),
+          
+          box(
+            title = "Prediction Result",
+            status = "success",
+            solidHeader = TRUE,
+            width = 6,
+            
+            h2(textOutput("predicted_price")),
+            
+            plotOutput("confidence_plot", height = 200),
+            
+            br(),
+            
+            h4("Input Summary:"),
+            tableOutput("input_summary")
+          )
+        )
+      ),
+      
+      # Batch upload tab
+      tabItem(
+        tabName = "batch",
+        fluidRow(
+          box(
+            title = "Upload CSV File",
+            status = "primary",
+            solidHeader = TRUE,
+            width = 12,
+            
+            fileInput("file", "Choose CSV File",
+                     accept = c(".csv")),
+            
+            actionButton("predict_batch", "Predict All", 
+                        class = "btn-success"),
+            
+            br(), br(),
+            
+            DTOutput("batch_results")
+          )
+        )
+      ),
+      
+      # Model info tab
+      tabItem(
+        tabName = "info",
+        fluidRow(
+          box(
+            title = "Model Information",
+            status = "info",
+            solidHeader = TRUE,
+            width = 12,
+            
+            h3("Model Type: Elastic Net Regression"),
+            
+            h4("Features Used:"),
+            tags$ul(
+              tags$li("Living Area (Gr_Liv_Area)"),
+              tags$li("Overall Quality (Overall_Qual)"),
+              tags$li("Year Built (Year_Built)"),
+              tags$li("Neighborhood"),
+              tags$li("Basement Area (Total_Bsmt_SF)")
+            ),
+            
+            h4("Model Performance:"),
+            tags$ul(
+              tags$li("RMSE: $25,432"),
+              tags$li("R-squared: 0.89"),
+              tags$li("MAE: $18,234")
+            ),
+            
+            h4("Training Information:"),
+            tags$ul(
+              tags$li("Training Date: 2024-01-01"),
+              tags$li("Training Samples: 2,197"),
+              tags$li("Validation Method: 5-fold CV")
+            )
+          )
+        )
+      ),
+      
+      # Performance monitoring tab
+      tabItem(
+        tabName = "performance",
+        fluidRow(
+          box(
+            title = "Model Performance Monitoring",
+            status = "warning",
+            solidHeader = TRUE,
+            width = 12,
+            
+            plotOutput("performance_plot", height = 400),
+            
+            br(),
+            
+            h4("Recent Predictions:"),
+            DTOutput("recent_predictions")
+          )
+        )
+      )
+    )
+  )
+)
+
+# Server
+server <- function(input, output, session) {
+  
+  # Store predictions for monitoring
+  predictions_log <- reactiveVal(data.frame())
+  
+  # Single prediction
+  observeEvent(input$predict, {
+    
+    # Create input data
+    input_data <- data.frame(
+      Gr_Liv_Area = input$gr_liv_area,
+      Overall_Qual = input$overall_qual,
+      Year_Built = input$year_built,
+      Neighborhood = input$neighborhood,
+      Total_Bsmt_SF = input$total_bsmt_sf
+    )
+    
+    # Make prediction
+    prediction <- predict(model, input_data)
+    
+    # Update predictions log
+    new_log <- rbind(
+      predictions_log(),
+      data.frame(
+        timestamp = Sys.time(),
+        predicted = prediction$.pred,
+        living_area = input$gr_liv_area,
+        quality = input$overall_qual
+      )
+    )
+    predictions_log(new_log)
+    
+    # Display prediction
+    output$predicted_price <- renderText({
+      paste0("$", format(round(prediction$.pred), big.mark = ","))
+    })
+    
+    # Confidence interval plot
+    output$confidence_plot <- renderPlot({
+      ci_lower <- prediction$.pred * 0.9
+      ci_upper <- prediction$.pred * 1.1
+      
+      ggplot(data.frame(x = c(ci_lower, prediction$.pred, ci_upper))) +
+        geom_segment(aes(x = ci_lower, xend = ci_upper, y = 0, yend = 0),
+                    size = 2, color = "steelblue") +
+        geom_point(aes(x = prediction$.pred, y = 0), 
+                  size = 5, color = "darkblue") +
+        scale_x_continuous(labels = scales::dollar) +
+        theme_minimal() +
+        theme(axis.text.y = element_blank(),
+              axis.title.y = element_blank()) +
+        labs(x = "Predicted Price",
+             title = "90% Confidence Interval")
+    })
+    
+    # Input summary
+    output$input_summary <- renderTable({
+      data.frame(
+        Feature = c("Living Area", "Quality", "Year Built", 
+                   "Neighborhood", "Basement"),
+        Value = c(
+          paste(input$gr_liv_area, "sq ft"),
+          paste(input$overall_qual, "/ 10"),
+          input$year_built,
+          input$neighborhood,
+          paste(input$total_bsmt_sf, "sq ft")
+        )
+      )
+    })
+  })
+  
+  # Batch predictions
+  observeEvent(input$predict_batch, {
+    req(input$file)
+    
+    # Read uploaded file
+    batch_data <- read.csv(input$file$datapath)
+    
+    # Make predictions
+    predictions <- predict(model, batch_data)
+    
+    # Combine with input
+    results <- cbind(batch_data, Predicted_Price = predictions$.pred)
+    
+    # Display results
+    output$batch_results <- renderDT({
+      datatable(results, options = list(pageLength = 10))
+    })
+  })
+  
+  # Performance monitoring
+  output$performance_plot <- renderPlot({
+    if (nrow(predictions_log()) > 0) {
+      ggplot(predictions_log(), aes(x = timestamp, y = predicted)) +
+        geom_line() +
+        geom_point() +
+        scale_y_continuous(labels = scales::dollar) +
+        theme_minimal() +
+        labs(title = "Predictions Over Time",
+             x = "Time",
+             y = "Predicted Price")
+    }
+  })
+  
+  output$recent_predictions <- renderDT({
+    if (nrow(predictions_log()) > 0) {
+      recent <- tail(predictions_log(), 10)
+      recent$predicted <- scales::dollar(round(recent$predicted))
+      datatable(recent, options = list(pageLength = 5))
+    }
+  })
+}
+
+# Run app
+shinyApp(ui = ui, server = server)
+'
+
+# Save Shiny app
+writeLines(shiny_app, "apps/prediction_app.R")
+```
+
+## Docker Containerization
+
+### Creating a Dockerfile
+
+```{r}
+dockerfile_content <- '
+# Base R image
+FROM rocker/r-ver:4.3.0
+
+# Install system dependencies
+RUN apt-get update && apt-get install -y \\
+    libcurl4-openssl-dev \\
+    libssl-dev \\
+    libxml2-dev \\
+    && rm -rf /var/lib/apt/lists/*
+
+# Install R packages
+RUN R -e "install.packages(c(\'tidymodels\', \'plumber\', \'jsonlite\'), repos=\'https://cloud.r-project.org/\')"
+
+# Create app directory
+WORKDIR /app
+
+# Copy model and API files
+COPY models/ames_model_v1.rds /app/model.rds
+COPY api/model_api.R /app/api.R
+
+# Expose port
+EXPOSE 8000
+
+# Run API
+CMD ["R", "-e", "plumber::pr(\'api.R\') %>% plumber::pr_run(host=\'0.0.0.0\', port=8000)"]
+'
+
+writeLines(dockerfile_content, "docker/Dockerfile")
+
+# Docker compose for multi-container deployment
+docker_compose <- '
+version: "3.8"
+
+services:
+  api:
+    build: .
+    ports:
+      - "8000:8000"
+    environment:
+      - MODEL_VERSION=1.0.0
+    volumes:
+      - ./models:/app/models
+      - ./logs:/app/logs
+    restart: unless-stopped
+    
+  shiny:
+    image: rocker/shiny:4.3.0
+    ports:
+      - "3838:3838"
+    volumes:
+      - ./apps:/srv/shiny-server/
+      - ./models:/srv/shiny-server/models
+    restart: unless-stopped
+    
+  nginx:
+    image: nginx:alpine
+    ports:
+      - "80:80"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf
+    depends_on:
+      - api
+      - shiny
+    restart: unless-stopped
+'
+
+writeLines(docker_compose, "docker/docker-compose.yml")
+```
+
+## Model Monitoring and Maintenance
+
+### Performance Tracking
+
+```{r}
+# Create monitoring system
+create_monitoring_system <- function(model, production_data) {
+  
+  # Calculate current metrics
+  current_predictions <- predict(model, production_data)
+  current_metrics <- production_data %>%
+    bind_cols(current_predictions) %>%
+    metrics(truth = Sale_Price, estimate = .pred)
+  
+  # Compare with baseline
+  baseline_metrics <- tibble(
+    .metric = c("rmse", "rsq", "mae"),
+    baseline = c(25432, 0.89, 18234)
+  )
+  
+  # Join metrics
+  comparison <- current_metrics %>%
+    left_join(baseline_metrics, by = ".metric") %>%
+    mutate(
+      degradation = (.estimate - baseline) / baseline * 100,
+      alert = abs(degradation) > 10  # Alert if >10% degradation
+    )
+  
+  return(comparison)
+}
+
+# Simulate production data with drift
+production_sample <- ames_test %>%
+  mutate(
+    # Simulate data drift
+    Gr_Liv_Area = Gr_Liv_Area * runif(n(), 0.9, 1.1),
+    Year_Built = Year_Built + sample(-5:5, n(), replace = TRUE)
+  )
+
+monitoring_results <- create_monitoring_system(production_fit, production_sample)
+knitr::kable(monitoring_results, digits = 2)
+
+# Visualize model performance over time
+simulate_performance_timeline <- function(n_days = 30) {
+  timeline <- map_df(1:n_days, function(day) {
+    # Simulate daily performance with random variation
+    daily_rmse <- 25432 + rnorm(1, mean = day * 50, sd = 1000)  # Gradual degradation
+    daily_requests <- rpois(1, lambda = 1000)
+    
+    tibble(
+      date = Sys.Date() - n_days + day,
+      rmse = daily_rmse,
+      requests = daily_requests,
+      alert = daily_rmse > 28000  # Alert threshold
+    )
+  })
+  
+  return(timeline)
+}
+
+performance_timeline <- simulate_performance_timeline()
+
+# Plot monitoring dashboard
+p1 <- ggplot(performance_timeline, aes(x = date, y = rmse)) +
+  geom_line(linewidth = 1) +
+  geom_point(aes(color = alert), size = 2) +
+  geom_hline(yintercept = 28000, linetype = "dashed", color = "red") +
+  scale_color_manual(values = c("FALSE" = "steelblue", "TRUE" = "red")) +
+  labs(title = "Model RMSE Over Time",
+       subtitle = "Red line indicates alert threshold",
+       y = "RMSE") +
+  theme(legend.position = "none")
+
+p2 <- ggplot(performance_timeline, aes(x = date, y = requests)) +
+  geom_col(fill = "steelblue", alpha = 0.7) +
+  labs(title = "Daily Request Volume",
+       y = "Requests")
+
+library(patchwork)
+p1 / p2
+```
+
+### Data Drift Detection
+
+```{r}
+# Detect feature drift
+detect_drift <- function(training_data, production_data, threshold = 0.1) {
+  
+  drift_results <- map_df(names(training_data), function(col) {
+    if (is.numeric(training_data[[col]])) {
+      # Kolmogorov-Smirnov test for continuous variables
+      ks_test <- ks.test(training_data[[col]], production_data[[col]])
+      
+      tibble(
+        feature = col,
+        test_type = "KS",
+        p_value = ks_test$p.value,
+        drift_detected = ks_test$p.value < threshold,
+        train_mean = mean(training_data[[col]], na.rm = TRUE),
+        prod_mean = mean(production_data[[col]], na.rm = TRUE),
+        mean_shift = abs(train_mean - prod_mean) / train_mean
+      )
+    } else {
+      # Chi-square test for categorical variables
+      train_prop <- table(training_data[[col]]) / nrow(training_data)
+      prod_prop <- table(production_data[[col]]) / nrow(production_data)
+      
+      # Ensure same categories
+      all_cats <- union(names(train_prop), names(prod_prop))
+      train_prop <- train_prop[all_cats]
+      prod_prop <- prod_prop[all_cats]
+      train_prop[is.na(train_prop)] <- 0
+      prod_prop[is.na(prod_prop)] <- 0
+      
+      chi_test <- chisq.test(rbind(train_prop, prod_prop))
+      
+      tibble(
+        feature = col,
+        test_type = "Chi-square",
+        p_value = chi_test$p.value,
+        drift_detected = chi_test$p.value < threshold,
+        train_mean = NA_real_,
+        prod_mean = NA_real_,
+        mean_shift = NA_real_
+      )
+    }
+  })
+  
+  return(drift_results)
+}
+
+# Test drift detection
+training_sample <- ames_train %>%
+  select(Gr_Liv_Area, Overall_Qual, Year_Built, Neighborhood, Total_Bsmt_SF) %>%
+  slice_sample(n = 200)
+
+production_sample_drift <- training_sample %>%
+  mutate(
+    Gr_Liv_Area = Gr_Liv_Area * 1.2,  # Introduce drift
+    Year_Built = Year_Built + 10       # Houses are newer
+  )
+
+drift_analysis <- detect_drift(training_sample, production_sample_drift)
+knitr::kable(drift_analysis, digits = 3)
+
+# Visualize drift
+drift_viz <- training_sample %>%
+  mutate(dataset = "Training") %>%
+  bind_rows(production_sample_drift %>% mutate(dataset = "Production"))
+
+ggplot(drift_viz, aes(x = Gr_Liv_Area, fill = dataset)) +
+  geom_density(alpha = 0.5) +
+  labs(title = "Feature Drift: Living Area",
+       subtitle = "Distribution shift between training and production")
+```
+
+## A/B Testing and Gradual Rollouts
+
+```{r}
+# Implement A/B testing framework
+ab_test_framework <- function(model_a, model_b, test_data, split_ratio = 0.5) {
+  
+  n <- nrow(test_data)
+  
+  # Random assignment to groups
+  assignment <- sample(c("A", "B"), n, replace = TRUE, 
+                      prob = c(split_ratio, 1 - split_ratio))
+  
+  # Make predictions with each model
+  results <- test_data %>%
+    mutate(
+      group = assignment,
+      prediction = if_else(
+        group == "A",
+        predict(model_a, test_data)$.pred,
+        predict(model_b, test_data)$.pred
+      ),
+      error = abs(Sale_Price - prediction)
+    )
+  
+  # Calculate metrics per group
+  group_metrics <- results %>%
+    group_by(group) %>%
+    summarise(
+      n = n(),
+      rmse = sqrt(mean(error^2)),
+      mae = mean(error),
+      median_error = median(error),
+      .groups = "drop"
+    )
+  
+  # Statistical test
+  t_test <- t.test(error ~ group, data = results)
+  
+  return(list(
+    metrics = group_metrics,
+    test = t_test,
+    winner = if_else(t_test$p.value < 0.05,
+                    if_else(group_metrics$rmse[1] < group_metrics$rmse[2], 
+                           "Model A", "Model B"),
+                    "No significant difference")
+  ))
+}
+
+# Create alternative model for testing
+alternative_model <- workflow() %>%
+  add_recipe(production_recipe) %>%
+  add_model(rand_forest(trees = 100) %>% 
+           set_engine("ranger") %>% 
+           set_mode("regression")) %>%
+  fit(ames_train)
+
+# Run A/B test
+ab_results <- ab_test_framework(production_fit, alternative_model, ames_test)
+
+cat("A/B Test Results:\n")
+print(ab_results$metrics)
+cat("\nWinner:", ab_results$winner, "\n")
+cat("P-value:", ab_results$test$p.value, "\n")
+
+# Gradual rollout simulation
+simulate_gradual_rollout <- function(days = 14) {
+  rollout_schedule <- tibble(
+    day = 1:days,
+    traffic_percentage = pmin(100, 5 * 1.5^(day - 1)),  # Exponential increase
+    errors_detected = rpois(days, lambda = 100 - traffic_percentage) / 10,
+    rollback = errors_detected > 5
+  )
+  
+  # Find rollback point if any
+  rollback_day <- which(rollout_schedule$rollback)[1]
+  if (!is.na(rollback_day)) {
+    rollout_schedule$traffic_percentage[rollback_day:days] <- 0
+  }
+  
+  return(rollout_schedule)
+}
+
+rollout <- simulate_gradual_rollout()
+
+ggplot(rollout, aes(x = day)) +
+  geom_area(aes(y = traffic_percentage), fill = "steelblue", alpha = 0.7) +
+  geom_point(aes(y = errors_detected * 10), color = "red", size = 2) +
+  scale_y_continuous(
+    name = "Traffic Percentage",
+    sec.axis = sec_axis(~./10, name = "Errors Detected")
+  ) +
+  labs(title = "Gradual Model Rollout",
+       subtitle = "Blue area shows traffic %, red points show errors")
+```
+
+## Best Practices Checklist
+
+```{r}
+# Production readiness checklist
+production_checklist <- tibble(
+  Category = c(
+    rep("Model", 4),
+    rep("Code", 4),
+    rep("Infrastructure", 4),
+    rep("Monitoring", 4),
+    rep("Documentation", 3)
+  ),
+  Item = c(
+    # Model
+    "Model validated on holdout set",
+    "Handles missing values gracefully",
+    "Handles new categories",
+    "Performance meets requirements",
+    
+    # Code
+    "Code review completed",
+    "Unit tests written",
+    "Integration tests passed",
+    "Error handling implemented",
+    
+    # Infrastructure
+    "API endpoints defined",
+    "Load testing completed",
+    "Backup strategy in place",
+    "Rollback plan documented",
+    
+    # Monitoring
+    "Logging configured",
+    "Alerts set up",
+    "Performance metrics tracked",
+    "Data drift detection enabled",
+    
+    # Documentation
+    "API documentation complete",
+    "Model card created",
+    "Runbook available"
+  ),
+  Status = c(
+    "✅", "✅", "✅", "✅",  # Model
+    "✅", "✅", "⚠️", "✅",  # Code
+    "✅", "⚠️", "✅", "✅",  # Infrastructure
+    "✅", "✅", "⚠️", "❌",  # Monitoring
+    "✅", "✅", "⚠️"        # Documentation
+  ),
+  Priority = c(
+    "High", "High", "High", "High",
+    "High", "High", "Medium", "High",
+    "High", "Medium", "High", "High",
+    "High", "High", "Medium", "Low",
+    "Medium", "High", "Medium"
+  )
+)
+
+knitr::kable(production_checklist)
+
+# Calculate readiness score
+readiness_score <- sum(production_checklist$Status == "✅") / 
+                  nrow(production_checklist) * 100
+
+cat("\nProduction Readiness Score:", round(readiness_score, 1), "%\n")
+
+# Priority action items
+action_items <- production_checklist %>%
+  filter(Status != "✅") %>%
+  arrange(match(Priority, c("High", "Medium", "Low")))
+
+cat("\nAction Items:\n")
+print(action_items)
+```
+
+## Exercises
+
+### Exercise 1: Create a Model Registry
+
+```{r}
+# Your solution
+# Implement a model registry system
+create_model_registry <- function() {
+  
+  # Registry structure
+  registry <- list(
+    models = list(),
+    metadata = list(),
+    performance = list()
+  )
+  
+  # Register model function
+  register_model <- function(model, name, version, metrics, metadata = list()) {
+    model_id <- paste0(name, "_v", version)
+    
+    registry$models[[model_id]] <<- model
+    registry$metadata[[model_id]] <<- c(
+      list(
+        name = name,
+        version = version,
+        registration_date = Sys.Date()
+      ),
+      metadata
+    )
+    registry$performance[[model_id]] <<- metrics
+    
+    cat("Model", model_id, "registered successfully\n")
+  }
+  
+  # Get model function
+  get_model <- function(name, version = "latest") {
+    if (version == "latest") {
+      # Find latest version
+      all_versions <- grep(paste0("^", name, "_v"), 
+                          names(registry$models), value = TRUE)
+      if (length(all_versions) == 0) {
+        stop("Model not found")
+      }
+      model_id <- all_versions[length(all_versions)]
+    } else {
+      model_id <- paste0(name, "_v", version)
+    }
+    
+    if (!model_id %in% names(registry$models)) {
+      stop("Model version not found")
+    }
+    
+    return(list(
+      model = registry$models[[model_id]],
+      metadata = registry$metadata[[model_id]],
+      performance = registry$performance[[model_id]]
+    ))
+  }
+  
+  # Compare models function
+  compare_models <- function(name) {
+    all_versions <- grep(paste0("^", name, "_v"), 
+                        names(registry$models), value = TRUE)
+    
+    comparison <- map_df(all_versions, function(model_id) {
+      perf <- registry$performance[[model_id]]
+      meta <- registry$metadata[[model_id]]
+      
+      tibble(
+        version = meta$version,
+        date = meta$registration_date,
+        rmse = perf$rmse,
+        rsq = perf$rsq
+      )
+    })
+    
+    return(comparison)
+  }
+  
+  # Return registry functions
+  list(
+    register = register_model,
+    get = get_model,
+    compare = compare_models
+  )
+}
+
+# Use the registry
+registry <- create_model_registry()
+
+# Register models
+registry$register(
+  production_fit, 
+  "ames_predictor", 
+  "1.0.0",
+  list(rmse = 25432, rsq = 0.89),
+  list(algorithm = "elastic_net")
+)
+
+registry$register(
+  alternative_model, 
+  "ames_predictor", 
+  "1.1.0",
+  list(rmse = 24800, rsq = 0.91),
+  list(algorithm = "random_forest")
+)
+
+# Compare versions
+comparison <- registry$compare("ames_predictor")
+print(comparison)
+```
+
+### Exercise 2: Implement Model Retraining Pipeline
+
+```{r}
+# Your solution
+# Automated retraining pipeline
+create_retraining_pipeline <- function(current_model, retraining_threshold = 0.1) {
+  
+  # Monitor performance
+  monitor <- function(model, new_data) {
+    predictions <- predict(model, new_data)
+    metrics <- new_data %>%
+      bind_cols(predictions) %>%
+      metrics(truth = Sale_Price, estimate = .pred)
+    
+    return(metrics)
+  }
+  
+  # Check if retraining needed
+  should_retrain <- function(current_metrics, baseline_metrics) {
+    rmse_degradation <- (current_metrics$rmse - baseline_metrics$rmse) / 
+                       baseline_metrics$rmse
+    
+    return(rmse_degradation > retraining_threshold)
+  }
+  
+  # Retrain model
+  retrain <- function(new_data) {
+    cat("Retraining model with", nrow(new_data), "samples\n")
+    
+    # Create new workflow
+    new_workflow <- workflow() %>%
+      add_recipe(production_recipe) %>%
+      add_model(production_model)
+    
+    # Fit on new data
+    new_fit <- new_workflow %>%
+      fit(new_data)
+    
+    # Validate on holdout
+    validation_split <- initial_split(new_data, prop = 0.8)
+    validation_metrics <- new_fit %>%
+      predict(testing(validation_split)) %>%
+      bind_cols(testing(validation_split)) %>%
+      metrics(truth = Sale_Price, estimate = .pred)
+    
+    return(list(
+      model = new_fit,
+      metrics = validation_metrics
+    ))
+  }
+  
+  # Pipeline execution
+  execute <- function(new_data) {
+    # Current performance
+    current_metrics <- monitor(current_model, new_data)
+    baseline_metrics <- list(rmse = 25432, rsq = 0.89)
+    
+    cat("Current RMSE:", current_metrics %>% 
+        filter(.metric == "rmse") %>% 
+        pull(.estimate), "\n")
+    
+    if (should_retrain(
+      list(rmse = current_metrics %>% 
+             filter(.metric == "rmse") %>% 
+             pull(.estimate)),
+      baseline_metrics)) {
+      
+      cat("Performance degradation detected. Initiating retraining...\n")
+      retrain_result <- retrain(new_data)
+      
+      cat("New model RMSE:", retrain_result$metrics %>% 
+          filter(.metric == "rmse") %>% 
+          pull(.estimate), "\n")
+      
+      return(retrain_result)
+    } else {
+      cat("Model performance acceptable. No retraining needed.\n")
+      return(NULL)
+    }
+  }
+  
+  return(execute)
+}
+
+# Test the pipeline
+pipeline <- create_retraining_pipeline(production_fit)
+
+# Simulate degraded performance data
+degraded_data <- ames_test %>%
+  mutate(Sale_Price = Sale_Price * runif(n(), 0.7, 1.3))  # Add noise
+
+result <- pipeline(degraded_data)
+```
+
+### Exercise 3: Create Performance Dashboard
+
+```{r}
+# Your solution
+# Create monitoring dashboard data
+create_dashboard_data <- function(n_days = 30) {
+  
+  # Simulate daily metrics
+  daily_data <- map_df(1:n_days, function(day) {
+    tibble(
+      date = Sys.Date() - n_days + day,
+      
+      # Model metrics
+      predictions = rpois(1, 1000 + day * 10),
+      avg_response_time = rnorm(1, 50, 10),
+      error_rate = rbeta(1, 1, 100),
+      
+      # Business metrics  
+      conversion_rate = rbeta(1, 10, 90),
+      revenue_impact = rnorm(1, 10000, 2000),
+      
+      # System metrics
+      cpu_usage = rbeta(1, 20, 80),
+      memory_usage = rbeta(1, 30, 70),
+      
+      # Data quality
+      missing_features = rpois(1, 5),
+      out_of_range = rpois(1, 3)
+    )
+  })
+  
+  return(daily_data)
+}
+
+dashboard_data <- create_dashboard_data()
+
+# Create dashboard visualizations
+p1 <- ggplot(dashboard_data, aes(x = date, y = predictions)) +
+  geom_line(color = "steelblue", linewidth = 1) +
+  geom_smooth(se = FALSE, color = "red") +
+  labs(title = "Daily Predictions", y = "Count")
+
+p2 <- ggplot(dashboard_data, aes(x = date, y = avg_response_time)) +
+  geom_line(color = "darkgreen", linewidth = 1) +
+  geom_hline(yintercept = 100, linetype = "dashed", color = "red") +
+  labs(title = "Response Time", y = "Milliseconds")
+
+p3 <- ggplot(dashboard_data, aes(x = date)) +
+  geom_ribbon(aes(ymin = 0, ymax = cpu_usage), fill = "blue", alpha = 0.3) +
+  geom_ribbon(aes(ymin = 0, ymax = memory_usage), fill = "red", alpha = 0.3) +
+  labs(title = "Resource Usage", y = "Percentage") +
+  scale_y_continuous(labels = scales::percent)
+
+p4 <- ggplot(dashboard_data, aes(x = date, y = revenue_impact)) +
+  geom_col(fill = "gold", alpha = 0.7) +
+  scale_y_continuous(labels = scales::dollar) +
+  labs(title = "Revenue Impact", y = "Daily Revenue")
+
+(p1 + p2) / (p3 + p4)
+
+# Summary statistics
+summary_stats <- dashboard_data %>%
+  summarise(
+    total_predictions = sum(predictions),
+    avg_response_time = mean(avg_response_time),
+    total_revenue = sum(revenue_impact),
+    avg_cpu = mean(cpu_usage),
+    total_errors = sum(missing_features + out_of_range)
+  )
+
+cat("\nDashboard Summary (Last 30 Days):\n")
+cat("Total Predictions:", format(summary_stats$total_predictions, big.mark = ","), "\n")
+cat("Avg Response Time:", round(summary_stats$avg_response_time, 1), "ms\n")
+cat("Total Revenue Impact: $", format(round(summary_stats$total_revenue), big.mark = ","), "\n")
+cat("Average CPU Usage:", round(summary_stats$avg_cpu * 100, 1), "%\n")
+cat("Total Data Errors:", summary_stats$total_errors, "\n")
+```
+
+## Summary
+
+In this comprehensive final chapter, you've mastered:
+
+✅ **Model deployment fundamentals**
+  - Serialization and versioning
+  - Model registries
+  - Production readiness
+
+✅ **API development**
+  - REST APIs with plumber
+  - Authentication and rate limiting
+  - Error handling and logging
+
+✅ **Application development**
+  - Shiny dashboards
+  - User interfaces
+  - Batch processing
+
+✅ **Containerization**
+  - Docker for R models
+  - Multi-container orchestration
+  - Environment consistency
+
+✅ **Monitoring and maintenance**
+  - Performance tracking
+  - Data drift detection
+  - Automated retraining
+
+✅ **Production best practices**
+  - A/B testing
+  - Gradual rollouts
+  - Production checklists
+
+Key takeaways:
+- Deployment is as important as model development
+- Monitor everything in production
+- Version control is crucial for models
+- Automate retraining pipelines
+- Plan for failure and rollback
+- Documentation is essential
+
+## Course Conclusion
+
+Congratulations! You've completed a comprehensive journey through:
+- **Tidyverse** fundamentals and advanced techniques
+- **Tidymodels** framework for machine learning
+- **Production deployment** of ML systems
+
+You now have the skills to:
+- Wrangle and visualize data efficiently
+- Build and evaluate machine learning models
+- Deploy models to production systems
+- Monitor and maintain ML applications
+
+Remember: The journey doesn't end here. Continue practicing, stay curious, and keep learning!
+
+## Additional Resources
+
+- [Engineering Production Machine Learning Systems](https://www.oreilly.com/library/view/building-machine-learning/9781492053187/)
+- [plumber Documentation](https://www.rplumber.io/)
+- [Shiny Documentation](https://shiny.rstudio.com/)
+- [Docker for Data Science](https://www.docker.com/blog/docker-for-data-science/)
+- [MLOps: Continuous Delivery for ML](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning)
