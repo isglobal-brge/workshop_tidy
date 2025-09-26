@@ -1,6 +1,5 @@
 ---
 title: "Chapter 14: Classification Models - Theory and Implementation"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -985,7 +984,7 @@ You've mastered classification theory and practice:
 
 ## What's Next?
 
-In [Chapter 15](15-regression.qmd), we'll explore regression models with similar depth in theory and practice.
+In [Chapter 15](15-regression.Rmd), we'll explore regression models with similar depth in theory and practice.
 
 ## Additional Resources
 

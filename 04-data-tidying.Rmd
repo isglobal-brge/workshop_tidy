@@ -1,6 +1,5 @@
 ---
 title: "Chapter 4: Data Tidying with tidyr"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -927,7 +926,7 @@ You've mastered tidyr essentials:
 
 ## What's Next?
 
-In [Chapter 5](05-visualization.qmd), we'll explore data visualization with ggplot2, creating beautiful and informative graphics.
+In [Chapter 5](05-visualization.Rmd), we'll explore data visualization with ggplot2, creating beautiful and informative graphics.
 
 ## Additional Resources
 

@@ -1,6 +1,5 @@
 ---
 title: "Chapter 17: Unsupervised Learning - Discovering Hidden Patterns"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -64,7 +63,7 @@ K-means is the workhorse of clustering algorithms. It partitions data into K clu
 ```{r}
 # Prepare data for clustering
 clustering_data <- ames_numeric %>%
-  select(Gr_Liv_Area, Overall_Qual, Year_Built, Total_Bsmt_SF, Garage_Area)
+  select(Gr_Liv_Area, Overall_Cond, Year_Built, Total_Bsmt_SF, Garage_Area)
 
 # Scale the data (crucial for distance-based methods!)
 scaled_data <- scale(clustering_data)
@@ -116,7 +115,7 @@ clustered_data <- clustering_data %>%
   mutate(cluster = factor(km_result$cluster))
 
 # Visualize clusters
-p1 <- ggplot(clustered_data, aes(x = Gr_Liv_Area, y = Overall_Qual, 
+p1 <- ggplot(clustered_data, aes(x = Gr_Liv_Area, y = Overall_Cond, 
                                   color = cluster)) +
   geom_point(size = 2, alpha = 0.7) +
   labs(title = "Clusters: Living Area vs Quality")
@@ -193,12 +192,12 @@ comparison_data <- clustering_data %>%
     hierarchical = factor(hc_clusters)
   )
 
-p1 <- ggplot(comparison_data, aes(x = Gr_Liv_Area, y = Overall_Qual, 
+p1 <- ggplot(comparison_data, aes(x = Gr_Liv_Area, y = Overall_Cond, 
                                    color = kmeans)) +
   geom_point(size = 2) +
   labs(title = "K-Means Clustering")
 
-p2 <- ggplot(comparison_data, aes(x = Gr_Liv_Area, y = Overall_Qual, 
+p2 <- ggplot(comparison_data, aes(x = Gr_Liv_Area, y = Overall_Cond, 
                                    color = hierarchical)) +
   geom_point(size = 2) +
   labs(title = "Hierarchical Clustering")
@@ -788,7 +787,7 @@ gower_distance <- function(data) {
   
   # Create mixed type data
   mixed_data <- ames %>%
-    select(Gr_Liv_Area, Overall_Qual, Neighborhood, Central_Air) %>%
+    select(Gr_Liv_Area, Overall_Cond, Neighborhood, Central_Air) %>%
     slice_sample(n = 100)
   
   # Calculate Gower distance
@@ -803,7 +802,7 @@ gower_distance <- function(data) {
   # Visualize
   mixed_data %>%
     mutate(cluster = factor(clusters)) %>%
-    ggplot(aes(x = Gr_Liv_Area, y = Overall_Qual, color = cluster)) +
+    ggplot(aes(x = Gr_Liv_Area, y = Overall_Cond, color = cluster)) +
     geom_point(size = 3) +
     facet_wrap(~Neighborhood) +
     labs(title = "Clustering with Gower Distance")
@@ -952,7 +951,7 @@ Key takeaways:
 
 ## What's Next?
 
-In [Chapter 18](18-model-deployment.qmd), we'll learn how to deploy models to production.
+In [Chapter 18](18-model-deployment.Rmd), we'll learn how to deploy models to production.
 
 ## Additional Resources
 

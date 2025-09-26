@@ -1,6 +1,5 @@
 ---
 title: "Chapter 6: Functional Programming with purrr - Iteration and Mapping Made Elegant"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -1032,7 +1031,7 @@ Key takeaways:
 
 ## What's Next?
 
-In [Chapter 7](07-strings-dates.qmd), we'll explore string manipulation and date/time handling with stringr and lubridate.
+In [Chapter 7](07-strings-dates.Rmd), we'll explore string manipulation and date/time handling with stringr and lubridate.
 
 ## Additional Resources
 

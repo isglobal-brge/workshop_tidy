@@ -1,6 +1,5 @@
 ---
 title: "Chapter 10: Feature Engineering with recipes - The Art and Science of Data Preparation"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -119,7 +118,7 @@ ames_test <- ames %>%
   anti_join(ames_train)
 
 # Create a basic recipe
-basic_recipe <- recipe(Sale_Price ~ Lot_Area + Year_Built + Overall_Qual, 
+basic_recipe <- recipe(Sale_Price ~ Lot_Area + Year_Built + Overall_Cond, 
                        data = ames_train)
 
 # View the recipe
@@ -134,7 +133,7 @@ Now let's add transformation steps. Each step transforms the data in a specific 
 
 ```{r}
 # Enhanced recipe with multiple steps
-enhanced_recipe <- recipe(Sale_Price ~ Lot_Area + Year_Built + Overall_Qual + 
+enhanced_recipe <- recipe(Sale_Price ~ Lot_Area + Year_Built + Overall_Cond + 
                           Neighborhood + Gr_Liv_Area, 
                           data = ames_train) %>%
   # Step 1: Log transform the outcome
@@ -956,7 +955,7 @@ overengineered_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
 thoughtful_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
   step_log(Sale_Price) %>%
   step_poly(Gr_Liv_Area, degree = 2) %>%  # Only where needed
-  step_interact(terms = ~ Gr_Liv_Area:Overall_Qual)  # Specific, meaningful interaction
+  step_interact(terms = ~ Gr_Liv_Area:Overall_Cond)  # Specific, meaningful interaction
 ```
 
 ## Complete Example: Putting It All Together
@@ -1055,7 +1054,7 @@ exercise_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
     Has_Garage = !is.na(Garage_Type),
     Total_Bathrooms = Full_Bath + Half_Bath * 0.5,
     Total_SF = Gr_Liv_Area + Total_Bsmt_SF,
-    Quality_x_Condition = Overall_Qual * Overall_Cond
+    Quality_x_Condition = Overall_Cond * Overall_Cond
   ) %>%
   
   # Remove original year variables
@@ -1075,7 +1074,7 @@ exercise_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
   step_YeoJohnson(Lot_Area, Gr_Liv_Area, Total_SF) %>%
   
   # Interactions
-  step_interact(terms = ~ Total_SF:Overall_Qual) %>%
+  step_interact(terms = ~ Total_SF:Overall_Cond) %>%
   
   # Scale
   step_normalize(all_numeric_predictors()) %>%
@@ -1250,7 +1249,7 @@ Remember:
 
 ## What's Next?
 
-In [Chapter 11](11-model-specification.qmd), we'll explore parsnip for unified model specification across different engines.
+In [Chapter 11](11-model-specification.Rmd), we'll explore parsnip for unified model specification across different engines.
 
 ## Additional Resources
 

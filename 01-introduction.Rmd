@@ -1,6 +1,5 @@
 ---
 title: "Chapter 1: Introduction to R and the Tidyverse Ecosystem"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -432,7 +431,7 @@ In this chapter, you learned:
 
 ## What's Next?
 
-In [Chapter 2](02-data-import.qmd), we'll dive deep into importing data from various sources using readr and other packages. You'll learn to read CSV, Excel, JSON, and database files efficiently.
+In [Chapter 2](02-data-import.Rmd), we'll dive deep into importing data from various sources using readr and other packages. You'll learn to read CSV, Excel, JSON, and database files efficiently.
 
 ## Additional Resources
 

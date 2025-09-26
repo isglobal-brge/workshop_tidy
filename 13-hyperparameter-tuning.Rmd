@@ -1,6 +1,5 @@
 ---
 title: "Chapter 13: Hyperparameter Tuning - Finding the Sweet Spot"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -126,7 +125,7 @@ Grid search evaluates all combinations of hyperparameter values in a predefined 
 
 ```{r}
 # Create a simple preprocessing recipe
-simple_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual + Year_Built + 
+simple_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Year_Built + 
                        Neighborhood, data = ames_train) %>%
   step_log(Sale_Price) %>%
   step_dummy(all_nominal_predictors()) %>%
@@ -173,7 +172,7 @@ grid_results <- elastic_workflow %>%
   tune_grid(
     resamples = ames_folds,
     grid = elastic_grid,
-    metrics = metric_set(rmse, rsq),
+    metrics = yardstick::metric_set(yardstick::rmse, yardstick::rsq),
     control = control_grid(save_pred = TRUE, verbose = FALSE)
   )
 
@@ -248,7 +247,7 @@ random_results <- elastic_workflow %>%
   tune_grid(
     resamples = ames_folds,
     grid = random_grid,
-    metrics = metric_set(rmse, rsq),
+    metrics = yardstick::metric_set(yardstick::rmse, yardstick::rsq),
     control = control_grid(save_pred = FALSE, verbose = FALSE)
   )
 
@@ -342,7 +341,7 @@ initial_results <- rf_workflow %>%
   tune_grid(
     resamples = ames_folds,
     grid = 5,  # Start with 5 random points
-    metrics = metric_set(rmse),
+    metrics = yardstick::metric_set(yardstick::rmse),
     control = control_grid(verbose = FALSE)
   )
 
@@ -352,7 +351,7 @@ bayes_results <- rf_workflow %>%
     resamples = ames_folds,
     initial = initial_results,  # Use initial results
     iter = 10,                   # 10 more iterations
-    metrics = metric_set(rmse),
+    metrics = yardstick::metric_set(yardstick::rmse),
     param_info = rf_params,
     control = control_bayes(
       verbose = FALSE,
@@ -399,7 +398,7 @@ race_results <- elastic_workflow %>%
   tune_race_anova(
     resamples = ames_folds,
     grid = race_grid,
-    metrics = metric_set(rmse),
+    metrics = yardstick::metric_set(yardstick::rmse),
     control = control_race(
       verbose_elim = TRUE,  # Show elimination progress
       burn_in = 3,          # Evaluate all on first 3 folds
@@ -444,7 +443,7 @@ Simulated annealing allows "bad" moves early on to escape local optima:
 sa_results <- elastic_workflow %>%
   tune_sim_anneal(
     resamples = ames_folds,
-    metrics = metric_set(rmse),
+    metrics = yardstick::metric_set(yardstick::rmse),
     initial = 4,      # Start with 4 random points
     iter = 25,        # 25 iterations
     control = control_sim_anneal(
@@ -496,7 +495,7 @@ tune_and_evaluate <- function(split) {
   inner_folds <- vfold_cv(train_data, v = 5)
   
   # Create workflow with data from this fold
-  fold_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual + Year_Built, 
+  fold_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Year_Built, 
                        data = train_data) %>%
     step_log(Sale_Price) %>%
     step_normalize(all_numeric_predictors())
@@ -510,7 +509,7 @@ tune_and_evaluate <- function(split) {
     tune_grid(
       resamples = inner_folds,
       grid = 10,
-      metrics = metric_set(rmse)
+      metrics = yardstick::metric_set(yardstick::rmse)
     )
   
   # Select best parameters
@@ -582,7 +581,7 @@ parallel_results <- elastic_workflow %>%
   tune_grid(
     resamples = ames_folds,
     grid = small_grid,
-    metrics = metric_set(rmse),
+    metrics = yardstick::metric_set(yardstick::rmse),
     control = control_grid(parallel_over = "resamples")  # Parallelize over folds
   )
 
@@ -614,7 +613,7 @@ multi_metric_results <- elastic_workflow %>%
   tune_grid(
     resamples = ames_folds,
     grid = 10,
-    metrics = metric_set(rmse, rsq, mae, mape)
+    metrics = yardstick::metric_set(yardstick::rmse, yardstick::rsq, yardstick::mae, yardstick::mape)
   )
 
 # Different metrics might suggest different "best" parameters
@@ -666,7 +665,7 @@ coarse_results <- elastic_workflow %>%
   tune_grid(
     resamples = ames_folds,
     grid = coarse_grid,
-    metrics = metric_set(rmse)
+    metrics = yardstick::metric_set(yardstick::rmse)
   )
 
 # Find promising region
@@ -685,7 +684,7 @@ fine_results <- elastic_workflow %>%
   tune_grid(
     resamples = ames_folds,
     grid = fine_grid,
-    metrics = metric_set(rmse)
+    metrics = yardstick::metric_set(yardstick::rmse)
   )
 
 # Visualize coarse vs fine search
@@ -863,7 +862,7 @@ regular_time <- system.time({
         min_n(c(5, 20)),
         levels = c(3, 3, 3)  # 27 combinations
       ),
-      metrics = metric_set(rmse)
+      metrics = yardstick::metric_set(yardstick::rmse)
     )
 })
 
@@ -873,7 +872,7 @@ random_time <- system.time({
     tune_grid(
       resamples = ames_folds,
       grid = 15,  # 15 random combinations
-      metrics = metric_set(rmse)
+      metrics = yardstick::metric_set(yardstick::rmse)
     )
 })
 
@@ -888,7 +887,7 @@ lhs_time <- system.time({
         min_n(c(5, 20)),
         size = 15
       ),
-      metrics = metric_set(rmse)
+      metrics = yardstick::metric_set(yardstick::rmse)
     )
 })
 
@@ -933,7 +932,7 @@ iterative_tuning <- function(workflow, resamples, n_iterations = 3) {
       tune_grid(
         resamples = resamples,
         grid = current_grid,
-        metrics = metric_set(rmse)
+        metrics = yardstick::metric_set(yardstick::rmse)
       )
     
     results[[i]] <- iter_results
@@ -963,7 +962,7 @@ iterative_tuning <- function(workflow, resamples, n_iterations = 3) {
 
 # Apply custom strategy (simplified for demonstration)
 simple_xgb_workflow <- workflow() %>%
-  add_recipe(recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual, data = ames_train)) %>%
+  add_recipe(recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond, data = ames_train)) %>%
   add_model(
     boost_tree(trees = 100, tree_depth = tune(), learn_rate = tune()) %>%
       set_engine("xgboost") %>%
@@ -1001,7 +1000,7 @@ complexity_results <- complexity_workflow %>%
   tune_grid(
     resamples = ames_folds,
     grid = complexity_grid,
-    metrics = metric_set(rmse, rsq)
+    metrics = yardstick::metric_set(yardstick::rmse, yardstick::rsq)
   )
 
 # Add complexity metric (total trees × average tree size estimate)
@@ -1080,7 +1079,7 @@ Key takeaways:
 
 ## What's Next?
 
-In [Chapter 16](16-ensemble-methods.qmd), we'll explore ensemble methods that combine multiple models for superior performance.
+In [Chapter 16](16-ensemble-methods.Rmd), we'll explore ensemble methods that combine multiple models for superior performance.
 
 ## Additional Resources
 

@@ -1,6 +1,5 @@
 ---
 title: "Chapter 18: Model Deployment and Production - From Prototype to Product"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -56,7 +55,7 @@ ames_train <- training(ames_split)
 ames_test <- testing(ames_split)
 
 # Create a production-ready model
-production_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual + 
+production_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + 
                           Year_Built + Neighborhood + Total_Bsmt_SF, 
                           data = ames_train) %>%
   step_log(Sale_Price) %>%
@@ -135,7 +134,7 @@ model_board %>%
     metadata = list(
       metrics = test_metrics,
       training_date = Sys.Date(),
-      features = c("Gr_Liv_Area", "Overall_Qual", "Year_Built", 
+      features = c("Gr_Liv_Area", "Overall_Cond", "Year_Built", 
                   "Neighborhood", "Total_Bsmt_SF"),
       model_type = "elastic_net",
       package_versions = sessionInfo()
@@ -162,7 +161,7 @@ v <- vetiver_model(
   "ames_price_predictor",
   metadata = list(
     description = "Predicts house prices in Ames, Iowa",
-    features = c("Gr_Liv_Area", "Overall_Qual", "Year_Built", 
+    features = c("Gr_Liv_Area", "Overall_Cond", "Year_Built", 
                 "Neighborhood", "Total_Bsmt_SF"),
     target = "Sale_Price"
   )
@@ -237,12 +236,12 @@ function() {
 
 #* Predict house price
 #* @param Gr_Liv_Area:numeric Living area in square feet
-#* @param Overall_Qual:numeric Overall quality (1-10)
+#* @param Overall_Cond:numeric Overall quality (1-10)
 #* @param Year_Built:numeric Year built
 #* @param Neighborhood:character Neighborhood name
 #* @param Total_Bsmt_SF:numeric Basement square feet
 #* @post /predict
-function(Gr_Liv_Area, Overall_Qual, Year_Built, Neighborhood, Total_Bsmt_SF) {
+function(Gr_Liv_Area, Overall_Cond, Year_Built, Neighborhood, Total_Bsmt_SF) {
   
   # Input validation
   if (is.na(as.numeric(Gr_Liv_Area))) {
@@ -252,7 +251,7 @@ function(Gr_Liv_Area, Overall_Qual, Year_Built, Neighborhood, Total_Bsmt_SF) {
   # Create input data frame
   input_data <- data.frame(
     Gr_Liv_Area = as.numeric(Gr_Liv_Area),
-    Overall_Qual = as.numeric(Overall_Qual),
+    Overall_Cond = as.numeric(Overall_Cond),
     Year_Built = as.numeric(Year_Built),
     Neighborhood = as.character(Neighborhood),
     Total_Bsmt_SF = as.numeric(Total_Bsmt_SF)
@@ -293,7 +292,7 @@ function(data) {
 function() {
   list(
     model_type = "elastic_net",
-    features = c("Gr_Liv_Area", "Overall_Qual", "Year_Built", 
+    features = c("Gr_Liv_Area", "Overall_Cond", "Year_Built", 
                 "Neighborhood", "Total_Bsmt_SF"),
     target = "Sale_Price",
     training_date = "2024-01-01",
@@ -376,7 +375,7 @@ function(req, res) {
 
 #* Predict with comprehensive logging
 #* @post /predict
-function(req, Gr_Liv_Area, Overall_Qual, Year_Built, Neighborhood, Total_Bsmt_SF) {
+function(req, Gr_Liv_Area, Overall_Cond, Year_Built, Neighborhood, Total_Bsmt_SF) {
   
   request_id <- uuid::UUIDgenerate()
   log_info("Prediction request", request_id = request_id)
@@ -385,7 +384,7 @@ function(req, Gr_Liv_Area, Overall_Qual, Year_Built, Neighborhood, Total_Bsmt_SF
     # Input validation
     input_data <- data.frame(
       Gr_Liv_Area = as.numeric(Gr_Liv_Area),
-      Overall_Qual = as.numeric(Overall_Qual),
+      Overall_Cond = as.numeric(Overall_Cond),
       Year_Built = as.numeric(Year_Built),
       Neighborhood = as.character(Neighborhood),
       Total_Bsmt_SF = as.numeric(Total_Bsmt_SF)
@@ -396,8 +395,8 @@ function(req, Gr_Liv_Area, Overall_Qual, Year_Built, Neighborhood, Total_Bsmt_SF
       stop("Gr_Liv_Area out of valid range")
     }
     
-    if (input_data$Overall_Qual < 1 || input_data$Overall_Qual > 10) {
-      stop("Overall_Qual must be between 1 and 10")
+    if (input_data$Overall_Cond < 1 || input_data$Overall_Cond > 10) {
+      stop("Overall_Cond must be between 1 and 10")
     }
     
     # Make prediction
@@ -558,7 +557,7 @@ ui <- dashboardPage(
             h4("Features Used:"),
             tags$ul(
               tags$li("Living Area (Gr_Liv_Area)"),
-              tags$li("Overall Quality (Overall_Qual)"),
+              tags$li("Overall Quality (Overall_Cond)"),
               tags$li("Year Built (Year_Built)"),
               tags$li("Neighborhood"),
               tags$li("Basement Area (Total_Bsmt_SF)")
@@ -616,7 +615,7 @@ server <- function(input, output, session) {
     # Create input data
     input_data <- data.frame(
       Gr_Liv_Area = input$gr_liv_area,
-      Overall_Qual = input$overall_qual,
+      Overall_Cond = input$overall_qual,
       Year_Built = input$year_built,
       Neighborhood = input$neighborhood,
       Total_Bsmt_SF = input$total_bsmt_sf
@@ -934,7 +933,7 @@ detect_drift <- function(training_data, production_data, threshold = 0.1) {
 
 # Test drift detection
 training_sample <- ames_train %>%
-  select(Gr_Liv_Area, Overall_Qual, Year_Built, Neighborhood, Total_Bsmt_SF) %>%
+  select(Gr_Liv_Area, Overall_Cond, Year_Built, Neighborhood, Total_Bsmt_SF) %>%
   slice_sample(n = 200)
 
 production_sample_drift <- training_sample %>%
@@ -1222,7 +1221,7 @@ registry$register(
   production_fit, 
   "ames_predictor", 
   "1.0.0",
-  list(rmse = 25432, rsq = 0.89),
+  list(rmse = 25432, yardstick::rsq = 0.89),
   list(algorithm = "elastic_net")
 )
 
@@ -1230,7 +1229,7 @@ registry$register(
   alternative_model, 
   "ames_predictor", 
   "1.1.0",
-  list(rmse = 24800, rsq = 0.91),
+  list(rmse = 24800, yardstick::rsq = 0.91),
   list(algorithm = "random_forest")
 )
 
@@ -1294,7 +1293,7 @@ create_retraining_pipeline <- function(current_model, retraining_threshold = 0.1
   execute <- function(new_data) {
     # Current performance
     current_metrics <- monitor(current_model, new_data)
-    baseline_metrics <- list(rmse = 25432, rsq = 0.89)
+    baseline_metrics <- list(rmse = 25432, yardstick::rsq = 0.89)
     
     cat("Current RMSE:", current_metrics %>% 
         filter(.metric == "rmse") %>% 

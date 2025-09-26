@@ -1,6 +1,5 @@
 ---
 title: "Chapter 12: Workflows and Model Evaluation - Building Reproducible ML Pipelines"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -79,7 +78,7 @@ ames_train_processed <- ames_train %>%
 
 # The RIGHT way - using workflows
 # Step 1: Create a recipe
-ames_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual + Neighborhood + 
+ames_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Neighborhood + 
                       Year_Built + Total_Bsmt_SF, 
                       data = ames_train) %>%
   step_log(Sale_Price) %>%
@@ -153,7 +152,7 @@ Workflows support two interfaces for specifying predictors:
 ```{r}
 # Method 1: Formula interface (simple, no preprocessing)
 formula_workflow <- workflow() %>%
-  add_formula(Sale_Price ~ Gr_Liv_Area + Overall_Qual) %>%
+  add_formula(Sale_Price ~ Gr_Liv_Area + Overall_Cond) %>%
   add_model(lm_spec)
 
 # Method 2: Recipe interface (complex preprocessing)
@@ -165,7 +164,7 @@ recipe_workflow <- workflow() %>%
 vars_workflow <- workflow() %>%
   add_variables(
     outcomes = Sale_Price,
-    predictors = c(Gr_Liv_Area, Overall_Qual, Neighborhood)
+    predictors = c(Gr_Liv_Area, Overall_Cond, Neighborhood)
   ) %>%
   add_model(lm_spec)
 
@@ -227,11 +226,11 @@ One of the most powerful features is comparing multiple workflows systematically
 
 ```{r}
 # Create multiple preprocessing recipes
-recipe_simple <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual, 
+recipe_simple <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond, 
                        data = ames_train) %>%
   step_log(Sale_Price)
 
-recipe_normalized <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual + Year_Built, 
+recipe_normalized <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Year_Built, 
                            data = ames_train) %>%
   step_log(Sale_Price) %>%
   step_normalize(all_numeric_predictors())
@@ -282,7 +281,7 @@ workflow_results <- workflow_set %>%
   workflow_map(
     "fit_resamples",
     resamples = ames_folds,
-    metrics = metric_set(rmse, rsq, mae),
+    metrics = yardstick::metric_set(yardstick::rmse, yardstick::rsq, yardstick::mae),
     control = control_resamples(save_pred = TRUE)
   )
 
@@ -368,7 +367,7 @@ ames_class <- ames_train %>%
   select(-Sale_Price)
 
 # Simple classification workflow
-class_recipe <- recipe(expensive ~ Gr_Liv_Area + Overall_Qual + Year_Built, 
+class_recipe <- recipe(expensive ~ Gr_Liv_Area + Overall_Cond + Year_Built, 
                       data = ames_class) %>%
   step_normalize(all_numeric_predictors())
 
@@ -444,7 +443,7 @@ mape_threshold <- new_numeric_metric(
 )
 
 # Use in evaluation
-custom_metrics <- metric_set(rmse, mape_threshold)
+custom_metrics <- yardstick::metric_set(yardstick::rmse, yardstick::mape_threshold)
 
 test_predictions %>%
   custom_metrics(truth = Sale_Price, estimate = .pred)
@@ -547,7 +546,7 @@ final_fit <- final_workflow %>%
 
 # Last fit - train on all data, evaluate on test
 last_fit_results <- final_workflow %>%
-  last_fit(split = ames_split, metrics = metric_set(rmse, rsq))
+  last_fit(split = ames_split, metrics = yardstick::metric_set(yardstick::rmse, yardstick::rsq))
 
 # Extract final metrics
 final_metrics <- last_fit_results %>%
@@ -767,7 +766,7 @@ Create a workflow and comprehensive evaluation:
 ```{r}
 # Your solution
 # Create a complete evaluation pipeline
-eval_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Year_Built + Overall_Qual + 
+eval_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Year_Built + Overall_Cond + 
                       Neighborhood + Total_Bsmt_SF, data = ames_train) %>%
   step_log(Sale_Price, skip = TRUE) %>%  # Skip for prediction
   step_impute_median(all_numeric_predictors()) %>%
@@ -787,7 +786,7 @@ eval_folds <- vfold_cv(ames_train, v = 10, strata = Sale_Price)
 eval_results <- eval_workflow %>%
   fit_resamples(
     resamples = eval_folds,
-    metrics = metric_set(rmse, rsq, mae, mape),
+    metrics = yardstick::metric_set(yardstick::rmse, yardstick::rsq, yardstick::mae, yardstick::mape),
     control = control_resamples(save_pred = TRUE)
   )
 
@@ -812,19 +811,19 @@ Evaluate different preprocessing approaches:
 ```{r}
 # Your solution
 # Define different preprocessing strategies
-preproc_minimal <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual, 
+preproc_minimal <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond, 
                          data = ames_train)
 
-preproc_standard <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual + Year_Built, 
+preproc_standard <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Year_Built, 
                           data = ames_train) %>%
   step_normalize(all_numeric_predictors())
 
-preproc_complex <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual + Year_Built + 
+preproc_complex <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Year_Built + 
                          Neighborhood + Total_Bsmt_SF, data = ames_train) %>%
   step_log(Sale_Price) %>%
   step_normalize(all_numeric_predictors()) %>%
   step_dummy(all_nominal_predictors()) %>%
-  step_interact(terms = ~ Gr_Liv_Area:Overall_Qual)
+  step_interact(terms = ~ Gr_Liv_Area:Overall_Cond)
 
 # Create workflows
 strategies <- list(
@@ -846,7 +845,7 @@ strategy_results <- map_df(names(strategies), function(strategy_name) {
   fit_resamples(
     wf,
     resamples = vfold_cv(ames_train, v = 5),
-    metrics = metric_set(rmse, rsq)
+    metrics = yardstick::metric_set(yardstick::rmse, yardstick::rsq)
   ) %>%
     collect_metrics() %>%
     mutate(strategy = strategy_name)
@@ -958,7 +957,7 @@ Key takeaways:
 
 ## What's Next?
 
-In [Chapter 13](13-hyperparameter-tuning.qmd), we'll explore hyperparameter tuning to optimize model performance.
+In [Chapter 13](13-hyperparameter-tuning.Rmd), we'll explore hyperparameter tuning to optimize model performance.
 
 ## Additional Resources
 

@@ -1,6 +1,5 @@
 ---
 title: "Chapter 9: Data Splitting and Resampling - The Foundation of Model Validation"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -294,7 +293,7 @@ ames_repeated_cv
 # Compare variability: single vs repeated CV
 # Fit a simple model to demonstrate
 simple_model <- linear_reg() %>% set_engine("lm")
-simple_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual, data = ames_train)
+simple_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond, data = ames_train)
 
 # Single CV
 single_cv_results <- workflow() %>%
@@ -641,8 +640,8 @@ test_set <- testing(val_split)
 
 # Use validation set for model selection
 models_to_compare <- list(
-  simple = recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual, data = train_set),
-  moderate = recipe(Sale_Price ~ Gr_Liv_Area + Overall_Qual + Year_Built + 
+  simple = recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond, data = train_set),
+  moderate = recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Year_Built + 
                    Neighborhood, data = train_set),
   complex = recipe(Sale_Price ~ ., data = train_set)
 )
@@ -872,7 +871,7 @@ Evaluate different resampling methods on the same dataset:
 # Your solution
 # Use a subset of Ames data for speed
 ames_subset <- ames %>%
-  select(Sale_Price, Gr_Liv_Area, Overall_Qual, Year_Built, Lot_Area) %>%
+  select(Sale_Price, Gr_Liv_Area, Overall_Cond, Year_Built, Lot_Area) %>%
   slice_sample(n = 500)
 
 # Define resampling strategies
@@ -953,7 +952,7 @@ ts_workflow <- workflow() %>%
 ts_results <- fit_resamples(
   ts_workflow,
   ts_splits,
-  metrics = metric_set(rmse, mae, rsq)
+  metrics = yardstick::metric_set(yardstick::rmse, yardstick::mae, yardstick::rsq)
 )
 
 # Examine performance over time
@@ -1014,7 +1013,7 @@ Key takeaways:
 
 ## What's Next?
 
-In [Chapter 10](10-feature-engineering.qmd), we'll explore feature engineering with recipes, learning how to transform raw data into model-ready features.
+In [Chapter 10](10-feature-engineering.Rmd), we'll explore feature engineering with recipes, learning how to transform raw data into model-ready features.
 
 ## Additional Resources
 

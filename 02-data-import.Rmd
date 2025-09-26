@@ -1,6 +1,5 @@
 ---
 title: "Chapter 2: Data Import and Export with readr and Beyond"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -30,9 +29,13 @@ library(jsonlite)   # For JSON files
 library(DBI)        # For databases
 library(RSQLite)    # For SQLite
 library(haven)      # For SPSS, Stata, SAS files
+library(palmerpenguins)  # For penguins dataset
 
 # Create a temporary directory for our examples
 temp_dir <- tempdir()
+
+# Load the penguins dataset
+data(penguins)
 ```
 
 ## Reading CSV Files with readr
@@ -722,7 +725,7 @@ In this chapter, you learned:
 
 ## What's Next?
 
-In [Chapter 3](03-data-wrangling.qmd), we'll dive deep into data manipulation with dplyr, learning to filter, select, mutate, and summarize data efficiently.
+In [Chapter 3](03-data-wrangling.Rmd), we'll dive deep into data manipulation with dplyr, learning to filter, select, mutate, and summarize data efficiently.
 
 ## Additional Resources
 

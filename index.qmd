@@ -101,7 +101,7 @@ install.packages(c(
 
 ## Getting Started
 
-Ready to begin? Start with [Chapter 1: Introduction to the Tidyverse](01-introduction.qmd)!
+Ready to begin? Start with [Chapter 1: Introduction to the Tidyverse](01-introduction.Rmd)!
 
 ## Support and Resources
 

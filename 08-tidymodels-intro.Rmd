@@ -1,6 +1,5 @@
 ---
 title: "Chapter 8: Introduction to Tidymodels - Theory and Practice"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -778,7 +777,7 @@ You've learned the theoretical foundations and practical implementation of:
 
 ## What's Next?
 
-In [Chapter 9](09-data-splitting.qmd), we'll dive deep into data splitting strategies and resampling techniques with rsample.
+In [Chapter 9](09-data-splitting.Rmd), we'll dive deep into data splitting strategies and resampling techniques with rsample.
 
 ## Additional Resources
 

@@ -1,6 +1,5 @@
 ---
 title: "Chapter 7: Working with Strings and Dates - Text and Time in the Tidyverse"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -1129,7 +1128,7 @@ Key takeaways:
 
 ## What's Next?
 
-In [Chapter 8](08-tidymodels-intro.qmd), we transition to machine learning with tidymodels, building on our data manipulation skills.
+In [Chapter 8](08-tidymodels-intro.Rmd), we transition to machine learning with tidymodels, building on our data manipulation skills.
 
 ## Additional Resources
 

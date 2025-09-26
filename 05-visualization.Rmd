@@ -1,6 +1,5 @@
 ---
 title: "Chapter 5: Data Visualization with ggplot2"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -777,7 +776,7 @@ You've mastered ggplot2 essentials:
 
 ## What's Next?
 
-In [Chapter 6](06-functional-programming.qmd), we'll explore functional programming with purrr, learning to apply functions efficiently across data structures.
+In [Chapter 6](06-functional-programming.Rmd), we'll explore functional programming with purrr, learning to apply functions efficiently across data structures.
 
 ## Additional Resources
 

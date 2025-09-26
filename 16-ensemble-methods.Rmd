@@ -1,6 +1,5 @@
 ---
 title: "Chapter 16: Ensemble Methods - The Power of Many"
-author: "Workshop Materials"
 date: today
 format:
   html:
@@ -55,7 +54,7 @@ ames_folds <- vfold_cv(ames_train, v = 5, strata = Sale_Price)
 
 # Prepare a simpler dataset for visualization
 ames_simple <- ames_train %>%
-  select(Sale_Price, Gr_Liv_Area, Overall_Qual, Year_Built, Neighborhood) %>%
+  select(Sale_Price, Gr_Liv_Area, Overall_Cond, Year_Built, Neighborhood) %>%
   slice_sample(n = 500)
 ```
 
@@ -264,7 +263,7 @@ rf_results <- rf_workflows %>%
     cv_results = map(workflow, ~ fit_resamples(
       .,
       resamples = vfold_cv(ames_train, v = 3),  # Reduced folds for speed
-      metrics = metric_set(rmse, rsq)
+      metrics = yardstick::metric_set(yardstick::rmse, yardstick::rsq)
     ))
   )
 
@@ -559,7 +558,7 @@ rf_class_spec <- rand_forest(trees = 100) %>%
   set_mode("classification")
 
 # Simple recipe for classification
-class_recipe <- recipe(expensive ~ Gr_Liv_Area + Overall_Qual + Year_Built, 
+class_recipe <- recipe(expensive ~ Gr_Liv_Area + Overall_Cond + Year_Built, 
                       data = class_train) %>%
   step_normalize(all_numeric_predictors())
 
@@ -1099,7 +1098,7 @@ Key takeaways:
 
 ## What's Next?
 
-In [Chapter 17](17-unsupervised-learning.qmd), we'll explore unsupervised learning techniques for discovering patterns without labels.
+In [Chapter 17](17-unsupervised-learning.Rmd), we'll explore unsupervised learning techniques for discovering patterns without labels.
 
 ## Additional Resources
 
