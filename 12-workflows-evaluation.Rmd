@@ -1,5 +1,6 @@
 ---
 title: "Chapter 12: Workflows and Model Evaluation - Building Reproducible ML Pipelines"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

@@ -1,5 +1,6 @@
 ---
 title: "Chapter 13: Hyperparameter Tuning - Finding the Sweet Spot"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

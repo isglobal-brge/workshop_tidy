@@ -1,5 +1,6 @@
 ---
 title: "Chapter 5: Data Visualization with ggplot2"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

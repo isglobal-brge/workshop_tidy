@@ -1,5 +1,6 @@
 ---
 title: "Chapter 10: Feature Engineering with recipes - The Art and Science of Data Preparation"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

@@ -1,5 +1,6 @@
 ---
 title: "Chapter 7: Working with Strings and Dates - Text and Time in the Tidyverse"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

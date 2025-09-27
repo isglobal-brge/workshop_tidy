@@ -1,5 +1,6 @@
 ---
 title: "Chapter 6: Functional Programming with purrr - Iteration and Mapping Made Elegant"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

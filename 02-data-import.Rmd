@@ -1,5 +1,6 @@
 ---
 title: "Chapter 2: Data Import and Export with readr and Beyond"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

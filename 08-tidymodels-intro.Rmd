@@ -1,5 +1,6 @@
 ---
 title: "Chapter 8: Introduction to Tidymodels - Theory and Practice"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

@@ -1,5 +1,6 @@
 ---
 title: "Chapter 14: Classification Models - Theory and Implementation"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

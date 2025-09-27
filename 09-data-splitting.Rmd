@@ -1,5 +1,6 @@
 ---
 title: "Chapter 9: Data Splitting and Resampling - The Foundation of Model Validation"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

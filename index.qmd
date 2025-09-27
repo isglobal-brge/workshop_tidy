@@ -1,6 +1,6 @@
 ---
 title: "Tidyverse & Machine Learning Workshop"
-author: "Workshop Materials"
+author: "David Sarrat González, Juan R González"
 date: today
 ---
 
@@ -62,7 +62,7 @@ install.packages("tidymodels")
 # Additional packages for specific chapters
 install.packages(c(
   # Datasets
-  "palmerpenguins",  # Penguin dataset
+  "palmerpenguins",   # Penguin dataset
   "gapminder",        # Gapminder dataset
   "nycflights13",     # Flights dataset
   "modeldata",        # Additional datasets
@@ -157,7 +157,12 @@ install.packages(c(
   "dtplyr",           # dplyr for data.table
   "jose",             # JWT tokens
   "logger",           # Logging
-  "performance"       # Model performance
+  "performance",      # Model performance
+  "ggfortify",        # PCA/clustering plots
+  "dendextend",       # Dendrogram manipulation
+  "scales",           # Scale formatting
+  "ggrepel",          # Better text labels
+  "hms"               # Time-of-day values
 ))
 ```
 
@@ -182,7 +187,7 @@ Ready to begin? Start with [Chapter 1: Introduction to the Tidyverse](01-introdu
 
 ## About This Workshop
 
-This workshop was created as a comprehensive resource for learning modern data science in R. It combines best practices from the tidyverse and tidymodels communities with practical machine learning applications.
+This workshop was made with ❤️ by **[David Sarrat González](https://davidsarratgonzalez.github.io)** and **[Juan R González](https://www.isglobal.org/our-team/-/profiles/18510)** from the **[Bioinformatic Research Group in Epidemiology](https://brge.isglobal.org)** at the **[Barcelona Institute for Global Health (ISGlobal)](https://www.isglobal.org)** as a comprehensive resource for learning modern data science in R. 
 
 ---
 

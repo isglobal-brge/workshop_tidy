@@ -1,1 +1,20 @@
-/* css styles */
+/* Custom styles for the workshop */
+
+/* Change "Author" to "Authors" using CSS content replacement */
+.quarto-title-meta-heading {
+    font-weight: 600;
+}
+
+/* Hide original "Author" text and replace with "Authors" */
+.quarto-title-meta-heading:contains("Author") {
+    visibility: hidden;
+    position: relative;
+}
+
+.quarto-title-meta-heading:contains("Author")::before {
+    content: "Authors";
+    visibility: visible;
+    position: absolute;
+    left: 0;
+    top: 0;
+}

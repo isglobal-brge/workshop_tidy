@@ -1,5 +1,6 @@
 ---
 title: "Chapter 11: Model Specification with parsnip - A Unified Interface for Models"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

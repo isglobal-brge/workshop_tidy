@@ -1,0 +1,1877 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en"><head>
+
+<meta charset="utf-8">
+<meta name="generator" content="quarto-1.7.31">
+
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
+
+<meta name="author" content="David Sarrat González, Juan R González">
+<meta name="dcterms.date" content="2025-09-27">
+
+<title>Chapter 1: Introduction to R and the Tidyverse Ecosystem – Tidyverse &amp; Machine Learning Workshop</title>
+<style>
+code{white-space: pre-wrap;}
+span.smallcaps{font-variant: small-caps;}
+div.columns{display: flex; gap: min(4vw, 1.5em);}
+div.column{flex: auto; overflow-x: auto;}
+div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+ul.task-list{list-style: none;}
+ul.task-list li input[type="checkbox"] {
+  width: 0.8em;
+  margin: 0 0.8em 0.2em -1em; /* quarto-specific, see https://github.com/quarto-dev/quarto-cli/issues/4556 */ 
+  vertical-align: middle;
+}
+/* CSS for syntax highlighting */
+html { -webkit-text-size-adjust: 100%; }
+pre > code.sourceCode { white-space: pre; position: relative; }
+pre > code.sourceCode > span { display: inline-block; line-height: 1.25; }
+pre > code.sourceCode > span:empty { height: 1.2em; }
+.sourceCode { overflow: visible; }
+code.sourceCode > span { color: inherit; text-decoration: inherit; }
+div.sourceCode { margin: 1em 0; }
+pre.sourceCode { margin: 0; }
+@media screen {
+div.sourceCode { overflow: auto; }
+}
+@media print {
+pre > code.sourceCode { white-space: pre-wrap; }
+pre > code.sourceCode > span { text-indent: -5em; padding-left: 5em; }
+}
+pre.numberSource code
+  { counter-reset: source-line 0; }
+pre.numberSource code > span
+  { position: relative; left: -4em; counter-increment: source-line; }
+pre.numberSource code > span > a:first-child::before
+  { content: counter(source-line);
+    position: relative; left: -1em; text-align: right; vertical-align: baseline;
+    border: none; display: inline-block;
+    -webkit-touch-callout: none; -webkit-user-select: none;
+    -khtml-user-select: none; -moz-user-select: none;
+    -ms-user-select: none; user-select: none;
+    padding: 0 4px; width: 4em;
+  }
+pre.numberSource { margin-left: 3em;  padding-left: 4px; }
+div.sourceCode
+  {   }
+@media screen {
+pre > code.sourceCode > span > a:first-child::before { text-decoration: underline; }
+}
+</style>
+
+
+<script src="site_libs/quarto-nav/quarto-nav.js"></script>
+<script src="site_libs/quarto-nav/headroom.min.js"></script>
+<script src="site_libs/clipboard/clipboard.min.js"></script>
+<script src="site_libs/quarto-search/autocomplete.umd.js"></script>
+<script src="site_libs/quarto-search/fuse.min.js"></script>
+<script src="site_libs/quarto-search/quarto-search.js"></script>
+<meta name="quarto:offset" content="./">
+<script src="site_libs/quarto-html/quarto.js" type="module"></script>
+<script src="site_libs/quarto-html/tabsets/tabsets.js" type="module"></script>
+<script src="site_libs/quarto-html/popper.min.js"></script>
+<script src="site_libs/quarto-html/tippy.umd.min.js"></script>
+<script src="site_libs/quarto-html/anchor.min.js"></script>
+<link href="site_libs/quarto-html/tippy.css" rel="stylesheet">
+<link href="site_libs/quarto-html/quarto-syntax-highlighting-4a990d8dcb58f517c7c86712b8f2ac7c.css" rel="stylesheet" id="quarto-text-highlighting-styles">
+<script src="site_libs/bootstrap/bootstrap.min.js"></script>
+<link href="site_libs/bootstrap/bootstrap-icons.css" rel="stylesheet">
+<link href="site_libs/bootstrap/bootstrap-90ee96a17764a76d4fcf3f331faa145e.min.css" rel="stylesheet" append-hash="true" id="quarto-bootstrap" data-mode="light">
+<script id="quarto-search-options" type="application/json">{
+  "location": "navbar",
+  "copy-button": false,
+  "collapse-after": 3,
+  "panel-placement": "end",
+  "type": "overlay",
+  "limit": 50,
+  "keyboard-shortcut": [
+    "f",
+    "/",
+    "s"
+  ],
+  "show-item-context": false,
+  "language": {
+    "search-no-results-text": "No results",
+    "search-matching-documents-text": "matching documents",
+    "search-copy-link-title": "Copy link to search",
+    "search-hide-matches-text": "Hide additional matches",
+    "search-more-match-text": "more match in this document",
+    "search-more-matches-text": "more matches in this document",
+    "search-clear-button-title": "Clear",
+    "search-text-placeholder": "",
+    "search-detached-cancel-button-title": "Cancel",
+    "search-submit-button-title": "Submit",
+    "search-label": "Search"
+  }
+}</script>
+
+
+<link rel="stylesheet" href="styles.css">
+</head>
+
+<body class="nav-fixed quarto-light">
+
+<div id="quarto-search-results"></div>
+  <header id="quarto-header" class="headroom fixed-top">
+    <nav class="navbar navbar-expand-lg " data-bs-theme="dark">
+      <div class="navbar-container container-fluid">
+      <div class="navbar-brand-container mx-auto">
+    <a class="navbar-brand" href="./index.html">
+    <span class="navbar-title">Tidyverse &amp; Machine Learning Workshop</span>
+    </a>
+  </div>
+            <div id="quarto-search" class="" title="Search"></div>
+          <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarCollapse" aria-controls="navbarCollapse" role="menu" aria-expanded="false" aria-label="Toggle navigation" onclick="if (window.quartoToggleHeadroom) { window.quartoToggleHeadroom(); }">
+  <span class="navbar-toggler-icon"></span>
+</button>
+          <div class="collapse navbar-collapse" id="navbarCollapse">
+            <ul class="navbar-nav navbar-nav-scroll me-auto">
+  <li class="nav-item">
+    <a class="nav-link" href="./index.html"> 
+<span class="menu-text">Home</span></a>
+  </li>  
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-part-1-tidyverse" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Part 1: Tidyverse</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-part-1-tidyverse">    
+        <li>
+    <a class="dropdown-item" href="./01-introduction.html">
+ <span class="dropdown-text">Ch 1: Introduction to Tidyverse</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./02-data-import.html">
+ <span class="dropdown-text">Ch 2: Data Import with readr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./03-data-wrangling.html">
+ <span class="dropdown-text">Ch 3: Data Wrangling with dplyr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./04-data-tidying.html">
+ <span class="dropdown-text">Ch 4: Data Tidying with tidyr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./05-visualization.html">
+ <span class="dropdown-text">Ch 5: Visualization with ggplot2</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./06-functional-programming.html">
+ <span class="dropdown-text">Ch 6: Functional Programming with purrr</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./07-strings-dates.html">
+ <span class="dropdown-text">Ch 7: Strings and Dates</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-part-2-tidymodels" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Part 2: Tidymodels</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-part-2-tidymodels">    
+        <li>
+    <a class="dropdown-item" href="./08-tidymodels-intro.html">
+ <span class="dropdown-text">Ch 8: Introduction to Tidymodels</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./09-data-splitting.html">
+ <span class="dropdown-text">Ch 9: Data Splitting &amp; Resampling</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./10-feature-engineering.html">
+ <span class="dropdown-text">Ch 10: Feature Engineering</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./11-model-specification.html">
+ <span class="dropdown-text">Ch 11: Model Specification</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./12-workflows-evaluation.html">
+ <span class="dropdown-text">Ch 12: Workflows &amp; Evaluation</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./13-hyperparameter-tuning.html">
+ <span class="dropdown-text">Ch 13: Hyperparameter Tuning</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item dropdown ">
+    <a class="nav-link dropdown-toggle" href="#" id="nav-menu-part-3-machine-learning" role="link" data-bs-toggle="dropdown" aria-expanded="false">
+ <span class="menu-text">Part 3: Machine Learning</span>
+    </a>
+    <ul class="dropdown-menu" aria-labelledby="nav-menu-part-3-machine-learning">    
+        <li>
+    <a class="dropdown-item" href="./14-classification.html">
+ <span class="dropdown-text">Ch 14: Classification Models</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./15-regression.html">
+ <span class="dropdown-text">Ch 15: Regression Models</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./16-ensemble-methods.html">
+ <span class="dropdown-text">Ch 16: Ensemble Methods</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./17-unsupervised-learning.html">
+ <span class="dropdown-text">Ch 17: Unsupervised Learning</span></a>
+  </li>  
+        <li>
+    <a class="dropdown-item" href="./18-model-deployment.html">
+ <span class="dropdown-text">Ch 18: Model Deployment</span></a>
+  </li>  
+    </ul>
+  </li>
+  <li class="nav-item">
+    <a class="nav-link" href="./about.Rmd"> 
+<span class="menu-text">About</span></a>
+  </li>  
+</ul>
+          </div> <!-- /navcollapse -->
+            <div class="quarto-navbar-tools">
+</div>
+      </div> <!-- /container-fluid -->
+    </nav>
+</header>
+<!-- content -->
+<div id="quarto-content" class="quarto-container page-columns page-rows-contents page-layout-article page-navbar">
+<!-- sidebar -->
+<!-- margin-sidebar -->
+    <div id="quarto-margin-sidebar" class="sidebar margin-sidebar">
+        <nav id="TOC" role="doc-toc" class="toc-active">
+    <h2 id="toc-title">On this page</h2>
+   
+  <ul>
+  <li><a href="#learning-objectives" id="toc-learning-objectives" class="nav-link active" data-scroll-target="#learning-objectives">Learning Objectives</a></li>
+  <li><a href="#what-is-the-tidyverse" id="toc-what-is-the-tidyverse" class="nav-link" data-scroll-target="#what-is-the-tidyverse">What is the Tidyverse?</a>
+  <ul class="collapse">
+  <li><a href="#core-tidyverse-packages" id="toc-core-tidyverse-packages" class="nav-link" data-scroll-target="#core-tidyverse-packages">Core Tidyverse Packages</a></li>
+  </ul></li>
+  <li><a href="#the-pipe-operator" id="toc-the-pipe-operator" class="nav-link" data-scroll-target="#the-pipe-operator">The Pipe Operator</a>
+  <ul class="collapse">
+  <li><a href="#understanding-the-problem-with-nested-functions" id="toc-understanding-the-problem-with-nested-functions" class="nav-link" data-scroll-target="#understanding-the-problem-with-nested-functions">Understanding the Problem with Nested Functions</a></li>
+  <li><a href="#traditional-r-vs-piped-approach" id="toc-traditional-r-vs-piped-approach" class="nav-link" data-scroll-target="#traditional-r-vs-piped-approach">Traditional R vs Piped Approach</a></li>
+  <li><a href="#how-the-pipe-actually-works" id="toc-how-the-pipe-actually-works" class="nav-link" data-scroll-target="#how-the-pipe-actually-works">How the Pipe Actually Works</a></li>
+  <li><a href="#practical-example-with-data" id="toc-practical-example-with-data" class="nav-link" data-scroll-target="#practical-example-with-data">Practical Example with Data</a></li>
+  </ul></li>
+  <li><a href="#tibbles-modern-data-frames" id="toc-tibbles-modern-data-frames" class="nav-link" data-scroll-target="#tibbles-modern-data-frames">Tibbles: Modern Data Frames</a>
+  <ul class="collapse">
+  <li><a href="#creating-tibbles" id="toc-creating-tibbles" class="nav-link" data-scroll-target="#creating-tibbles">Creating Tibbles</a></li>
+  <li><a href="#tibble-vs-data-frame" id="toc-tibble-vs-data-frame" class="nav-link" data-scroll-target="#tibble-vs-data-frame">Tibble vs Data Frame</a></li>
+  <li><a href="#key-advantages-of-tibbles" id="toc-key-advantages-of-tibbles" class="nav-link" data-scroll-target="#key-advantages-of-tibbles">Key Advantages of Tibbles</a></li>
+  </ul></li>
+  <li><a href="#tidy-data-principles" id="toc-tidy-data-principles" class="nav-link" data-scroll-target="#tidy-data-principles">Tidy Data Principles</a>
+  <ul class="collapse">
+  <li><a href="#the-three-rules-of-tidy-data" id="toc-the-three-rules-of-tidy-data" class="nav-link" data-scroll-target="#the-three-rules-of-tidy-data">The Three Rules of Tidy Data</a></li>
+  <li><a href="#example-messy-vs-tidy-data" id="toc-example-messy-vs-tidy-data" class="nav-link" data-scroll-target="#example-messy-vs-tidy-data">Example: Messy vs Tidy Data</a></li>
+  </ul></li>
+  <li><a href="#working-with-real-data" id="toc-working-with-real-data" class="nav-link" data-scroll-target="#working-with-real-data">Working with Real Data</a>
+  <ul class="collapse">
+  <li><a href="#data-exploration-pipeline" id="toc-data-exploration-pipeline" class="nav-link" data-scroll-target="#data-exploration-pipeline">Data Exploration Pipeline</a></li>
+  </ul></li>
+  <li><a href="#visualization-preview" id="toc-visualization-preview" class="nav-link" data-scroll-target="#visualization-preview">Visualization Preview</a></li>
+  <li><a href="#common-tidyverse-patterns" id="toc-common-tidyverse-patterns" class="nav-link" data-scroll-target="#common-tidyverse-patterns">Common Tidyverse Patterns</a>
+  <ul class="collapse">
+  <li><a href="#pattern-1-read-clean-transform-visualize" id="toc-pattern-1-read-clean-transform-visualize" class="nav-link" data-scroll-target="#pattern-1-read-clean-transform-visualize">Pattern 1: Read, Clean, Transform, Visualize</a></li>
+  <li><a href="#pattern-2-multiple-operations-with-groups" id="toc-pattern-2-multiple-operations-with-groups" class="nav-link" data-scroll-target="#pattern-2-multiple-operations-with-groups">Pattern 2: Multiple Operations with Groups</a></li>
+  </ul></li>
+  <li><a href="#exercises" id="toc-exercises" class="nav-link" data-scroll-target="#exercises">Exercises</a>
+  <ul class="collapse">
+  <li><a href="#exercise-1-basic-pipe-operations" id="toc-exercise-1-basic-pipe-operations" class="nav-link" data-scroll-target="#exercise-1-basic-pipe-operations">Exercise 1: Basic Pipe Operations</a></li>
+  <li><a href="#exercise-2-tibble-creation-and-manipulation" id="toc-exercise-2-tibble-creation-and-manipulation" class="nav-link" data-scroll-target="#exercise-2-tibble-creation-and-manipulation">Exercise 2: Tibble Creation and Manipulation</a></li>
+  <li><a href="#exercise-3-working-with-penguins-data" id="toc-exercise-3-working-with-penguins-data" class="nav-link" data-scroll-target="#exercise-3-working-with-penguins-data">Exercise 3: Working with Penguins Data</a></li>
+  <li><a href="#exercise-4-tidy-data-challenge" id="toc-exercise-4-tidy-data-challenge" class="nav-link" data-scroll-target="#exercise-4-tidy-data-challenge">Exercise 4: Tidy Data Challenge</a></li>
+  </ul></li>
+  <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#whats-next" id="toc-whats-next" class="nav-link" data-scroll-target="#whats-next">What’s Next?</a></li>
+  <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources">Additional Resources</a></li>
+  </ul>
+</nav>
+    </div>
+<!-- main -->
+<main class="content" id="quarto-document-content">
+
+<header id="title-block-header" class="quarto-title-block default">
+<div class="quarto-title">
+<div class="quarto-title-block"><div><h1 class="title">Chapter 1: Introduction to R and the Tidyverse Ecosystem</h1><button type="button" class="btn code-tools-button" id="quarto-code-tools-source"><i class="bi"></i> Code</button></div></div>
+</div>
+
+
+
+<div class="quarto-title-meta">
+
+    <div>
+    <div class="quarto-title-meta-heading">Author</div>
+    <div class="quarto-title-meta-contents">
+             <p>David Sarrat González, Juan R González </p>
+          </div>
+  </div>
+    
+    <div>
+    <div class="quarto-title-meta-heading">Published</div>
+    <div class="quarto-title-meta-contents">
+      <p class="date">September 27, 2025</p>
+    </div>
+  </div>
+  
+    
+  </div>
+  
+
+
+</header>
+
+
+<section id="learning-objectives" class="level2">
+<h2 class="anchored" data-anchor-id="learning-objectives">Learning Objectives</h2>
+<p>By the end of this chapter, you will:</p>
+<ul>
+<li>Understand the philosophy and principles of the tidyverse</li>
+<li>Know the core tidyverse packages and their purposes</li>
+<li>Be able to install and load tidyverse packages</li>
+<li>Understand the pipe operator (<code>%&gt;%</code> and <code>|&gt;</code>)</li>
+<li>Work with tibbles, the tidyverse’s modern data frames</li>
+<li>Understand tidy data principles</li>
+</ul>
+</section>
+<section id="what-is-the-tidyverse" class="level2">
+<h2 class="anchored" data-anchor-id="what-is-the-tidyverse">What is the Tidyverse?</h2>
+<p>The tidyverse is a collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures. The tidyverse makes data manipulation, exploration, and visualization faster and more intuitive.</p>
+<section id="core-tidyverse-packages" class="level3">
+<h3 class="anchored" data-anchor-id="core-tidyverse-packages">Core Tidyverse Packages</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb1"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb1-1"><a href="#cb1-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Install tidyverse if you haven't already</span></span>
+<span id="cb1-2"><a href="#cb1-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("tidyverse")</span></span>
+<span id="cb1-3"><a href="#cb1-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb1-4"><a href="#cb1-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the tidyverse</span></span>
+<span id="cb1-5"><a href="#cb1-5" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stderr">
+<pre><code>-- Attaching core tidyverse packages ------------------------ tidyverse 2.0.0 --
+v dplyr     1.1.4     v readr     2.1.5
+v forcats   1.0.0     v stringr   1.5.2
+v ggplot2   4.0.0     v tibble    3.3.0
+v lubridate 1.9.4     v tidyr     1.3.1
+v purrr     1.1.0     
+-- Conflicts ------------------------------------------ tidyverse_conflicts() --
+x dplyr::filter() masks stats::filter()
+x dplyr::lag()    masks stats::lag()
+i Use the conflicted package (&lt;http://conflicted.r-lib.org/&gt;) to force all conflicts to become errors</code></pre>
+</div>
+</div>
+<p>The tidyverse includes these core packages:</p>
+<ol type="1">
+<li><strong>ggplot2</strong>: Data visualization</li>
+<li><strong>dplyr</strong>: Data manipulation</li>
+<li><strong>tidyr</strong>: Data tidying</li>
+<li><strong>readr</strong>: Data import</li>
+<li><strong>purrr</strong>: Functional programming</li>
+<li><strong>tibble</strong>: Modern data frames</li>
+<li><strong>stringr</strong>: String manipulation</li>
+<li><strong>forcats</strong>: Factor handling</li>
+</ol>
+</section>
+</section>
+<section id="the-pipe-operator" class="level2">
+<h2 class="anchored" data-anchor-id="the-pipe-operator">The Pipe Operator</h2>
+<p>The pipe operator is fundamental to tidyverse workflows. It allows you to chain operations together in a readable way.</p>
+<section id="understanding-the-problem-with-nested-functions" class="level3">
+<h3 class="anchored" data-anchor-id="understanding-the-problem-with-nested-functions">Understanding the Problem with Nested Functions</h3>
+<p>In traditional R programming, when you need to apply multiple functions to data, you end up with deeply nested function calls that are read from the inside out. This creates several problems:</p>
+<ol type="1">
+<li><strong>Readability</strong>: The order of operations is reversed from how we naturally think about them</li>
+<li><strong>Debugging</strong>: It’s hard to inspect intermediate results</li>
+<li><strong>Modification</strong>: Adding or removing steps requires careful parenthesis management</li>
+</ol>
+</section>
+<section id="traditional-r-vs-piped-approach" class="level3">
+<h3 class="anchored" data-anchor-id="traditional-r-vs-piped-approach">Traditional R vs Piped Approach</h3>
+<p>Let’s look at a simple example where we want to: 1. Take a vector of numbers 2. Calculate the square root of each 3. Find the mean 4. Round to 2 decimal places</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb3"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb3-1"><a href="#cb3-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Traditional nested approach (hard to read)</span></span>
+<span id="cb3-2"><a href="#cb3-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We read this from inside-out: first sqrt, then mean, then round</span></span>
+<span id="cb3-3"><a href="#cb3-3" aria-hidden="true" tabindex="-1"></a><span class="co"># But we write it outside-in!</span></span>
+<span id="cb3-4"><a href="#cb3-4" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(<span class="fu">sqrt</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">16</span>, <span class="dv">25</span>))), <span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb5"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb5-1"><a href="#cb5-1" aria-hidden="true" tabindex="-1"></a><span class="co"># With pipes (much clearer!)</span></span>
+<span id="cb5-2"><a href="#cb5-2" aria-hidden="true" tabindex="-1"></a><span class="co"># We read AND write this in the order operations happen</span></span>
+<span id="cb5-3"><a href="#cb5-3" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">16</span>, <span class="dv">25</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb5-4"><a href="#cb5-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>() <span class="sc">%&gt;%</span>         <span class="co"># First: take square root</span></span>
+<span id="cb5-5"><a href="#cb5-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>() <span class="sc">%&gt;%</span>         <span class="co"># Then: calculate mean</span></span>
+<span id="cb5-6"><a href="#cb5-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">2</span>)           <span class="co"># Finally: round to 2 decimals</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb7"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb7-1"><a href="#cb7-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the native R pipe (R 4.1+)</span></span>
+<span id="cb7-2"><a href="#cb7-2" aria-hidden="true" tabindex="-1"></a><span class="co"># The |&gt; operator is built into base R as of version 4.1</span></span>
+<span id="cb7-3"><a href="#cb7-3" aria-hidden="true" tabindex="-1"></a><span class="co"># It works similarly to %&gt;% but with some subtle differences</span></span>
+<span id="cb7-4"><a href="#cb7-4" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">16</span>, <span class="dv">25</span>) <span class="sc">|&gt;</span></span>
+<span id="cb7-5"><a href="#cb7-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-6"><a href="#cb7-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>() <span class="sc">|&gt;</span></span>
+<span id="cb7-7"><a href="#cb7-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">2</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 3</code></pre>
+</div>
+</div>
+<p>Notice how the piped version reads like a recipe: “Take these numbers, THEN calculate square root, THEN find the mean, THEN round.” This matches our mental model of the data transformation process.</p>
+</section>
+<section id="how-the-pipe-actually-works" class="level3">
+<h3 class="anchored" data-anchor-id="how-the-pipe-actually-works">How the Pipe Actually Works</h3>
+<p>The pipe operator takes the output of the expression on its left and passes it as the first argument to the function on its right. So <code>x %&gt;% f()</code> is equivalent to <code>f(x)</code>, and <code>x %&gt;% f() %&gt;% g()</code> is equivalent to <code>g(f(x))</code>.</p>
+<p>You can also use the <code>.</code> placeholder to specify where the piped value should go if it’s not the first argument:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb9"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb9-1"><a href="#cb9-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the dot placeholder for custom positioning</span></span>
+<span id="cb9-2"><a href="#cb9-2" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span> <span class="sc">%&gt;%</span> </span>
+<span id="cb9-3"><a href="#cb9-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">/</span><span class="st">`</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span>      <span class="co"># 10 / 2 = 5</span></span>
+<span id="cb9-4"><a href="#cb9-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">+</span><span class="st">`</span>(<span class="dv">3</span>) <span class="sc">%&gt;%</span>      <span class="co"># 5 + 3 = 8  </span></span>
+<span id="cb9-5"><a href="#cb9-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">^</span><span class="st">`</span>(<span class="dv">2</span>)          <span class="co"># 8^2 = 64</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 64</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb11"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb11-1"><a href="#cb11-1" aria-hidden="true" tabindex="-1"></a><span class="co"># When the piped value isn't the first argument</span></span>
+<span id="cb11-2"><a href="#cb11-2" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span> <span class="sc">%&gt;%</span> </span>
+<span id="cb11-3"><a href="#cb11-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">1</span>, <span class="at">to =</span> .)  <span class="co"># Creates sequence from 1 to 5</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 1 2 3 4 5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb13"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb13-1"><a href="#cb13-1" aria-hidden="true" tabindex="-1"></a><span class="co"># More practical example with data</span></span>
+<span id="cb13-2"><a href="#cb13-2" aria-hidden="true" tabindex="-1"></a>mtcars <span class="sc">%&gt;%</span></span>
+<span id="cb13-3"><a href="#cb13-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(mpg <span class="sc">~</span> cyl <span class="sc">+</span> wt, <span class="at">data =</span> .)  <span class="co"># data = . puts the piped data in the right place</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>
+Call:
+lm(formula = mpg ~ cyl + wt, data = .)
+
+Coefficients:
+(Intercept)          cyl           wt  
+     39.686       -1.508       -3.191  </code></pre>
+</div>
+</div>
+</section>
+<section id="practical-example-with-data" class="level3">
+<h3 class="anchored" data-anchor-id="practical-example-with-data">Practical Example with Data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb15"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb15-1"><a href="#cb15-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load a built-in dataset</span></span>
+<span id="cb15-2"><a href="#cb15-2" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb15-3"><a href="#cb15-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb15-4"><a href="#cb15-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Without pipes - nested and hard to read</span></span>
+<span id="cb15-5"><a href="#cb15-5" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">arrange</span>(<span class="fu">filter</span>(mtcars, cyl <span class="sc">==</span> <span class="dv">6</span>), <span class="fu">desc</span>(mpg)), <span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+Hornet 4 Drive 21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
+Mazda RX4      21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
+Mazda RX4 Wag  21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
+Ferrari Dino   19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6
+Merc 280       19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb17"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb17-1"><a href="#cb17-1" aria-hidden="true" tabindex="-1"></a><span class="co"># With pipes - clear and sequential</span></span>
+<span id="cb17-2"><a href="#cb17-2" aria-hidden="true" tabindex="-1"></a>mtcars <span class="sc">%&gt;%</span></span>
+<span id="cb17-3"><a href="#cb17-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(cyl <span class="sc">==</span> <span class="dv">6</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb17-4"><a href="#cb17-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(mpg)) <span class="sc">%&gt;%</span></span>
+<span id="cb17-5"><a href="#cb17-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                mpg cyl  disp  hp drat    wt  qsec vs am gear carb
+Hornet 4 Drive 21.4   6 258.0 110 3.08 3.215 19.44  1  0    3    1
+Mazda RX4      21.0   6 160.0 110 3.90 2.620 16.46  0  1    4    4
+Mazda RX4 Wag  21.0   6 160.0 110 3.90 2.875 17.02  0  1    4    4
+Ferrari Dino   19.7   6 145.0 175 3.62 2.770 15.50  0  1    5    6
+Merc 280       19.2   6 167.6 123 3.92 3.440 18.30  1  0    4    4</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="tibbles-modern-data-frames" class="level2">
+<h2 class="anchored" data-anchor-id="tibbles-modern-data-frames">Tibbles: Modern Data Frames</h2>
+<p>Tibbles are the tidyverse’s enhanced version of data frames.</p>
+<section id="creating-tibbles" class="level3">
+<h3 class="anchored" data-anchor-id="creating-tibbles">Creating Tibbles</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb19"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb19-1"><a href="#cb19-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a tibble from scratch</span></span>
+<span id="cb19-2"><a href="#cb19-2" aria-hidden="true" tabindex="-1"></a>my_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb19-3"><a href="#cb19-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="fu">c</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>, <span class="st">"Diana"</span>),</span>
+<span id="cb19-4"><a href="#cb19-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">25</span>, <span class="dv">30</span>, <span class="dv">35</span>, <span class="dv">28</span>),</span>
+<span id="cb19-5"><a href="#cb19-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">score =</span> <span class="fu">c</span>(<span class="fl">85.5</span>, <span class="fl">92.3</span>, <span class="fl">78.9</span>, <span class="fl">88.1</span>),</span>
+<span id="cb19-6"><a href="#cb19-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">passed =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">TRUE</span>)</span>
+<span id="cb19-7"><a href="#cb19-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb19-8"><a href="#cb19-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb19-9"><a href="#cb19-9" aria-hidden="true" tabindex="-1"></a>my_tibble</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 4 x 4
+  name      age score passed
+  &lt;chr&gt;   &lt;dbl&gt; &lt;dbl&gt; &lt;lgl&gt; 
+1 Alice      25  85.5 TRUE  
+2 Bob        30  92.3 TRUE  
+3 Charlie    35  78.9 FALSE 
+4 Diana      28  88.1 TRUE  </code></pre>
+</div>
+</div>
+</section>
+<section id="tibble-vs-data-frame" class="level3">
+<h3 class="anchored" data-anchor-id="tibble-vs-data-frame">Tibble vs Data Frame</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb21"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb21-1"><a href="#cb21-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert data frame to tibble</span></span>
+<span id="cb21-2"><a href="#cb21-2" aria-hidden="true" tabindex="-1"></a>mtcars_tibble <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mtcars)</span>
+<span id="cb21-3"><a href="#cb21-3" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb21-4"><a href="#cb21-4" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare printing</span></span>
+<span id="cb21-5"><a href="#cb21-5" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Data frame (first 6 rows shown by default):"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Data frame (first 6 rows shown by default):"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb23"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb23-1"><a href="#cb23-1" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mtcars)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>                   mpg cyl disp  hp drat    wt  qsec vs am gear carb
+Mazda RX4         21.0   6  160 110 3.90 2.620 16.46  0  1    4    4
+Mazda RX4 Wag     21.0   6  160 110 3.90 2.875 17.02  0  1    4    4
+Datsun 710        22.8   4  108  93 3.85 2.320 18.61  1  1    4    1
+Hornet 4 Drive    21.4   6  258 110 3.08 3.215 19.44  1  0    3    1
+Hornet Sportabout 18.7   8  360 175 3.15 3.440 17.02  0  0    3    2
+Valiant           18.1   6  225 105 2.76 3.460 20.22  1  0    3    1</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb25"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb25-1"><a href="#cb25-1" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Tibble (shows what fits on screen):"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Tibble (shows what fits on screen):"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb27"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb27-1"><a href="#cb27-1" aria-hidden="true" tabindex="-1"></a>mtcars_tibble</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 32 x 11
+     mpg   cyl  disp    hp  drat    wt  qsec    vs    am  gear  carb
+   &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt; &lt;dbl&gt;
+ 1  21       6  160    110  3.9   2.62  16.5     0     1     4     4
+ 2  21       6  160    110  3.9   2.88  17.0     0     1     4     4
+ 3  22.8     4  108     93  3.85  2.32  18.6     1     1     4     1
+ 4  21.4     6  258    110  3.08  3.22  19.4     1     0     3     1
+ 5  18.7     8  360    175  3.15  3.44  17.0     0     0     3     2
+ 6  18.1     6  225    105  2.76  3.46  20.2     1     0     3     1
+ 7  14.3     8  360    245  3.21  3.57  15.8     0     0     3     4
+ 8  24.4     4  147.    62  3.69  3.19  20       1     0     4     2
+ 9  22.8     4  141.    95  3.92  3.15  22.9     1     0     4     2
+10  19.2     6  168.   123  3.92  3.44  18.3     1     0     4     4
+# i 22 more rows</code></pre>
+</div>
+</div>
+</section>
+<section id="key-advantages-of-tibbles" class="level3">
+<h3 class="anchored" data-anchor-id="key-advantages-of-tibbles">Key Advantages of Tibbles</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tibbles preserve data types</span></span>
+<span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">y =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>))</span>
+<span id="cb29-3"><a href="#cb29-3" aria-hidden="true" tabindex="-1"></a>tb <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">y =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>))</span>
+<span id="cb29-4"><a href="#cb29-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb29-5"><a href="#cb29-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Data frame converts strings to factors (in older R versions)</span></span>
+<span id="cb29-6"><a href="#cb29-6" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>'data.frame':   3 obs. of  2 variables:
+ $ x: int  1 2 3
+ $ y: chr  "a" "b" "c"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb31"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb31-1"><a href="#cb31-1" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(tb)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>tibble [3 x 2] (S3: tbl_df/tbl/data.frame)
+ $ x: int [1:3] 1 2 3
+ $ y: chr [1:3] "a" "b" "c"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb33"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb33-1"><a href="#cb33-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tibbles handle column names better</span></span>
+<span id="cb33-2"><a href="#cb33-2" aria-hidden="true" tabindex="-1"></a>weird_tb <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb33-3"><a href="#cb33-3" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">First Name</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"John"</span>, <span class="st">"Jane"</span>),</span>
+<span id="cb33-4"><a href="#cb33-4" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">2020</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">200</span>),</span>
+<span id="cb33-5"><a href="#cb33-5" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">:)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"happy"</span>, <span class="st">"sad"</span>)</span>
+<span id="cb33-6"><a href="#cb33-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb33-7"><a href="#cb33-7" aria-hidden="true" tabindex="-1"></a>weird_tb</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 x 3
+  `First Name` `2020` `:)` 
+  &lt;chr&gt;         &lt;dbl&gt; &lt;chr&gt;
+1 John            100 happy
+2 Jane            200 sad  </code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="tidy-data-principles" class="level2">
+<h2 class="anchored" data-anchor-id="tidy-data-principles">Tidy Data Principles</h2>
+<p>Tidy data is a standard way of organizing data values within a dataset.</p>
+<section id="the-three-rules-of-tidy-data" class="level3">
+<h3 class="anchored" data-anchor-id="the-three-rules-of-tidy-data">The Three Rules of Tidy Data</h3>
+<ol type="1">
+<li>Each variable must have its own column</li>
+<li>Each observation must have its own row</li>
+<li>Each value must have its own cell</li>
+</ol>
+</section>
+<section id="example-messy-vs-tidy-data" class="level3">
+<h3 class="anchored" data-anchor-id="example-messy-vs-tidy-data">Example: Messy vs Tidy Data</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb35"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb35-1"><a href="#cb35-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Messy data</span></span>
+<span id="cb35-2"><a href="#cb35-2" aria-hidden="true" tabindex="-1"></a>messy_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb35-3"><a href="#cb35-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">student =</span> <span class="fu">c</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>),</span>
+<span id="cb35-4"><a href="#cb35-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">midterm =</span> <span class="fu">c</span>(<span class="dv">85</span>, <span class="dv">90</span>, <span class="dv">78</span>),</span>
+<span id="cb35-5"><a href="#cb35-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">final =</span> <span class="fu">c</span>(<span class="dv">88</span>, <span class="dv">85</span>, <span class="dv">92</span>)</span>
+<span id="cb35-6"><a href="#cb35-6" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb35-7"><a href="#cb35-7" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb35-8"><a href="#cb35-8" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Messy data (wide format):"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Messy data (wide format):"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb37"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb37-1"><a href="#cb37-1" aria-hidden="true" tabindex="-1"></a>messy_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 x 3
+  student midterm final
+  &lt;chr&gt;     &lt;dbl&gt; &lt;dbl&gt;
+1 Alice        85    88
+2 Bob          90    85
+3 Charlie      78    92</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy data</span></span>
+<span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> messy_data <span class="sc">%&gt;%</span></span>
+<span id="cb39-3"><a href="#cb39-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb39-4"><a href="#cb39-4" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(midterm, final),</span>
+<span id="cb39-5"><a href="#cb39-5" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"exam"</span>,</span>
+<span id="cb39-6"><a href="#cb39-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"score"</span></span>
+<span id="cb39-7"><a href="#cb39-7" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb39-8"><a href="#cb39-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb39-9"><a href="#cb39-9" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Tidy data (long format):"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] "Tidy data (long format):"</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb41"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb41-1"><a href="#cb41-1" aria-hidden="true" tabindex="-1"></a>tidy_data</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 6 x 3
+  student exam    score
+  &lt;chr&gt;   &lt;chr&gt;   &lt;dbl&gt;
+1 Alice   midterm    85
+2 Alice   final      88
+3 Bob     midterm    90
+4 Bob     final      85
+5 Charlie midterm    78
+6 Charlie final      92</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="working-with-real-data" class="level2">
+<h2 class="anchored" data-anchor-id="working-with-real-data">Working with Real Data</h2>
+<p>Let’s practice with a real dataset:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb43"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb43-1"><a href="#cb43-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the palmerpenguins package for example data</span></span>
+<span id="cb43-2"><a href="#cb43-2" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("palmerpenguins")</span></span>
+<span id="cb43-3"><a href="#cb43-3" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(palmerpenguins)</span>
+<span id="cb43-4"><a href="#cb43-4" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb43-5"><a href="#cb43-5" aria-hidden="true" tabindex="-1"></a><span class="co"># Explore the penguins dataset</span></span>
+<span id="cb43-6"><a href="#cb43-6" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(penguins)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>Rows: 344
+Columns: 8
+$ species           &lt;fct&gt; Adelie, Adelie, Adelie, Adelie, Adelie, Adelie, Adel~
+$ island            &lt;fct&gt; Torgersen, Torgersen, Torgersen, Torgersen, Torgerse~
+$ bill_length_mm    &lt;dbl&gt; 39.1, 39.5, 40.3, NA, 36.7, 39.3, 38.9, 39.2, 34.1, ~
+$ bill_depth_mm     &lt;dbl&gt; 18.7, 17.4, 18.0, NA, 19.3, 20.6, 17.8, 19.6, 18.1, ~
+$ flipper_length_mm &lt;int&gt; 181, 186, 195, NA, 193, 190, 181, 195, 193, 190, 186~
+$ body_mass_g       &lt;int&gt; 3750, 3800, 3250, NA, 3450, 3650, 3625, 4675, 3475, ~
+$ sex               &lt;fct&gt; male, female, female, NA, female, male, female, male~
+$ year              &lt;int&gt; 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007, 2007~</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb45"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb45-1"><a href="#cb45-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Basic exploration</span></span>
+<span id="cb45-2"><a href="#cb45-2" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb45-3"><a href="#cb45-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>      species          island    bill_length_mm  bill_depth_mm  
+ Adelie   :152   Biscoe   :168   Min.   :32.10   Min.   :13.10  
+ Chinstrap: 68   Dream    :124   1st Qu.:39.23   1st Qu.:15.60  
+ Gentoo   :124   Torgersen: 52   Median :44.45   Median :17.30  
+                                 Mean   :43.92   Mean   :17.15  
+                                 3rd Qu.:48.50   3rd Qu.:18.70  
+                                 Max.   :59.60   Max.   :21.50  
+                                 NA's   :2       NA's   :2      
+ flipper_length_mm  body_mass_g       sex           year     
+ Min.   :172.0     Min.   :2700   female:165   Min.   :2007  
+ 1st Qu.:190.0     1st Qu.:3550   male  :168   1st Qu.:2007  
+ Median :197.0     Median :4050   NA's  : 11   Median :2008  
+ Mean   :200.9     Mean   :4202                Mean   :2008  
+ 3rd Qu.:213.0     3rd Qu.:4750                3rd Qu.:2009  
+ Max.   :231.0     Max.   :6300                Max.   :2009  
+ NA's   :2         NA's   :2                                 </code></pre>
+</div>
+</div>
+<section id="data-exploration-pipeline" class="level3">
+<h3 class="anchored" data-anchor-id="data-exploration-pipeline">Data Exploration Pipeline</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb47"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb47-1"><a href="#cb47-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Complete analysis pipeline</span></span>
+<span id="cb47-2"><a href="#cb47-2" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb47-3"><a href="#cb47-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span>  <span class="co"># Remove missing values</span></span>
+<span id="cb47-4"><a href="#cb47-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species, island) <span class="sc">%&gt;%</span></span>
+<span id="cb47-5"><a href="#cb47-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb47-6"><a href="#cb47-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">count =</span> <span class="fu">n</span>(),</span>
+<span id="cb47-7"><a href="#cb47-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_bill_length =</span> <span class="fu">mean</span>(bill_length_mm),</span>
+<span id="cb47-8"><a href="#cb47-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_body_mass =</span> <span class="fu">mean</span>(body_mass_g),</span>
+<span id="cb47-9"><a href="#cb47-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb47-10"><a href="#cb47-10" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb47-11"><a href="#cb47-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_body_mass))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 x 5
+  species   island    count avg_bill_length avg_body_mass
+  &lt;fct&gt;     &lt;fct&gt;     &lt;int&gt;           &lt;dbl&gt;         &lt;dbl&gt;
+1 Gentoo    Biscoe      119            47.6         5092.
+2 Chinstrap Dream        68            48.8         3733.
+3 Adelie    Biscoe       44            39.0         3710.
+4 Adelie    Torgersen    47            39.0         3709.
+5 Adelie    Dream        55            38.5         3701.</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="visualization-preview" class="level2">
+<h2 class="anchored" data-anchor-id="visualization-preview">Visualization Preview</h2>
+<p>A quick taste of ggplot2 (covered in detail in Chapter 5):</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb49"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb49-1"><a href="#cb49-1" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb49-2"><a href="#cb49-2" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb49-3"><a href="#cb49-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> flipper_length_mm, <span class="at">y =</span> body_mass_g, <span class="at">color =</span> species)) <span class="sc">+</span></span>
+<span id="cb49-4"><a href="#cb49-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb49-5"><a href="#cb49-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb49-6"><a href="#cb49-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb49-7"><a href="#cb49-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Penguin Body Mass vs Flipper Length"</span>,</span>
+<span id="cb49-8"><a href="#cb49-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Flipper Length (mm)"</span>,</span>
+<span id="cb49-9"><a href="#cb49-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Body Mass (g)"</span>,</span>
+<span id="cb49-10"><a href="#cb49-10" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Species"</span></span>
+<span id="cb49-11"><a href="#cb49-11" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb49-12"><a href="#cb49-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb49-13"><a href="#cb49-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-11-1.png" class="img-fluid figure-img" width="768"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="common-tidyverse-patterns" class="level2">
+<h2 class="anchored" data-anchor-id="common-tidyverse-patterns">Common Tidyverse Patterns</h2>
+<section id="pattern-1-read-clean-transform-visualize" class="level3">
+<h3 class="anchored" data-anchor-id="pattern-1-read-clean-transform-visualize">Pattern 1: Read, Clean, Transform, Visualize</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb50"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb50-1"><a href="#cb50-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Typical workflow</span></span>
+<span id="cb50-2"><a href="#cb50-2" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb50-3"><a href="#cb50-3" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Clean</span></span>
+<span id="cb50-4"><a href="#cb50-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb50-5"><a href="#cb50-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2008</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb50-6"><a href="#cb50-6" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Transform</span></span>
+<span id="cb50-7"><a href="#cb50-7" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb50-8"><a href="#cb50-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">body_mass_kg =</span> body_mass_g <span class="sc">/</span> <span class="dv">1000</span>,</span>
+<span id="cb50-9"><a href="#cb50-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">size_category =</span> <span class="fu">case_when</span>(</span>
+<span id="cb50-10"><a href="#cb50-10" aria-hidden="true" tabindex="-1"></a>      body_mass_kg <span class="sc">&lt;</span> <span class="fl">3.5</span> <span class="sc">~</span> <span class="st">"Small"</span>,</span>
+<span id="cb50-11"><a href="#cb50-11" aria-hidden="true" tabindex="-1"></a>      body_mass_kg <span class="sc">&lt;</span> <span class="fl">4.5</span> <span class="sc">~</span> <span class="st">"Medium"</span>,</span>
+<span id="cb50-12"><a href="#cb50-12" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Large"</span></span>
+<span id="cb50-13"><a href="#cb50-13" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb50-14"><a href="#cb50-14" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb50-15"><a href="#cb50-15" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Summarize</span></span>
+<span id="cb50-16"><a href="#cb50-16" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species, size_category) <span class="sc">%&gt;%</span></span>
+<span id="cb50-17"><a href="#cb50-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb50-18"><a href="#cb50-18" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Visualize</span></span>
+<span id="cb50-19"><a href="#cb50-19" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> species, <span class="at">y =</span> count, <span class="at">fill =</span> size_category)) <span class="sc">+</span></span>
+<span id="cb50-20"><a href="#cb50-20" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb50-21"><a href="#cb50-21" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb50-22"><a href="#cb50-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Penguin Size Distribution by Species (2008)"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output-display">
+<div>
+<figure class="figure">
+<p><img src="01-introduction_files/figure-html/unnamed-chunk-12-1.png" class="img-fluid figure-img" width="672"></p>
+</figure>
+</div>
+</div>
+</div>
+</section>
+<section id="pattern-2-multiple-operations-with-groups" class="level3">
+<h3 class="anchored" data-anchor-id="pattern-2-multiple-operations-with-groups">Pattern 2: Multiple Operations with Groups</h3>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb51"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb51-1"><a href="#cb51-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Complex grouped operations</span></span>
+<span id="cb51-2"><a href="#cb51-2" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb51-3"><a href="#cb51-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb51-4"><a href="#cb51-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species) <span class="sc">%&gt;%</span></span>
+<span id="cb51-5"><a href="#cb51-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb51-6"><a href="#cb51-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">bill_length_z =</span> (bill_length_mm <span class="sc">-</span> <span class="fu">mean</span>(bill_length_mm)) <span class="sc">/</span> <span class="fu">sd</span>(bill_length_mm),</span>
+<span id="cb51-7"><a href="#cb51-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">bill_depth_z =</span> (bill_depth_mm <span class="sc">-</span> <span class="fu">mean</span>(bill_depth_mm)) <span class="sc">/</span> <span class="fu">sd</span>(bill_depth_mm)</span>
+<span id="cb51-8"><a href="#cb51-8" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb51-9"><a href="#cb51-9" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">abs</span>(bill_length_z) <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">&amp;</span> <span class="fu">abs</span>(bill_depth_z) <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span>  <span class="co"># Remove outliers</span></span>
+<span id="cb51-10"><a href="#cb51-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb51-11"><a href="#cb51-11" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb51-12"><a href="#cb51-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">correlation =</span> <span class="fu">cor</span>(bill_length_mm, bill_depth_mm),</span>
+<span id="cb51-13"><a href="#cb51-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb51-14"><a href="#cb51-14" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 x 3
+  species       n correlation
+  &lt;fct&gt;     &lt;int&gt;       &lt;dbl&gt;
+1 Adelie      135       0.290
+2 Chinstrap    63       0.673
+3 Gentoo      110       0.627</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="exercises" class="level2">
+<h2 class="anchored" data-anchor-id="exercises">Exercises</h2>
+<section id="exercise-1-basic-pipe-operations" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-1-basic-pipe-operations">Exercise 1: Basic Pipe Operations</h3>
+<p>Create a pipeline that: 1. Takes the numbers 1 to 100 2. Keeps only even numbers 3. Squares each number 4. Calculates the mean 5. Takes the square root of the result</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb53"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb53-1"><a href="#cb53-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span>
+<span id="cb53-2"><a href="#cb53-2" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">:</span><span class="dv">100</span> <span class="sc">%&gt;%</span></span>
+<span id="cb53-3"><a href="#cb53-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep</span>(<span class="sc">~</span> . <span class="sc">%%</span> <span class="dv">2</span> <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span>  <span class="co"># Keep even numbers</span></span>
+<span id="cb53-4"><a href="#cb53-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_dbl</span>(<span class="sc">~</span> .<span class="sc">^</span><span class="dv">2</span>) <span class="sc">%&gt;%</span>        <span class="co"># Square each</span></span>
+<span id="cb53-5"><a href="#cb53-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>() <span class="sc">%&gt;%</span>                <span class="co"># Calculate mean</span></span>
+<span id="cb53-6"><a href="#cb53-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>()                    <span class="co"># Take square root</span></span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code>[1] 58.60034</code></pre>
+</div>
+</div>
+</section>
+<section id="exercise-2-tibble-creation-and-manipulation" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-2-tibble-creation-and-manipulation">Exercise 2: Tibble Creation and Manipulation</h3>
+<p>Create a tibble with information about 5 books (title, author, year, pages, rating). Then: 1. Filter books published after 2000 2. Add a column for reading_time (assuming 1 page per minute) 3. Arrange by rating (descending)</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb55"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb55-1"><a href="#cb55-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span>
+<span id="cb55-2"><a href="#cb55-2" aria-hidden="true" tabindex="-1"></a>books <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb55-3"><a href="#cb55-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="fu">c</span>(<span class="st">"The Great Gatsby"</span>, <span class="st">"1984"</span>, <span class="st">"The Hunger Games"</span>, <span class="st">"Dune"</span>, <span class="st">"Project Hail Mary"</span>),</span>
+<span id="cb55-4"><a href="#cb55-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">author =</span> <span class="fu">c</span>(<span class="st">"F. Scott Fitzgerald"</span>, <span class="st">"George Orwell"</span>, <span class="st">"Suzanne Collins"</span>, <span class="st">"Frank Herbert"</span>, <span class="st">"Andy Weir"</span>),</span>
+<span id="cb55-5"><a href="#cb55-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="fu">c</span>(<span class="dv">1925</span>, <span class="dv">1949</span>, <span class="dv">2008</span>, <span class="dv">1965</span>, <span class="dv">2021</span>),</span>
+<span id="cb55-6"><a href="#cb55-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">pages =</span> <span class="fu">c</span>(<span class="dv">180</span>, <span class="dv">328</span>, <span class="dv">374</span>, <span class="dv">688</span>, <span class="dv">476</span>),</span>
+<span id="cb55-7"><a href="#cb55-7" aria-hidden="true" tabindex="-1"></a>  <span class="at">rating =</span> <span class="fu">c</span>(<span class="fl">4.5</span>, <span class="fl">4.8</span>, <span class="fl">4.3</span>, <span class="fl">4.7</span>, <span class="fl">4.9</span>)</span>
+<span id="cb55-8"><a href="#cb55-8" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb55-9"><a href="#cb55-9" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb55-10"><a href="#cb55-10" aria-hidden="true" tabindex="-1"></a>books <span class="sc">%&gt;%</span></span>
+<span id="cb55-11"><a href="#cb55-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;</span> <span class="dv">2000</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb55-12"><a href="#cb55-12" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">reading_time_hours =</span> pages <span class="sc">/</span> <span class="dv">60</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb55-13"><a href="#cb55-13" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(rating))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 2 x 6
+  title             author           year pages rating reading_time_hours
+  &lt;chr&gt;             &lt;chr&gt;           &lt;dbl&gt; &lt;dbl&gt;  &lt;dbl&gt;              &lt;dbl&gt;
+1 Project Hail Mary Andy Weir        2021   476    4.9               7.93
+2 The Hunger Games  Suzanne Collins  2008   374    4.3               6.23</code></pre>
+</div>
+</div>
+</section>
+<section id="exercise-3-working-with-penguins-data" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-3-working-with-penguins-data">Exercise 3: Working with Penguins Data</h3>
+<p>Using the penguins dataset: 1. Calculate the average bill length for each species on each island 2. Find which species-island combination has the longest average bill 3. Create a summary showing min, max, and mean body mass for each species</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb57"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb57-1"><a href="#cb57-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span>
+<span id="cb57-2"><a href="#cb57-2" aria-hidden="true" tabindex="-1"></a><span class="co"># Part 1 &amp; 2</span></span>
+<span id="cb57-3"><a href="#cb57-3" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb57-4"><a href="#cb57-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(bill_length_mm) <span class="sc">%&gt;%</span></span>
+<span id="cb57-5"><a href="#cb57-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species, island) <span class="sc">%&gt;%</span></span>
+<span id="cb57-6"><a href="#cb57-6" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb57-7"><a href="#cb57-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_bill_length =</span> <span class="fu">mean</span>(bill_length_mm),</span>
+<span id="cb57-8"><a href="#cb57-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb57-9"><a href="#cb57-9" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb57-10"><a href="#cb57-10" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_bill_length))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 5 x 3
+  species   island    avg_bill_length
+  &lt;fct&gt;     &lt;fct&gt;               &lt;dbl&gt;
+1 Chinstrap Dream                48.8
+2 Gentoo    Biscoe               47.5
+3 Adelie    Biscoe               39.0
+4 Adelie    Torgersen            39.0
+5 Adelie    Dream                38.5</code></pre>
+</div>
+<div class="sourceCode cell-code" id="cb59"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb59-1"><a href="#cb59-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Part 3</span></span>
+<span id="cb59-2"><a href="#cb59-2" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb59-3"><a href="#cb59-3" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(body_mass_g) <span class="sc">%&gt;%</span></span>
+<span id="cb59-4"><a href="#cb59-4" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species) <span class="sc">%&gt;%</span></span>
+<span id="cb59-5"><a href="#cb59-5" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb59-6"><a href="#cb59-6" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_mass =</span> <span class="fu">min</span>(body_mass_g),</span>
+<span id="cb59-7"><a href="#cb59-7" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_mass =</span> <span class="fu">mean</span>(body_mass_g),</span>
+<span id="cb59-8"><a href="#cb59-8" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_mass =</span> <span class="fu">max</span>(body_mass_g),</span>
+<span id="cb59-9"><a href="#cb59-9" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb59-10"><a href="#cb59-10" aria-hidden="true" tabindex="-1"></a>  )</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 x 4
+  species   min_mass mean_mass max_mass
+  &lt;fct&gt;        &lt;int&gt;     &lt;dbl&gt;    &lt;int&gt;
+1 Adelie        2850     3701.     4775
+2 Chinstrap     2700     3733.     4800
+3 Gentoo        3950     5076.     6300</code></pre>
+</div>
+</div>
+</section>
+<section id="exercise-4-tidy-data-challenge" class="level3">
+<h3 class="anchored" data-anchor-id="exercise-4-tidy-data-challenge">Exercise 4: Tidy Data Challenge</h3>
+<p>Convert this wide dataset to tidy format and calculate the average score for each subject:</p>
+<div class="cell">
+<div class="sourceCode cell-code" id="cb61"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb61-1"><a href="#cb61-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Given data</span></span>
+<span id="cb61-2"><a href="#cb61-2" aria-hidden="true" tabindex="-1"></a>student_scores <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb61-3"><a href="#cb61-3" aria-hidden="true" tabindex="-1"></a>  <span class="at">student_id =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb61-4"><a href="#cb61-4" aria-hidden="true" tabindex="-1"></a>  <span class="at">math_score =</span> <span class="fu">c</span>(<span class="dv">85</span>, <span class="dv">92</span>, <span class="dv">78</span>, <span class="dv">95</span>, <span class="dv">88</span>),</span>
+<span id="cb61-5"><a href="#cb61-5" aria-hidden="true" tabindex="-1"></a>  <span class="at">science_score =</span> <span class="fu">c</span>(<span class="dv">90</span>, <span class="dv">88</span>, <span class="dv">85</span>, <span class="dv">92</span>, <span class="dv">91</span>),</span>
+<span id="cb61-6"><a href="#cb61-6" aria-hidden="true" tabindex="-1"></a>  <span class="at">english_score =</span> <span class="fu">c</span>(<span class="dv">88</span>, <span class="dv">85</span>, <span class="dv">90</span>, <span class="dv">87</span>, <span class="dv">89</span>)</span>
+<span id="cb61-7"><a href="#cb61-7" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb61-8"><a href="#cb61-8" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb61-9"><a href="#cb61-9" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span>
+<span id="cb61-10"><a href="#cb61-10" aria-hidden="true" tabindex="-1"></a>student_scores <span class="sc">%&gt;%</span></span>
+<span id="cb61-11"><a href="#cb61-11" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb61-12"><a href="#cb61-12" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">ends_with</span>(<span class="st">"_score"</span>),</span>
+<span id="cb61-13"><a href="#cb61-13" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"subject"</span>,</span>
+<span id="cb61-14"><a href="#cb61-14" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"score"</span>,</span>
+<span id="cb61-15"><a href="#cb61-15" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_pattern =</span> <span class="st">"(.*)_score"</span></span>
+<span id="cb61-16"><a href="#cb61-16" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb61-17"><a href="#cb61-17" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(subject) <span class="sc">%&gt;%</span></span>
+<span id="cb61-18"><a href="#cb61-18" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb61-19"><a href="#cb61-19" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_score =</span> <span class="fu">mean</span>(score),</span>
+<span id="cb61-20"><a href="#cb61-20" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb61-21"><a href="#cb61-21" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb61-22"><a href="#cb61-22" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_score))</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
+<div class="cell-output cell-output-stdout">
+<pre><code># A tibble: 3 x 2
+  subject avg_score
+  &lt;chr&gt;       &lt;dbl&gt;
+1 science      89.2
+2 english      87.8
+3 math         87.6</code></pre>
+</div>
+</div>
+</section>
+</section>
+<section id="summary" class="level2">
+<h2 class="anchored" data-anchor-id="summary">Summary</h2>
+<p>In this chapter, you learned:</p>
+<p>✅ The tidyverse philosophy and ecosystem<br>
+✅ How to use the pipe operator for readable code<br>
+✅ Working with tibbles instead of data frames<br>
+✅ Tidy data principles<br>
+✅ Basic data manipulation patterns</p>
+</section>
+<section id="whats-next" class="level2">
+<h2 class="anchored" data-anchor-id="whats-next">What’s Next?</h2>
+<p>In <a href="./02-data-import.html">Chapter 2</a>, we’ll dive deep into importing data from various sources using readr and other packages. You’ll learn to read CSV, Excel, JSON, and database files efficiently.</p>
+</section>
+<section id="additional-resources" class="level2">
+<h2 class="anchored" data-anchor-id="additional-resources">Additional Resources</h2>
+<ul>
+<li><a href="https://r4ds.hadley.nz/">R for Data Science (2e)</a></li>
+<li><a href="https://style.tidyverse.org/">Tidyverse Style Guide</a></li>
+<li><a href="https://www.rstudio.com/resources/cheatsheets/">Tidyverse Cheat Sheets</a></li>
+<li><a href="https://adv-r.hadley.nz/">Advanced R</a></li>
+</ul>
+
+
+<!-- -->
+
+</section>
+
+</main> <!-- /main -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Find all elements with class 'quarto-title-meta-heading' that contain "Author"
+    const authorHeadings = document.querySelectorAll('.quarto-title-meta-heading');
+    
+    authorHeadings.forEach(function(heading) {
+        if (heading.textContent.trim() === 'Author') {
+            heading.textContent = 'Authors';
+        }
+    });
+});
+</script>
+<script id="quarto-html-after-body" type="application/javascript">
+  window.document.addEventListener("DOMContentLoaded", function (event) {
+    const icon = "";
+    const anchorJS = new window.AnchorJS();
+    anchorJS.options = {
+      placement: 'right',
+      icon: icon
+    };
+    anchorJS.add('.anchored');
+    const isCodeAnnotation = (el) => {
+      for (const clz of el.classList) {
+        if (clz.startsWith('code-annotation-')) {                     
+          return true;
+        }
+      }
+      return false;
+    }
+    const onCopySuccess = function(e) {
+      // button target
+      const button = e.trigger;
+      // don't keep focus
+      button.blur();
+      // flash "checked"
+      button.classList.add('code-copy-button-checked');
+      var currentTitle = button.getAttribute("title");
+      button.setAttribute("title", "Copied!");
+      let tooltip;
+      if (window.bootstrap) {
+        button.setAttribute("data-bs-toggle", "tooltip");
+        button.setAttribute("data-bs-placement", "left");
+        button.setAttribute("data-bs-title", "Copied!");
+        tooltip = new bootstrap.Tooltip(button, 
+          { trigger: "manual", 
+            customClass: "code-copy-button-tooltip",
+            offset: [0, -8]});
+        tooltip.show();    
+      }
+      setTimeout(function() {
+        if (tooltip) {
+          tooltip.hide();
+          button.removeAttribute("data-bs-title");
+          button.removeAttribute("data-bs-toggle");
+          button.removeAttribute("data-bs-placement");
+        }
+        button.setAttribute("title", currentTitle);
+        button.classList.remove('code-copy-button-checked');
+      }, 1000);
+      // clear code selection
+      e.clearSelection();
+    }
+    const getTextToCopy = function(trigger) {
+        const codeEl = trigger.previousElementSibling.cloneNode(true);
+        for (const childEl of codeEl.children) {
+          if (isCodeAnnotation(childEl)) {
+            childEl.remove();
+          }
+        }
+        return codeEl.innerText;
+    }
+    const clipboard = new window.ClipboardJS('.code-copy-button:not([data-in-quarto-modal])', {
+      text: getTextToCopy
+    });
+    clipboard.on('success', onCopySuccess);
+    if (window.document.getElementById('quarto-embedded-source-code-modal')) {
+      const clipboardModal = new window.ClipboardJS('.code-copy-button[data-in-quarto-modal]', {
+        text: getTextToCopy,
+        container: window.document.getElementById('quarto-embedded-source-code-modal')
+      });
+      clipboardModal.on('success', onCopySuccess);
+    }
+    const viewSource = window.document.getElementById('quarto-view-source') ||
+                       window.document.getElementById('quarto-code-tools-source');
+    if (viewSource) {
+      const sourceUrl = viewSource.getAttribute("data-quarto-source-url");
+      viewSource.addEventListener("click", function(e) {
+        if (sourceUrl) {
+          // rstudio viewer pane
+          if (/\bcapabilities=\b/.test(window.location)) {
+            window.open(sourceUrl);
+          } else {
+            window.location.href = sourceUrl;
+          }
+        } else {
+          const modal = new bootstrap.Modal(document.getElementById('quarto-embedded-source-code-modal'));
+          modal.show();
+        }
+        return false;
+      });
+    }
+    function toggleCodeHandler(show) {
+      return function(e) {
+        const detailsSrc = window.document.querySelectorAll(".cell > details > .sourceCode");
+        for (let i=0; i<detailsSrc.length; i++) {
+          const details = detailsSrc[i].parentElement;
+          if (show) {
+            details.open = true;
+          } else {
+            details.removeAttribute("open");
+          }
+        }
+        const cellCodeDivs = window.document.querySelectorAll(".cell > .sourceCode");
+        const fromCls = show ? "hidden" : "unhidden";
+        const toCls = show ? "unhidden" : "hidden";
+        for (let i=0; i<cellCodeDivs.length; i++) {
+          const codeDiv = cellCodeDivs[i];
+          if (codeDiv.classList.contains(fromCls)) {
+            codeDiv.classList.remove(fromCls);
+            codeDiv.classList.add(toCls);
+          } 
+        }
+        return false;
+      }
+    }
+    const hideAllCode = window.document.getElementById("quarto-hide-all-code");
+    if (hideAllCode) {
+      hideAllCode.addEventListener("click", toggleCodeHandler(false));
+    }
+    const showAllCode = window.document.getElementById("quarto-show-all-code");
+    if (showAllCode) {
+      showAllCode.addEventListener("click", toggleCodeHandler(true));
+    }
+      var localhostRegex = new RegExp(/^(?:http|https):\/\/localhost\:?[0-9]*\//);
+      var mailtoRegex = new RegExp(/^mailto:/);
+        var filterRegex = new RegExp('/' + window.location.host + '/');
+      var isInternal = (href) => {
+          return filterRegex.test(href) || localhostRegex.test(href) || mailtoRegex.test(href);
+      }
+      // Inspect non-navigation links and adorn them if external
+     var links = window.document.querySelectorAll('a[href]:not(.nav-link):not(.navbar-brand):not(.toc-action):not(.sidebar-link):not(.sidebar-item-toggle):not(.pagination-link):not(.no-external):not([aria-hidden]):not(.dropdown-item):not(.quarto-navigation-tool):not(.about-link)');
+      for (var i=0; i<links.length; i++) {
+        const link = links[i];
+        if (!isInternal(link.href)) {
+          // undo the damage that might have been done by quarto-nav.js in the case of
+          // links that we want to consider external
+          if (link.dataset.originalHref !== undefined) {
+            link.href = link.dataset.originalHref;
+          }
+        }
+      }
+    function tippyHover(el, contentFn, onTriggerFn, onUntriggerFn) {
+      const config = {
+        allowHTML: true,
+        maxWidth: 500,
+        delay: 100,
+        arrow: false,
+        appendTo: function(el) {
+            return el.parentElement;
+        },
+        interactive: true,
+        interactiveBorder: 10,
+        theme: 'quarto',
+        placement: 'bottom-start',
+      };
+      if (contentFn) {
+        config.content = contentFn;
+      }
+      if (onTriggerFn) {
+        config.onTrigger = onTriggerFn;
+      }
+      if (onUntriggerFn) {
+        config.onUntrigger = onUntriggerFn;
+      }
+      window.tippy(el, config); 
+    }
+    const noterefs = window.document.querySelectorAll('a[role="doc-noteref"]');
+    for (var i=0; i<noterefs.length; i++) {
+      const ref = noterefs[i];
+      tippyHover(ref, function() {
+        // use id or data attribute instead here
+        let href = ref.getAttribute('data-footnote-href') || ref.getAttribute('href');
+        try { href = new URL(href).hash; } catch {}
+        const id = href.replace(/^#\/?/, "");
+        const note = window.document.getElementById(id);
+        if (note) {
+          return note.innerHTML;
+        } else {
+          return "";
+        }
+      });
+    }
+    const xrefs = window.document.querySelectorAll('a.quarto-xref');
+    const processXRef = (id, note) => {
+      // Strip column container classes
+      const stripColumnClz = (el) => {
+        el.classList.remove("page-full", "page-columns");
+        if (el.children) {
+          for (const child of el.children) {
+            stripColumnClz(child);
+          }
+        }
+      }
+      stripColumnClz(note)
+      if (id === null || id.startsWith('sec-')) {
+        // Special case sections, only their first couple elements
+        const container = document.createElement("div");
+        if (note.children && note.children.length > 2) {
+          container.appendChild(note.children[0].cloneNode(true));
+          for (let i = 1; i < note.children.length; i++) {
+            const child = note.children[i];
+            if (child.tagName === "P" && child.innerText === "") {
+              continue;
+            } else {
+              container.appendChild(child.cloneNode(true));
+              break;
+            }
+          }
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(container);
+          }
+          return container.innerHTML
+        } else {
+          if (window.Quarto?.typesetMath) {
+            window.Quarto.typesetMath(note);
+          }
+          return note.innerHTML;
+        }
+      } else {
+        // Remove any anchor links if they are present
+        const anchorLink = note.querySelector('a.anchorjs-link');
+        if (anchorLink) {
+          anchorLink.remove();
+        }
+        if (window.Quarto?.typesetMath) {
+          window.Quarto.typesetMath(note);
+        }
+        if (note.classList.contains("callout")) {
+          return note.outerHTML;
+        } else {
+          return note.innerHTML;
+        }
+      }
+    }
+    for (var i=0; i<xrefs.length; i++) {
+      const xref = xrefs[i];
+      tippyHover(xref, undefined, function(instance) {
+        instance.disable();
+        let url = xref.getAttribute('href');
+        let hash = undefined; 
+        if (url.startsWith('#')) {
+          hash = url;
+        } else {
+          try { hash = new URL(url).hash; } catch {}
+        }
+        if (hash) {
+          const id = hash.replace(/^#\/?/, "");
+          const note = window.document.getElementById(id);
+          if (note !== null) {
+            try {
+              const html = processXRef(id, note.cloneNode(true));
+              instance.setContent(html);
+            } finally {
+              instance.enable();
+              instance.show();
+            }
+          } else {
+            // See if we can fetch this
+            fetch(url.split('#')[0])
+            .then(res => res.text())
+            .then(html => {
+              const parser = new DOMParser();
+              const htmlDoc = parser.parseFromString(html, "text/html");
+              const note = htmlDoc.getElementById(id);
+              if (note !== null) {
+                const html = processXRef(id, note);
+                instance.setContent(html);
+              } 
+            }).finally(() => {
+              instance.enable();
+              instance.show();
+            });
+          }
+        } else {
+          // See if we can fetch a full url (with no hash to target)
+          // This is a special case and we should probably do some content thinning / targeting
+          fetch(url)
+          .then(res => res.text())
+          .then(html => {
+            const parser = new DOMParser();
+            const htmlDoc = parser.parseFromString(html, "text/html");
+            const note = htmlDoc.querySelector('main.content');
+            if (note !== null) {
+              // This should only happen for chapter cross references
+              // (since there is no id in the URL)
+              // remove the first header
+              if (note.children.length > 0 && note.children[0].tagName === "HEADER") {
+                note.children[0].remove();
+              }
+              const html = processXRef(null, note);
+              instance.setContent(html);
+            } 
+          }).finally(() => {
+            instance.enable();
+            instance.show();
+          });
+        }
+      }, function(instance) {
+      });
+    }
+        let selectedAnnoteEl;
+        const selectorForAnnotation = ( cell, annotation) => {
+          let cellAttr = 'data-code-cell="' + cell + '"';
+          let lineAttr = 'data-code-annotation="' +  annotation + '"';
+          const selector = 'span[' + cellAttr + '][' + lineAttr + ']';
+          return selector;
+        }
+        const selectCodeLines = (annoteEl) => {
+          const doc = window.document;
+          const targetCell = annoteEl.getAttribute("data-target-cell");
+          const targetAnnotation = annoteEl.getAttribute("data-target-annotation");
+          const annoteSpan = window.document.querySelector(selectorForAnnotation(targetCell, targetAnnotation));
+          const lines = annoteSpan.getAttribute("data-code-lines").split(",");
+          const lineIds = lines.map((line) => {
+            return targetCell + "-" + line;
+          })
+          let top = null;
+          let height = null;
+          let parent = null;
+          if (lineIds.length > 0) {
+              //compute the position of the single el (top and bottom and make a div)
+              const el = window.document.getElementById(lineIds[0]);
+              top = el.offsetTop;
+              height = el.offsetHeight;
+              parent = el.parentElement.parentElement;
+            if (lineIds.length > 1) {
+              const lastEl = window.document.getElementById(lineIds[lineIds.length - 1]);
+              const bottom = lastEl.offsetTop + lastEl.offsetHeight;
+              height = bottom - top;
+            }
+            if (top !== null && height !== null && parent !== null) {
+              // cook up a div (if necessary) and position it 
+              let div = window.document.getElementById("code-annotation-line-highlight");
+              if (div === null) {
+                div = window.document.createElement("div");
+                div.setAttribute("id", "code-annotation-line-highlight");
+                div.style.position = 'absolute';
+                parent.appendChild(div);
+              }
+              div.style.top = top - 2 + "px";
+              div.style.height = height + 4 + "px";
+              div.style.left = 0;
+              let gutterDiv = window.document.getElementById("code-annotation-line-highlight-gutter");
+              if (gutterDiv === null) {
+                gutterDiv = window.document.createElement("div");
+                gutterDiv.setAttribute("id", "code-annotation-line-highlight-gutter");
+                gutterDiv.style.position = 'absolute';
+                const codeCell = window.document.getElementById(targetCell);
+                const gutter = codeCell.querySelector('.code-annotation-gutter');
+                gutter.appendChild(gutterDiv);
+              }
+              gutterDiv.style.top = top - 2 + "px";
+              gutterDiv.style.height = height + 4 + "px";
+            }
+            selectedAnnoteEl = annoteEl;
+          }
+        };
+        const unselectCodeLines = () => {
+          const elementsIds = ["code-annotation-line-highlight", "code-annotation-line-highlight-gutter"];
+          elementsIds.forEach((elId) => {
+            const div = window.document.getElementById(elId);
+            if (div) {
+              div.remove();
+            }
+          });
+          selectedAnnoteEl = undefined;
+        };
+          // Handle positioning of the toggle
+      window.addEventListener(
+        "resize",
+        throttle(() => {
+          elRect = undefined;
+          if (selectedAnnoteEl) {
+            selectCodeLines(selectedAnnoteEl);
+          }
+        }, 10)
+      );
+      function throttle(fn, ms) {
+      let throttle = false;
+      let timer;
+        return (...args) => {
+          if(!throttle) { // first call gets through
+              fn.apply(this, args);
+              throttle = true;
+          } else { // all the others get throttled
+              if(timer) clearTimeout(timer); // cancel #2
+              timer = setTimeout(() => {
+                fn.apply(this, args);
+                timer = throttle = false;
+              }, ms);
+          }
+        };
+      }
+        // Attach click handler to the DT
+        const annoteDls = window.document.querySelectorAll('dt[data-target-cell]');
+        for (const annoteDlNode of annoteDls) {
+          annoteDlNode.addEventListener('click', (event) => {
+            const clickedEl = event.target;
+            if (clickedEl !== selectedAnnoteEl) {
+              unselectCodeLines();
+              const activeEl = window.document.querySelector('dt[data-target-cell].code-annotation-active');
+              if (activeEl) {
+                activeEl.classList.remove('code-annotation-active');
+              }
+              selectCodeLines(clickedEl);
+              clickedEl.classList.add('code-annotation-active');
+            } else {
+              // Unselect the line
+              unselectCodeLines();
+              clickedEl.classList.remove('code-annotation-active');
+            }
+          });
+        }
+    const findCites = (el) => {
+      const parentEl = el.parentElement;
+      if (parentEl) {
+        const cites = parentEl.dataset.cites;
+        if (cites) {
+          return {
+            el,
+            cites: cites.split(' ')
+          };
+        } else {
+          return findCites(el.parentElement)
+        }
+      } else {
+        return undefined;
+      }
+    };
+    var bibliorefs = window.document.querySelectorAll('a[role="doc-biblioref"]');
+    for (var i=0; i<bibliorefs.length; i++) {
+      const ref = bibliorefs[i];
+      const citeInfo = findCites(ref);
+      if (citeInfo) {
+        tippyHover(citeInfo.el, function() {
+          var popup = window.document.createElement('div');
+          citeInfo.cites.forEach(function(cite) {
+            var citeDiv = window.document.createElement('div');
+            citeDiv.classList.add('hanging-indent');
+            citeDiv.classList.add('csl-entry');
+            var biblioDiv = window.document.getElementById('ref-' + cite);
+            if (biblioDiv) {
+              citeDiv.innerHTML = biblioDiv.innerHTML;
+            }
+            popup.appendChild(citeDiv);
+          });
+          return popup.innerHTML;
+        });
+      }
+    }
+  });
+  </script><div class="modal fade" id="quarto-embedded-source-code-modal" tabindex="-1" aria-labelledby="quarto-embedded-source-code-modal-label" aria-hidden="true"><div class="modal-dialog modal-dialog-scrollable"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="quarto-embedded-source-code-modal-label">Source Code</h5><button class="btn-close" data-bs-dismiss="modal"></button></div><div class="modal-body"><div class="">
+<div class="sourceCode" id="cb63" data-shortcodes="false"><pre class="sourceCode markdown code-with-copy"><code class="sourceCode markdown"><span id="cb63-1"><a href="#cb63-1" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb63-2"><a href="#cb63-2" aria-hidden="true" tabindex="-1"></a><span class="an">title:</span><span class="co"> "Chapter 1: Introduction to R and the Tidyverse Ecosystem"</span></span>
+<span id="cb63-3"><a href="#cb63-3" aria-hidden="true" tabindex="-1"></a><span class="an">author:</span><span class="co"> "David Sarrat González, Juan R González"</span></span>
+<span id="cb63-4"><a href="#cb63-4" aria-hidden="true" tabindex="-1"></a><span class="an">date:</span><span class="co"> today</span></span>
+<span id="cb63-5"><a href="#cb63-5" aria-hidden="true" tabindex="-1"></a><span class="an">format:</span></span>
+<span id="cb63-6"><a href="#cb63-6" aria-hidden="true" tabindex="-1"></a><span class="co">  html:</span></span>
+<span id="cb63-7"><a href="#cb63-7" aria-hidden="true" tabindex="-1"></a><span class="co">    code-fold: false</span></span>
+<span id="cb63-8"><a href="#cb63-8" aria-hidden="true" tabindex="-1"></a><span class="co">    code-tools: true</span></span>
+<span id="cb63-9"><a href="#cb63-9" aria-hidden="true" tabindex="-1"></a><span class="co">---</span></span>
+<span id="cb63-10"><a href="#cb63-10" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-11"><a href="#cb63-11" aria-hidden="true" tabindex="-1"></a><span class="fu">## Learning Objectives</span></span>
+<span id="cb63-12"><a href="#cb63-12" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-13"><a href="#cb63-13" aria-hidden="true" tabindex="-1"></a>By the end of this chapter, you will:</span>
+<span id="cb63-14"><a href="#cb63-14" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-15"><a href="#cb63-15" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Understand the philosophy and principles of the tidyverse</span>
+<span id="cb63-16"><a href="#cb63-16" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Know the core tidyverse packages and their purposes</span>
+<span id="cb63-17"><a href="#cb63-17" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Be able to install and load tidyverse packages</span>
+<span id="cb63-18"><a href="#cb63-18" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Understand the pipe operator (<span class="in">`%&gt;%`</span> and <span class="in">`|&gt;`</span>)</span>
+<span id="cb63-19"><a href="#cb63-19" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Work with tibbles, the tidyverse's modern data frames</span>
+<span id="cb63-20"><a href="#cb63-20" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Understand tidy data principles</span>
+<span id="cb63-21"><a href="#cb63-21" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-22"><a href="#cb63-22" aria-hidden="true" tabindex="-1"></a><span class="fu">## What is the Tidyverse?</span></span>
+<span id="cb63-23"><a href="#cb63-23" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-24"><a href="#cb63-24" aria-hidden="true" tabindex="-1"></a>The tidyverse is a collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures. The tidyverse makes data manipulation, exploration, and visualization faster and more intuitive.</span>
+<span id="cb63-25"><a href="#cb63-25" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-26"><a href="#cb63-26" aria-hidden="true" tabindex="-1"></a><span class="fu">### Core Tidyverse Packages</span></span>
+<span id="cb63-27"><a href="#cb63-27" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-30"><a href="#cb63-30" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-31"><a href="#cb63-31" aria-hidden="true" tabindex="-1"></a><span class="co">#| message: true</span></span>
+<span id="cb63-32"><a href="#cb63-32" aria-hidden="true" tabindex="-1"></a><span class="co"># Install tidyverse if you haven't already</span></span>
+<span id="cb63-33"><a href="#cb63-33" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("tidyverse")</span></span>
+<span id="cb63-34"><a href="#cb63-34" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-35"><a href="#cb63-35" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the tidyverse</span></span>
+<span id="cb63-36"><a href="#cb63-36" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(tidyverse)</span>
+<span id="cb63-37"><a href="#cb63-37" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-38"><a href="#cb63-38" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-39"><a href="#cb63-39" aria-hidden="true" tabindex="-1"></a>The tidyverse includes these core packages:</span>
+<span id="cb63-40"><a href="#cb63-40" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-41"><a href="#cb63-41" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**ggplot2**: Data visualization</span>
+<span id="cb63-42"><a href="#cb63-42" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**dplyr**: Data manipulation</span>
+<span id="cb63-43"><a href="#cb63-43" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**tidyr**: Data tidying</span>
+<span id="cb63-44"><a href="#cb63-44" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>**readr**: Data import</span>
+<span id="cb63-45"><a href="#cb63-45" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>**purrr**: Functional programming</span>
+<span id="cb63-46"><a href="#cb63-46" aria-hidden="true" tabindex="-1"></a><span class="ss">6. </span>**tibble**: Modern data frames</span>
+<span id="cb63-47"><a href="#cb63-47" aria-hidden="true" tabindex="-1"></a><span class="ss">7. </span>**stringr**: String manipulation</span>
+<span id="cb63-48"><a href="#cb63-48" aria-hidden="true" tabindex="-1"></a><span class="ss">8. </span>**forcats**: Factor handling</span>
+<span id="cb63-49"><a href="#cb63-49" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-50"><a href="#cb63-50" aria-hidden="true" tabindex="-1"></a><span class="fu">## The Pipe Operator</span></span>
+<span id="cb63-51"><a href="#cb63-51" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-52"><a href="#cb63-52" aria-hidden="true" tabindex="-1"></a>The pipe operator is fundamental to tidyverse workflows. It allows you to chain operations together in a readable way.</span>
+<span id="cb63-53"><a href="#cb63-53" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-54"><a href="#cb63-54" aria-hidden="true" tabindex="-1"></a><span class="fu">### Understanding the Problem with Nested Functions</span></span>
+<span id="cb63-55"><a href="#cb63-55" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-56"><a href="#cb63-56" aria-hidden="true" tabindex="-1"></a>In traditional R programming, when you need to apply multiple functions to data, you end up with deeply nested function calls that are read from the inside out. This creates several problems:</span>
+<span id="cb63-57"><a href="#cb63-57" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-58"><a href="#cb63-58" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>**Readability**: The order of operations is reversed from how we naturally think about them</span>
+<span id="cb63-59"><a href="#cb63-59" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>**Debugging**: It's hard to inspect intermediate results</span>
+<span id="cb63-60"><a href="#cb63-60" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>**Modification**: Adding or removing steps requires careful parenthesis management</span>
+<span id="cb63-61"><a href="#cb63-61" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-62"><a href="#cb63-62" aria-hidden="true" tabindex="-1"></a><span class="fu">### Traditional R vs Piped Approach</span></span>
+<span id="cb63-63"><a href="#cb63-63" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-64"><a href="#cb63-64" aria-hidden="true" tabindex="-1"></a>Let's look at a simple example where we want to:</span>
+<span id="cb63-65"><a href="#cb63-65" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Take a vector of numbers</span>
+<span id="cb63-66"><a href="#cb63-66" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Calculate the square root of each</span>
+<span id="cb63-67"><a href="#cb63-67" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Find the mean</span>
+<span id="cb63-68"><a href="#cb63-68" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Round to 2 decimal places</span>
+<span id="cb63-69"><a href="#cb63-69" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-72"><a href="#cb63-72" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-73"><a href="#cb63-73" aria-hidden="true" tabindex="-1"></a><span class="co"># Traditional nested approach (hard to read)</span></span>
+<span id="cb63-74"><a href="#cb63-74" aria-hidden="true" tabindex="-1"></a><span class="co"># We read this from inside-out: first sqrt, then mean, then round</span></span>
+<span id="cb63-75"><a href="#cb63-75" aria-hidden="true" tabindex="-1"></a><span class="co"># But we write it outside-in!</span></span>
+<span id="cb63-76"><a href="#cb63-76" aria-hidden="true" tabindex="-1"></a><span class="fu">round</span>(<span class="fu">mean</span>(<span class="fu">sqrt</span>(<span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">16</span>, <span class="dv">25</span>))), <span class="dv">2</span>)</span>
+<span id="cb63-77"><a href="#cb63-77" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-78"><a href="#cb63-78" aria-hidden="true" tabindex="-1"></a><span class="co"># With pipes (much clearer!)</span></span>
+<span id="cb63-79"><a href="#cb63-79" aria-hidden="true" tabindex="-1"></a><span class="co"># We read AND write this in the order operations happen</span></span>
+<span id="cb63-80"><a href="#cb63-80" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">16</span>, <span class="dv">25</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb63-81"><a href="#cb63-81" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>() <span class="sc">%&gt;%</span>         <span class="co"># First: take square root</span></span>
+<span id="cb63-82"><a href="#cb63-82" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>() <span class="sc">%&gt;%</span>         <span class="co"># Then: calculate mean</span></span>
+<span id="cb63-83"><a href="#cb63-83" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">2</span>)           <span class="co"># Finally: round to 2 decimals</span></span>
+<span id="cb63-84"><a href="#cb63-84" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-85"><a href="#cb63-85" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the native R pipe (R 4.1+)</span></span>
+<span id="cb63-86"><a href="#cb63-86" aria-hidden="true" tabindex="-1"></a><span class="co"># The |&gt; operator is built into base R as of version 4.1</span></span>
+<span id="cb63-87"><a href="#cb63-87" aria-hidden="true" tabindex="-1"></a><span class="co"># It works similarly to %&gt;% but with some subtle differences</span></span>
+<span id="cb63-88"><a href="#cb63-88" aria-hidden="true" tabindex="-1"></a><span class="fu">c</span>(<span class="dv">1</span>, <span class="dv">4</span>, <span class="dv">9</span>, <span class="dv">16</span>, <span class="dv">25</span>) <span class="sc">|&gt;</span></span>
+<span id="cb63-89"><a href="#cb63-89" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>() <span class="sc">|&gt;</span></span>
+<span id="cb63-90"><a href="#cb63-90" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>() <span class="sc">|&gt;</span></span>
+<span id="cb63-91"><a href="#cb63-91" aria-hidden="true" tabindex="-1"></a>  <span class="fu">round</span>(<span class="dv">2</span>)</span>
+<span id="cb63-92"><a href="#cb63-92" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-93"><a href="#cb63-93" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-94"><a href="#cb63-94" aria-hidden="true" tabindex="-1"></a>Notice how the piped version reads like a recipe: "Take these numbers, THEN calculate square root, THEN find the mean, THEN round." This matches our mental model of the data transformation process.</span>
+<span id="cb63-95"><a href="#cb63-95" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-96"><a href="#cb63-96" aria-hidden="true" tabindex="-1"></a><span class="fu">### How the Pipe Actually Works</span></span>
+<span id="cb63-97"><a href="#cb63-97" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-98"><a href="#cb63-98" aria-hidden="true" tabindex="-1"></a>The pipe operator takes the output of the expression on its left and passes it as the first argument to the function on its right. So <span class="in">`x %&gt;% f()`</span> is equivalent to <span class="in">`f(x)`</span>, and <span class="in">`x %&gt;% f() %&gt;% g()`</span> is equivalent to <span class="in">`g(f(x))`</span>.</span>
+<span id="cb63-99"><a href="#cb63-99" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-100"><a href="#cb63-100" aria-hidden="true" tabindex="-1"></a>You can also use the <span class="in">`.`</span> placeholder to specify where the piped value should go if it's not the first argument:</span>
+<span id="cb63-101"><a href="#cb63-101" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-104"><a href="#cb63-104" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-105"><a href="#cb63-105" aria-hidden="true" tabindex="-1"></a><span class="co"># Using the dot placeholder for custom positioning</span></span>
+<span id="cb63-106"><a href="#cb63-106" aria-hidden="true" tabindex="-1"></a><span class="dv">10</span> <span class="sc">%&gt;%</span> </span>
+<span id="cb63-107"><a href="#cb63-107" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">/</span><span class="st">`</span>(<span class="dv">2</span>) <span class="sc">%&gt;%</span>      <span class="co"># 10 / 2 = 5</span></span>
+<span id="cb63-108"><a href="#cb63-108" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">+</span><span class="st">`</span>(<span class="dv">3</span>) <span class="sc">%&gt;%</span>      <span class="co"># 5 + 3 = 8  </span></span>
+<span id="cb63-109"><a href="#cb63-109" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">^</span><span class="st">`</span>(<span class="dv">2</span>)          <span class="co"># 8^2 = 64</span></span>
+<span id="cb63-110"><a href="#cb63-110" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-111"><a href="#cb63-111" aria-hidden="true" tabindex="-1"></a><span class="co"># When the piped value isn't the first argument</span></span>
+<span id="cb63-112"><a href="#cb63-112" aria-hidden="true" tabindex="-1"></a><span class="dv">5</span> <span class="sc">%&gt;%</span> </span>
+<span id="cb63-113"><a href="#cb63-113" aria-hidden="true" tabindex="-1"></a>  <span class="fu">seq</span>(<span class="at">from =</span> <span class="dv">1</span>, <span class="at">to =</span> .)  <span class="co"># Creates sequence from 1 to 5</span></span>
+<span id="cb63-114"><a href="#cb63-114" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-115"><a href="#cb63-115" aria-hidden="true" tabindex="-1"></a><span class="co"># More practical example with data</span></span>
+<span id="cb63-116"><a href="#cb63-116" aria-hidden="true" tabindex="-1"></a>mtcars <span class="sc">%&gt;%</span></span>
+<span id="cb63-117"><a href="#cb63-117" aria-hidden="true" tabindex="-1"></a>  <span class="fu">lm</span>(mpg <span class="sc">~</span> cyl <span class="sc">+</span> wt, <span class="at">data =</span> .)  <span class="co"># data = . puts the piped data in the right place</span></span>
+<span id="cb63-118"><a href="#cb63-118" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-119"><a href="#cb63-119" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-120"><a href="#cb63-120" aria-hidden="true" tabindex="-1"></a><span class="fu">### Practical Example with Data</span></span>
+<span id="cb63-121"><a href="#cb63-121" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-124"><a href="#cb63-124" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-125"><a href="#cb63-125" aria-hidden="true" tabindex="-1"></a><span class="co"># Load a built-in dataset</span></span>
+<span id="cb63-126"><a href="#cb63-126" aria-hidden="true" tabindex="-1"></a><span class="fu">data</span>(mtcars)</span>
+<span id="cb63-127"><a href="#cb63-127" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-128"><a href="#cb63-128" aria-hidden="true" tabindex="-1"></a><span class="co"># Without pipes - nested and hard to read</span></span>
+<span id="cb63-129"><a href="#cb63-129" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(<span class="fu">arrange</span>(<span class="fu">filter</span>(mtcars, cyl <span class="sc">==</span> <span class="dv">6</span>), <span class="fu">desc</span>(mpg)), <span class="dv">5</span>)</span>
+<span id="cb63-130"><a href="#cb63-130" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-131"><a href="#cb63-131" aria-hidden="true" tabindex="-1"></a><span class="co"># With pipes - clear and sequential</span></span>
+<span id="cb63-132"><a href="#cb63-132" aria-hidden="true" tabindex="-1"></a>mtcars <span class="sc">%&gt;%</span></span>
+<span id="cb63-133"><a href="#cb63-133" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(cyl <span class="sc">==</span> <span class="dv">6</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb63-134"><a href="#cb63-134" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(mpg)) <span class="sc">%&gt;%</span></span>
+<span id="cb63-135"><a href="#cb63-135" aria-hidden="true" tabindex="-1"></a>  <span class="fu">head</span>(<span class="dv">5</span>)</span>
+<span id="cb63-136"><a href="#cb63-136" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-137"><a href="#cb63-137" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-138"><a href="#cb63-138" aria-hidden="true" tabindex="-1"></a><span class="fu">## Tibbles: Modern Data Frames</span></span>
+<span id="cb63-139"><a href="#cb63-139" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-140"><a href="#cb63-140" aria-hidden="true" tabindex="-1"></a>Tibbles are the tidyverse's enhanced version of data frames.</span>
+<span id="cb63-141"><a href="#cb63-141" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-142"><a href="#cb63-142" aria-hidden="true" tabindex="-1"></a><span class="fu">### Creating Tibbles</span></span>
+<span id="cb63-143"><a href="#cb63-143" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-146"><a href="#cb63-146" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-147"><a href="#cb63-147" aria-hidden="true" tabindex="-1"></a><span class="co"># Create a tibble from scratch</span></span>
+<span id="cb63-148"><a href="#cb63-148" aria-hidden="true" tabindex="-1"></a>my_tibble <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb63-149"><a href="#cb63-149" aria-hidden="true" tabindex="-1"></a>  <span class="at">name =</span> <span class="fu">c</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>, <span class="st">"Diana"</span>),</span>
+<span id="cb63-150"><a href="#cb63-150" aria-hidden="true" tabindex="-1"></a>  <span class="at">age =</span> <span class="fu">c</span>(<span class="dv">25</span>, <span class="dv">30</span>, <span class="dv">35</span>, <span class="dv">28</span>),</span>
+<span id="cb63-151"><a href="#cb63-151" aria-hidden="true" tabindex="-1"></a>  <span class="at">score =</span> <span class="fu">c</span>(<span class="fl">85.5</span>, <span class="fl">92.3</span>, <span class="fl">78.9</span>, <span class="fl">88.1</span>),</span>
+<span id="cb63-152"><a href="#cb63-152" aria-hidden="true" tabindex="-1"></a>  <span class="at">passed =</span> <span class="fu">c</span>(<span class="cn">TRUE</span>, <span class="cn">TRUE</span>, <span class="cn">FALSE</span>, <span class="cn">TRUE</span>)</span>
+<span id="cb63-153"><a href="#cb63-153" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb63-154"><a href="#cb63-154" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-155"><a href="#cb63-155" aria-hidden="true" tabindex="-1"></a>my_tibble</span>
+<span id="cb63-156"><a href="#cb63-156" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-157"><a href="#cb63-157" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-158"><a href="#cb63-158" aria-hidden="true" tabindex="-1"></a><span class="fu">### Tibble vs Data Frame</span></span>
+<span id="cb63-159"><a href="#cb63-159" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-162"><a href="#cb63-162" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-163"><a href="#cb63-163" aria-hidden="true" tabindex="-1"></a><span class="co"># Convert data frame to tibble</span></span>
+<span id="cb63-164"><a href="#cb63-164" aria-hidden="true" tabindex="-1"></a>mtcars_tibble <span class="ot">&lt;-</span> <span class="fu">as_tibble</span>(mtcars)</span>
+<span id="cb63-165"><a href="#cb63-165" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-166"><a href="#cb63-166" aria-hidden="true" tabindex="-1"></a><span class="co"># Compare printing</span></span>
+<span id="cb63-167"><a href="#cb63-167" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Data frame (first 6 rows shown by default):"</span>)</span>
+<span id="cb63-168"><a href="#cb63-168" aria-hidden="true" tabindex="-1"></a><span class="fu">head</span>(mtcars)</span>
+<span id="cb63-169"><a href="#cb63-169" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-170"><a href="#cb63-170" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Tibble (shows what fits on screen):"</span>)</span>
+<span id="cb63-171"><a href="#cb63-171" aria-hidden="true" tabindex="-1"></a>mtcars_tibble</span>
+<span id="cb63-172"><a href="#cb63-172" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-173"><a href="#cb63-173" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-174"><a href="#cb63-174" aria-hidden="true" tabindex="-1"></a><span class="fu">### Key Advantages of Tibbles</span></span>
+<span id="cb63-175"><a href="#cb63-175" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-178"><a href="#cb63-178" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-179"><a href="#cb63-179" aria-hidden="true" tabindex="-1"></a><span class="co"># Tibbles preserve data types</span></span>
+<span id="cb63-180"><a href="#cb63-180" aria-hidden="true" tabindex="-1"></a>df <span class="ot">&lt;-</span> <span class="fu">data.frame</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">y =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>))</span>
+<span id="cb63-181"><a href="#cb63-181" aria-hidden="true" tabindex="-1"></a>tb <span class="ot">&lt;-</span> <span class="fu">tibble</span>(<span class="at">x =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">3</span>, <span class="at">y =</span> <span class="fu">c</span>(<span class="st">"a"</span>, <span class="st">"b"</span>, <span class="st">"c"</span>))</span>
+<span id="cb63-182"><a href="#cb63-182" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-183"><a href="#cb63-183" aria-hidden="true" tabindex="-1"></a><span class="co"># Data frame converts strings to factors (in older R versions)</span></span>
+<span id="cb63-184"><a href="#cb63-184" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(df)</span>
+<span id="cb63-185"><a href="#cb63-185" aria-hidden="true" tabindex="-1"></a><span class="fu">str</span>(tb)</span>
+<span id="cb63-186"><a href="#cb63-186" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-187"><a href="#cb63-187" aria-hidden="true" tabindex="-1"></a><span class="co"># Tibbles handle column names better</span></span>
+<span id="cb63-188"><a href="#cb63-188" aria-hidden="true" tabindex="-1"></a>weird_tb <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb63-189"><a href="#cb63-189" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">First Name</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"John"</span>, <span class="st">"Jane"</span>),</span>
+<span id="cb63-190"><a href="#cb63-190" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">2020</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="dv">100</span>, <span class="dv">200</span>),</span>
+<span id="cb63-191"><a href="#cb63-191" aria-hidden="true" tabindex="-1"></a>  <span class="st">`</span><span class="at">:)</span><span class="st">`</span> <span class="ot">=</span> <span class="fu">c</span>(<span class="st">"happy"</span>, <span class="st">"sad"</span>)</span>
+<span id="cb63-192"><a href="#cb63-192" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb63-193"><a href="#cb63-193" aria-hidden="true" tabindex="-1"></a>weird_tb</span>
+<span id="cb63-194"><a href="#cb63-194" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-195"><a href="#cb63-195" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-196"><a href="#cb63-196" aria-hidden="true" tabindex="-1"></a><span class="fu">## Tidy Data Principles</span></span>
+<span id="cb63-197"><a href="#cb63-197" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-198"><a href="#cb63-198" aria-hidden="true" tabindex="-1"></a>Tidy data is a standard way of organizing data values within a dataset.</span>
+<span id="cb63-199"><a href="#cb63-199" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-200"><a href="#cb63-200" aria-hidden="true" tabindex="-1"></a><span class="fu">### The Three Rules of Tidy Data</span></span>
+<span id="cb63-201"><a href="#cb63-201" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-202"><a href="#cb63-202" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Each variable must have its own column</span>
+<span id="cb63-203"><a href="#cb63-203" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Each observation must have its own row</span>
+<span id="cb63-204"><a href="#cb63-204" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Each value must have its own cell</span>
+<span id="cb63-205"><a href="#cb63-205" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-206"><a href="#cb63-206" aria-hidden="true" tabindex="-1"></a><span class="fu">### Example: Messy vs Tidy Data</span></span>
+<span id="cb63-207"><a href="#cb63-207" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-210"><a href="#cb63-210" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-211"><a href="#cb63-211" aria-hidden="true" tabindex="-1"></a><span class="co"># Messy data</span></span>
+<span id="cb63-212"><a href="#cb63-212" aria-hidden="true" tabindex="-1"></a>messy_data <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb63-213"><a href="#cb63-213" aria-hidden="true" tabindex="-1"></a>  <span class="at">student =</span> <span class="fu">c</span>(<span class="st">"Alice"</span>, <span class="st">"Bob"</span>, <span class="st">"Charlie"</span>),</span>
+<span id="cb63-214"><a href="#cb63-214" aria-hidden="true" tabindex="-1"></a>  <span class="at">midterm =</span> <span class="fu">c</span>(<span class="dv">85</span>, <span class="dv">90</span>, <span class="dv">78</span>),</span>
+<span id="cb63-215"><a href="#cb63-215" aria-hidden="true" tabindex="-1"></a>  <span class="at">final =</span> <span class="fu">c</span>(<span class="dv">88</span>, <span class="dv">85</span>, <span class="dv">92</span>)</span>
+<span id="cb63-216"><a href="#cb63-216" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb63-217"><a href="#cb63-217" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-218"><a href="#cb63-218" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Messy data (wide format):"</span>)</span>
+<span id="cb63-219"><a href="#cb63-219" aria-hidden="true" tabindex="-1"></a>messy_data</span>
+<span id="cb63-220"><a href="#cb63-220" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-221"><a href="#cb63-221" aria-hidden="true" tabindex="-1"></a><span class="co"># Tidy data</span></span>
+<span id="cb63-222"><a href="#cb63-222" aria-hidden="true" tabindex="-1"></a>tidy_data <span class="ot">&lt;-</span> messy_data <span class="sc">%&gt;%</span></span>
+<span id="cb63-223"><a href="#cb63-223" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb63-224"><a href="#cb63-224" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">c</span>(midterm, final),</span>
+<span id="cb63-225"><a href="#cb63-225" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"exam"</span>,</span>
+<span id="cb63-226"><a href="#cb63-226" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"score"</span></span>
+<span id="cb63-227"><a href="#cb63-227" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb63-228"><a href="#cb63-228" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-229"><a href="#cb63-229" aria-hidden="true" tabindex="-1"></a><span class="fu">print</span>(<span class="st">"Tidy data (long format):"</span>)</span>
+<span id="cb63-230"><a href="#cb63-230" aria-hidden="true" tabindex="-1"></a>tidy_data</span>
+<span id="cb63-231"><a href="#cb63-231" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-232"><a href="#cb63-232" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-233"><a href="#cb63-233" aria-hidden="true" tabindex="-1"></a><span class="fu">## Working with Real Data</span></span>
+<span id="cb63-234"><a href="#cb63-234" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-235"><a href="#cb63-235" aria-hidden="true" tabindex="-1"></a>Let's practice with a real dataset:</span>
+<span id="cb63-236"><a href="#cb63-236" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-239"><a href="#cb63-239" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-240"><a href="#cb63-240" aria-hidden="true" tabindex="-1"></a><span class="co"># Load the palmerpenguins package for example data</span></span>
+<span id="cb63-241"><a href="#cb63-241" aria-hidden="true" tabindex="-1"></a><span class="co"># install.packages("palmerpenguins")</span></span>
+<span id="cb63-242"><a href="#cb63-242" aria-hidden="true" tabindex="-1"></a><span class="fu">library</span>(palmerpenguins)</span>
+<span id="cb63-243"><a href="#cb63-243" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-244"><a href="#cb63-244" aria-hidden="true" tabindex="-1"></a><span class="co"># Explore the penguins dataset</span></span>
+<span id="cb63-245"><a href="#cb63-245" aria-hidden="true" tabindex="-1"></a><span class="fu">glimpse</span>(penguins)</span>
+<span id="cb63-246"><a href="#cb63-246" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-247"><a href="#cb63-247" aria-hidden="true" tabindex="-1"></a><span class="co"># Basic exploration</span></span>
+<span id="cb63-248"><a href="#cb63-248" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb63-249"><a href="#cb63-249" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summary</span>()</span>
+<span id="cb63-250"><a href="#cb63-250" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-251"><a href="#cb63-251" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-252"><a href="#cb63-252" aria-hidden="true" tabindex="-1"></a><span class="fu">### Data Exploration Pipeline</span></span>
+<span id="cb63-253"><a href="#cb63-253" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-256"><a href="#cb63-256" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-257"><a href="#cb63-257" aria-hidden="true" tabindex="-1"></a><span class="co"># Complete analysis pipeline</span></span>
+<span id="cb63-258"><a href="#cb63-258" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb63-259"><a href="#cb63-259" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span>  <span class="co"># Remove missing values</span></span>
+<span id="cb63-260"><a href="#cb63-260" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species, island) <span class="sc">%&gt;%</span></span>
+<span id="cb63-261"><a href="#cb63-261" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb63-262"><a href="#cb63-262" aria-hidden="true" tabindex="-1"></a>    <span class="at">count =</span> <span class="fu">n</span>(),</span>
+<span id="cb63-263"><a href="#cb63-263" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_bill_length =</span> <span class="fu">mean</span>(bill_length_mm),</span>
+<span id="cb63-264"><a href="#cb63-264" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_body_mass =</span> <span class="fu">mean</span>(body_mass_g),</span>
+<span id="cb63-265"><a href="#cb63-265" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb63-266"><a href="#cb63-266" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb63-267"><a href="#cb63-267" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_body_mass))</span>
+<span id="cb63-268"><a href="#cb63-268" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-269"><a href="#cb63-269" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-270"><a href="#cb63-270" aria-hidden="true" tabindex="-1"></a><span class="fu">## Visualization Preview</span></span>
+<span id="cb63-271"><a href="#cb63-271" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-272"><a href="#cb63-272" aria-hidden="true" tabindex="-1"></a>A quick taste of ggplot2 (covered in detail in Chapter 5):</span>
+<span id="cb63-273"><a href="#cb63-273" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-276"><a href="#cb63-276" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-277"><a href="#cb63-277" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-width: 8</span></span>
+<span id="cb63-278"><a href="#cb63-278" aria-hidden="true" tabindex="-1"></a><span class="co">#| fig-height: 6</span></span>
+<span id="cb63-279"><a href="#cb63-279" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb63-280"><a href="#cb63-280" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb63-281"><a href="#cb63-281" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> flipper_length_mm, <span class="at">y =</span> body_mass_g, <span class="at">color =</span> species)) <span class="sc">+</span></span>
+<span id="cb63-282"><a href="#cb63-282" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_point</span>(<span class="at">size =</span> <span class="dv">3</span>, <span class="at">alpha =</span> <span class="fl">0.7</span>) <span class="sc">+</span></span>
+<span id="cb63-283"><a href="#cb63-283" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_smooth</span>(<span class="at">method =</span> <span class="st">"lm"</span>, <span class="at">se =</span> <span class="cn">FALSE</span>) <span class="sc">+</span></span>
+<span id="cb63-284"><a href="#cb63-284" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(</span>
+<span id="cb63-285"><a href="#cb63-285" aria-hidden="true" tabindex="-1"></a>    <span class="at">title =</span> <span class="st">"Penguin Body Mass vs Flipper Length"</span>,</span>
+<span id="cb63-286"><a href="#cb63-286" aria-hidden="true" tabindex="-1"></a>    <span class="at">x =</span> <span class="st">"Flipper Length (mm)"</span>,</span>
+<span id="cb63-287"><a href="#cb63-287" aria-hidden="true" tabindex="-1"></a>    <span class="at">y =</span> <span class="st">"Body Mass (g)"</span>,</span>
+<span id="cb63-288"><a href="#cb63-288" aria-hidden="true" tabindex="-1"></a>    <span class="at">color =</span> <span class="st">"Species"</span></span>
+<span id="cb63-289"><a href="#cb63-289" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">+</span></span>
+<span id="cb63-290"><a href="#cb63-290" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb63-291"><a href="#cb63-291" aria-hidden="true" tabindex="-1"></a>  <span class="fu">scale_color_brewer</span>(<span class="at">palette =</span> <span class="st">"Set2"</span>)</span>
+<span id="cb63-292"><a href="#cb63-292" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-293"><a href="#cb63-293" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-294"><a href="#cb63-294" aria-hidden="true" tabindex="-1"></a><span class="fu">## Common Tidyverse Patterns</span></span>
+<span id="cb63-295"><a href="#cb63-295" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-296"><a href="#cb63-296" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pattern 1: Read, Clean, Transform, Visualize</span></span>
+<span id="cb63-297"><a href="#cb63-297" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-300"><a href="#cb63-300" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-301"><a href="#cb63-301" aria-hidden="true" tabindex="-1"></a><span class="co"># Typical workflow</span></span>
+<span id="cb63-302"><a href="#cb63-302" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb63-303"><a href="#cb63-303" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Clean</span></span>
+<span id="cb63-304"><a href="#cb63-304" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb63-305"><a href="#cb63-305" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">==</span> <span class="dv">2008</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb63-306"><a href="#cb63-306" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Transform</span></span>
+<span id="cb63-307"><a href="#cb63-307" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb63-308"><a href="#cb63-308" aria-hidden="true" tabindex="-1"></a>    <span class="at">body_mass_kg =</span> body_mass_g <span class="sc">/</span> <span class="dv">1000</span>,</span>
+<span id="cb63-309"><a href="#cb63-309" aria-hidden="true" tabindex="-1"></a>    <span class="at">size_category =</span> <span class="fu">case_when</span>(</span>
+<span id="cb63-310"><a href="#cb63-310" aria-hidden="true" tabindex="-1"></a>      body_mass_kg <span class="sc">&lt;</span> <span class="fl">3.5</span> <span class="sc">~</span> <span class="st">"Small"</span>,</span>
+<span id="cb63-311"><a href="#cb63-311" aria-hidden="true" tabindex="-1"></a>      body_mass_kg <span class="sc">&lt;</span> <span class="fl">4.5</span> <span class="sc">~</span> <span class="st">"Medium"</span>,</span>
+<span id="cb63-312"><a href="#cb63-312" aria-hidden="true" tabindex="-1"></a>      <span class="cn">TRUE</span> <span class="sc">~</span> <span class="st">"Large"</span></span>
+<span id="cb63-313"><a href="#cb63-313" aria-hidden="true" tabindex="-1"></a>    )</span>
+<span id="cb63-314"><a href="#cb63-314" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb63-315"><a href="#cb63-315" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Summarize</span></span>
+<span id="cb63-316"><a href="#cb63-316" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species, size_category) <span class="sc">%&gt;%</span></span>
+<span id="cb63-317"><a href="#cb63-317" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(<span class="at">count =</span> <span class="fu">n</span>(), <span class="at">.groups =</span> <span class="st">"drop"</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb63-318"><a href="#cb63-318" aria-hidden="true" tabindex="-1"></a>  <span class="co"># Visualize</span></span>
+<span id="cb63-319"><a href="#cb63-319" aria-hidden="true" tabindex="-1"></a>  <span class="fu">ggplot</span>(<span class="fu">aes</span>(<span class="at">x =</span> species, <span class="at">y =</span> count, <span class="at">fill =</span> size_category)) <span class="sc">+</span></span>
+<span id="cb63-320"><a href="#cb63-320" aria-hidden="true" tabindex="-1"></a>  <span class="fu">geom_col</span>(<span class="at">position =</span> <span class="st">"dodge"</span>) <span class="sc">+</span></span>
+<span id="cb63-321"><a href="#cb63-321" aria-hidden="true" tabindex="-1"></a>  <span class="fu">theme_minimal</span>() <span class="sc">+</span></span>
+<span id="cb63-322"><a href="#cb63-322" aria-hidden="true" tabindex="-1"></a>  <span class="fu">labs</span>(<span class="at">title =</span> <span class="st">"Penguin Size Distribution by Species (2008)"</span>)</span>
+<span id="cb63-323"><a href="#cb63-323" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-324"><a href="#cb63-324" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-325"><a href="#cb63-325" aria-hidden="true" tabindex="-1"></a><span class="fu">### Pattern 2: Multiple Operations with Groups</span></span>
+<span id="cb63-326"><a href="#cb63-326" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-329"><a href="#cb63-329" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-330"><a href="#cb63-330" aria-hidden="true" tabindex="-1"></a><span class="co"># Complex grouped operations</span></span>
+<span id="cb63-331"><a href="#cb63-331" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb63-332"><a href="#cb63-332" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>() <span class="sc">%&gt;%</span></span>
+<span id="cb63-333"><a href="#cb63-333" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species) <span class="sc">%&gt;%</span></span>
+<span id="cb63-334"><a href="#cb63-334" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(</span>
+<span id="cb63-335"><a href="#cb63-335" aria-hidden="true" tabindex="-1"></a>    <span class="at">bill_length_z =</span> (bill_length_mm <span class="sc">-</span> <span class="fu">mean</span>(bill_length_mm)) <span class="sc">/</span> <span class="fu">sd</span>(bill_length_mm),</span>
+<span id="cb63-336"><a href="#cb63-336" aria-hidden="true" tabindex="-1"></a>    <span class="at">bill_depth_z =</span> (bill_depth_mm <span class="sc">-</span> <span class="fu">mean</span>(bill_depth_mm)) <span class="sc">/</span> <span class="fu">sd</span>(bill_depth_mm)</span>
+<span id="cb63-337"><a href="#cb63-337" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb63-338"><a href="#cb63-338" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(<span class="fu">abs</span>(bill_length_z) <span class="sc">&lt;</span> <span class="dv">2</span> <span class="sc">&amp;</span> <span class="fu">abs</span>(bill_depth_z) <span class="sc">&lt;</span> <span class="dv">2</span>) <span class="sc">%&gt;%</span>  <span class="co"># Remove outliers</span></span>
+<span id="cb63-339"><a href="#cb63-339" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb63-340"><a href="#cb63-340" aria-hidden="true" tabindex="-1"></a>    <span class="at">n =</span> <span class="fu">n</span>(),</span>
+<span id="cb63-341"><a href="#cb63-341" aria-hidden="true" tabindex="-1"></a>    <span class="at">correlation =</span> <span class="fu">cor</span>(bill_length_mm, bill_depth_mm),</span>
+<span id="cb63-342"><a href="#cb63-342" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb63-343"><a href="#cb63-343" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb63-344"><a href="#cb63-344" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-345"><a href="#cb63-345" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-346"><a href="#cb63-346" aria-hidden="true" tabindex="-1"></a><span class="fu">## Exercises</span></span>
+<span id="cb63-347"><a href="#cb63-347" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-348"><a href="#cb63-348" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 1: Basic Pipe Operations</span></span>
+<span id="cb63-349"><a href="#cb63-349" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-350"><a href="#cb63-350" aria-hidden="true" tabindex="-1"></a>Create a pipeline that:</span>
+<span id="cb63-351"><a href="#cb63-351" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Takes the numbers 1 to 100</span>
+<span id="cb63-352"><a href="#cb63-352" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Keeps only even numbers</span>
+<span id="cb63-353"><a href="#cb63-353" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Squares each number</span>
+<span id="cb63-354"><a href="#cb63-354" aria-hidden="true" tabindex="-1"></a><span class="ss">4. </span>Calculates the mean</span>
+<span id="cb63-355"><a href="#cb63-355" aria-hidden="true" tabindex="-1"></a><span class="ss">5. </span>Takes the square root of the result</span>
+<span id="cb63-356"><a href="#cb63-356" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-359"><a href="#cb63-359" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-360"><a href="#cb63-360" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span>
+<span id="cb63-361"><a href="#cb63-361" aria-hidden="true" tabindex="-1"></a><span class="dv">1</span><span class="sc">:</span><span class="dv">100</span> <span class="sc">%&gt;%</span></span>
+<span id="cb63-362"><a href="#cb63-362" aria-hidden="true" tabindex="-1"></a>  <span class="fu">keep</span>(<span class="sc">~</span> . <span class="sc">%%</span> <span class="dv">2</span> <span class="sc">==</span> <span class="dv">0</span>) <span class="sc">%&gt;%</span>  <span class="co"># Keep even numbers</span></span>
+<span id="cb63-363"><a href="#cb63-363" aria-hidden="true" tabindex="-1"></a>  <span class="fu">map_dbl</span>(<span class="sc">~</span> .<span class="sc">^</span><span class="dv">2</span>) <span class="sc">%&gt;%</span>        <span class="co"># Square each</span></span>
+<span id="cb63-364"><a href="#cb63-364" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mean</span>() <span class="sc">%&gt;%</span>                <span class="co"># Calculate mean</span></span>
+<span id="cb63-365"><a href="#cb63-365" aria-hidden="true" tabindex="-1"></a>  <span class="fu">sqrt</span>()                    <span class="co"># Take square root</span></span>
+<span id="cb63-366"><a href="#cb63-366" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-367"><a href="#cb63-367" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-368"><a href="#cb63-368" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 2: Tibble Creation and Manipulation</span></span>
+<span id="cb63-369"><a href="#cb63-369" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-370"><a href="#cb63-370" aria-hidden="true" tabindex="-1"></a>Create a tibble with information about 5 books (title, author, year, pages, rating). Then:</span>
+<span id="cb63-371"><a href="#cb63-371" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Filter books published after 2000</span>
+<span id="cb63-372"><a href="#cb63-372" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Add a column for reading_time (assuming 1 page per minute)</span>
+<span id="cb63-373"><a href="#cb63-373" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Arrange by rating (descending)</span>
+<span id="cb63-374"><a href="#cb63-374" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-377"><a href="#cb63-377" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-378"><a href="#cb63-378" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span>
+<span id="cb63-379"><a href="#cb63-379" aria-hidden="true" tabindex="-1"></a>books <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb63-380"><a href="#cb63-380" aria-hidden="true" tabindex="-1"></a>  <span class="at">title =</span> <span class="fu">c</span>(<span class="st">"The Great Gatsby"</span>, <span class="st">"1984"</span>, <span class="st">"The Hunger Games"</span>, <span class="st">"Dune"</span>, <span class="st">"Project Hail Mary"</span>),</span>
+<span id="cb63-381"><a href="#cb63-381" aria-hidden="true" tabindex="-1"></a>  <span class="at">author =</span> <span class="fu">c</span>(<span class="st">"F. Scott Fitzgerald"</span>, <span class="st">"George Orwell"</span>, <span class="st">"Suzanne Collins"</span>, <span class="st">"Frank Herbert"</span>, <span class="st">"Andy Weir"</span>),</span>
+<span id="cb63-382"><a href="#cb63-382" aria-hidden="true" tabindex="-1"></a>  <span class="at">year =</span> <span class="fu">c</span>(<span class="dv">1925</span>, <span class="dv">1949</span>, <span class="dv">2008</span>, <span class="dv">1965</span>, <span class="dv">2021</span>),</span>
+<span id="cb63-383"><a href="#cb63-383" aria-hidden="true" tabindex="-1"></a>  <span class="at">pages =</span> <span class="fu">c</span>(<span class="dv">180</span>, <span class="dv">328</span>, <span class="dv">374</span>, <span class="dv">688</span>, <span class="dv">476</span>),</span>
+<span id="cb63-384"><a href="#cb63-384" aria-hidden="true" tabindex="-1"></a>  <span class="at">rating =</span> <span class="fu">c</span>(<span class="fl">4.5</span>, <span class="fl">4.8</span>, <span class="fl">4.3</span>, <span class="fl">4.7</span>, <span class="fl">4.9</span>)</span>
+<span id="cb63-385"><a href="#cb63-385" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb63-386"><a href="#cb63-386" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-387"><a href="#cb63-387" aria-hidden="true" tabindex="-1"></a>books <span class="sc">%&gt;%</span></span>
+<span id="cb63-388"><a href="#cb63-388" aria-hidden="true" tabindex="-1"></a>  <span class="fu">filter</span>(year <span class="sc">&gt;</span> <span class="dv">2000</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb63-389"><a href="#cb63-389" aria-hidden="true" tabindex="-1"></a>  <span class="fu">mutate</span>(<span class="at">reading_time_hours =</span> pages <span class="sc">/</span> <span class="dv">60</span>) <span class="sc">%&gt;%</span></span>
+<span id="cb63-390"><a href="#cb63-390" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(rating))</span>
+<span id="cb63-391"><a href="#cb63-391" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-392"><a href="#cb63-392" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-393"><a href="#cb63-393" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 3: Working with Penguins Data</span></span>
+<span id="cb63-394"><a href="#cb63-394" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-395"><a href="#cb63-395" aria-hidden="true" tabindex="-1"></a>Using the penguins dataset:</span>
+<span id="cb63-396"><a href="#cb63-396" aria-hidden="true" tabindex="-1"></a><span class="ss">1. </span>Calculate the average bill length for each species on each island</span>
+<span id="cb63-397"><a href="#cb63-397" aria-hidden="true" tabindex="-1"></a><span class="ss">2. </span>Find which species-island combination has the longest average bill</span>
+<span id="cb63-398"><a href="#cb63-398" aria-hidden="true" tabindex="-1"></a><span class="ss">3. </span>Create a summary showing min, max, and mean body mass for each species</span>
+<span id="cb63-399"><a href="#cb63-399" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-402"><a href="#cb63-402" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-403"><a href="#cb63-403" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span>
+<span id="cb63-404"><a href="#cb63-404" aria-hidden="true" tabindex="-1"></a><span class="co"># Part 1 &amp; 2</span></span>
+<span id="cb63-405"><a href="#cb63-405" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb63-406"><a href="#cb63-406" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(bill_length_mm) <span class="sc">%&gt;%</span></span>
+<span id="cb63-407"><a href="#cb63-407" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species, island) <span class="sc">%&gt;%</span></span>
+<span id="cb63-408"><a href="#cb63-408" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb63-409"><a href="#cb63-409" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_bill_length =</span> <span class="fu">mean</span>(bill_length_mm),</span>
+<span id="cb63-410"><a href="#cb63-410" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb63-411"><a href="#cb63-411" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb63-412"><a href="#cb63-412" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_bill_length))</span>
+<span id="cb63-413"><a href="#cb63-413" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-414"><a href="#cb63-414" aria-hidden="true" tabindex="-1"></a><span class="co"># Part 3</span></span>
+<span id="cb63-415"><a href="#cb63-415" aria-hidden="true" tabindex="-1"></a>penguins <span class="sc">%&gt;%</span></span>
+<span id="cb63-416"><a href="#cb63-416" aria-hidden="true" tabindex="-1"></a>  <span class="fu">drop_na</span>(body_mass_g) <span class="sc">%&gt;%</span></span>
+<span id="cb63-417"><a href="#cb63-417" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(species) <span class="sc">%&gt;%</span></span>
+<span id="cb63-418"><a href="#cb63-418" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb63-419"><a href="#cb63-419" aria-hidden="true" tabindex="-1"></a>    <span class="at">min_mass =</span> <span class="fu">min</span>(body_mass_g),</span>
+<span id="cb63-420"><a href="#cb63-420" aria-hidden="true" tabindex="-1"></a>    <span class="at">mean_mass =</span> <span class="fu">mean</span>(body_mass_g),</span>
+<span id="cb63-421"><a href="#cb63-421" aria-hidden="true" tabindex="-1"></a>    <span class="at">max_mass =</span> <span class="fu">max</span>(body_mass_g),</span>
+<span id="cb63-422"><a href="#cb63-422" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb63-423"><a href="#cb63-423" aria-hidden="true" tabindex="-1"></a>  )</span>
+<span id="cb63-424"><a href="#cb63-424" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-425"><a href="#cb63-425" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-426"><a href="#cb63-426" aria-hidden="true" tabindex="-1"></a><span class="fu">### Exercise 4: Tidy Data Challenge</span></span>
+<span id="cb63-427"><a href="#cb63-427" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-428"><a href="#cb63-428" aria-hidden="true" tabindex="-1"></a>Convert this wide dataset to tidy format and calculate the average score for each subject:</span>
+<span id="cb63-429"><a href="#cb63-429" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-432"><a href="#cb63-432" aria-hidden="true" tabindex="-1"></a><span class="in">```{r}</span></span>
+<span id="cb63-433"><a href="#cb63-433" aria-hidden="true" tabindex="-1"></a><span class="co"># Given data</span></span>
+<span id="cb63-434"><a href="#cb63-434" aria-hidden="true" tabindex="-1"></a>student_scores <span class="ot">&lt;-</span> <span class="fu">tibble</span>(</span>
+<span id="cb63-435"><a href="#cb63-435" aria-hidden="true" tabindex="-1"></a>  <span class="at">student_id =</span> <span class="dv">1</span><span class="sc">:</span><span class="dv">5</span>,</span>
+<span id="cb63-436"><a href="#cb63-436" aria-hidden="true" tabindex="-1"></a>  <span class="at">math_score =</span> <span class="fu">c</span>(<span class="dv">85</span>, <span class="dv">92</span>, <span class="dv">78</span>, <span class="dv">95</span>, <span class="dv">88</span>),</span>
+<span id="cb63-437"><a href="#cb63-437" aria-hidden="true" tabindex="-1"></a>  <span class="at">science_score =</span> <span class="fu">c</span>(<span class="dv">90</span>, <span class="dv">88</span>, <span class="dv">85</span>, <span class="dv">92</span>, <span class="dv">91</span>),</span>
+<span id="cb63-438"><a href="#cb63-438" aria-hidden="true" tabindex="-1"></a>  <span class="at">english_score =</span> <span class="fu">c</span>(<span class="dv">88</span>, <span class="dv">85</span>, <span class="dv">90</span>, <span class="dv">87</span>, <span class="dv">89</span>)</span>
+<span id="cb63-439"><a href="#cb63-439" aria-hidden="true" tabindex="-1"></a>)</span>
+<span id="cb63-440"><a href="#cb63-440" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-441"><a href="#cb63-441" aria-hidden="true" tabindex="-1"></a><span class="co"># Your code here</span></span>
+<span id="cb63-442"><a href="#cb63-442" aria-hidden="true" tabindex="-1"></a>student_scores <span class="sc">%&gt;%</span></span>
+<span id="cb63-443"><a href="#cb63-443" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pivot_longer</span>(</span>
+<span id="cb63-444"><a href="#cb63-444" aria-hidden="true" tabindex="-1"></a>    <span class="at">cols =</span> <span class="fu">ends_with</span>(<span class="st">"_score"</span>),</span>
+<span id="cb63-445"><a href="#cb63-445" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_to =</span> <span class="st">"subject"</span>,</span>
+<span id="cb63-446"><a href="#cb63-446" aria-hidden="true" tabindex="-1"></a>    <span class="at">values_to =</span> <span class="st">"score"</span>,</span>
+<span id="cb63-447"><a href="#cb63-447" aria-hidden="true" tabindex="-1"></a>    <span class="at">names_pattern =</span> <span class="st">"(.*)_score"</span></span>
+<span id="cb63-448"><a href="#cb63-448" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb63-449"><a href="#cb63-449" aria-hidden="true" tabindex="-1"></a>  <span class="fu">group_by</span>(subject) <span class="sc">%&gt;%</span></span>
+<span id="cb63-450"><a href="#cb63-450" aria-hidden="true" tabindex="-1"></a>  <span class="fu">summarise</span>(</span>
+<span id="cb63-451"><a href="#cb63-451" aria-hidden="true" tabindex="-1"></a>    <span class="at">avg_score =</span> <span class="fu">mean</span>(score),</span>
+<span id="cb63-452"><a href="#cb63-452" aria-hidden="true" tabindex="-1"></a>    <span class="at">.groups =</span> <span class="st">"drop"</span></span>
+<span id="cb63-453"><a href="#cb63-453" aria-hidden="true" tabindex="-1"></a>  ) <span class="sc">%&gt;%</span></span>
+<span id="cb63-454"><a href="#cb63-454" aria-hidden="true" tabindex="-1"></a>  <span class="fu">arrange</span>(<span class="fu">desc</span>(avg_score))</span>
+<span id="cb63-455"><a href="#cb63-455" aria-hidden="true" tabindex="-1"></a><span class="in">```</span></span>
+<span id="cb63-456"><a href="#cb63-456" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-457"><a href="#cb63-457" aria-hidden="true" tabindex="-1"></a><span class="fu">## Summary</span></span>
+<span id="cb63-458"><a href="#cb63-458" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-459"><a href="#cb63-459" aria-hidden="true" tabindex="-1"></a>In this chapter, you learned:</span>
+<span id="cb63-460"><a href="#cb63-460" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-461"><a href="#cb63-461" aria-hidden="true" tabindex="-1"></a>✅ The tidyverse philosophy and ecosystem  </span>
+<span id="cb63-462"><a href="#cb63-462" aria-hidden="true" tabindex="-1"></a>✅ How to use the pipe operator for readable code  </span>
+<span id="cb63-463"><a href="#cb63-463" aria-hidden="true" tabindex="-1"></a>✅ Working with tibbles instead of data frames  </span>
+<span id="cb63-464"><a href="#cb63-464" aria-hidden="true" tabindex="-1"></a>✅ Tidy data principles  </span>
+<span id="cb63-465"><a href="#cb63-465" aria-hidden="true" tabindex="-1"></a>✅ Basic data manipulation patterns  </span>
+<span id="cb63-466"><a href="#cb63-466" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-467"><a href="#cb63-467" aria-hidden="true" tabindex="-1"></a><span class="fu">## What's Next?</span></span>
+<span id="cb63-468"><a href="#cb63-468" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-469"><a href="#cb63-469" aria-hidden="true" tabindex="-1"></a>In <span class="co">[</span><span class="ot">Chapter 2</span><span class="co">](02-data-import.Rmd)</span>, we'll dive deep into importing data from various sources using readr and other packages. You'll learn to read CSV, Excel, JSON, and database files efficiently.</span>
+<span id="cb63-470"><a href="#cb63-470" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-471"><a href="#cb63-471" aria-hidden="true" tabindex="-1"></a><span class="fu">## Additional Resources</span></span>
+<span id="cb63-472"><a href="#cb63-472" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb63-473"><a href="#cb63-473" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">R for Data Science (2e)</span><span class="co">](https://r4ds.hadley.nz/)</span></span>
+<span id="cb63-474"><a href="#cb63-474" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Tidyverse Style Guide</span><span class="co">](https://style.tidyverse.org/)</span></span>
+<span id="cb63-475"><a href="#cb63-475" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Tidyverse Cheat Sheets</span><span class="co">](https://www.rstudio.com/resources/cheatsheets/)</span></span>
+<span id="cb63-476"><a href="#cb63-476" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Advanced R</span><span class="co">](https://adv-r.hadley.nz/)</span></span>
+</code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
+</div></div></div></div></div>
+</div> <!-- /content -->
+
+
+
+
+</body></html>

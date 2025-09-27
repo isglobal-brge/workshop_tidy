@@ -1,5 +1,6 @@
 ---
 title: "Chapter 16: Ensemble Methods - The Power of Many"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

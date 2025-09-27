@@ -1,5 +1,6 @@
 ---
 title: "Chapter 18: Model Deployment and Production - From Prototype to Product"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

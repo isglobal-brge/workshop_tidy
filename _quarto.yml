@@ -62,6 +62,7 @@ format:
     code-tools: true
     code-copy: true
     highlight-style: github
+    include-after-body: author-fix.html
 
 execute:
   freeze: auto

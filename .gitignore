@@ -4,13 +4,19 @@
 .Rproj.user/
 *.Rproj
 
-# Quarto
+# Quarto cache and temporary files
 /.quarto/
+_freeze/
 _site/
 _book/
 *.knit.md
 *_cache/
+
+# Temporary _files/ directories (NOT in docs/)
+# Note: docs/*_files/ contains images and should NOT be ignored
 *_files/
+!docs/
+!docs/**
 
 # R package files
 *.tar.gz
@@ -22,51 +28,6 @@ _book/
 *.toc
 *.bak
 *~
-.DS_Store
-Thumbs.db
-
-# Output files
-*.html
-*.pdf
-*.docx
-*.epub
-
-# Data files (if you want to exclude large datasets)
-# *.csv
-# *.xlsx
-# *.rds
-
-# API keys and credentials
-api/
-config/api_keys.rds
-.env
-
-# Model files (if they're large)
-models/pins/
-models/*.rds
-!models/README.md
-
-# Logs
-logs/
-*.log
-
-# Docker
-docker/models/
-docker/logs/
-
-# Shiny apps
-apps/rsconnect/
-apps/*.dcf
-
-# Python (if using reticulate)
-__pycache__/
-*.py[cod]
-.venv/
-venv/
-
-# IDE
-.vscode/
-.idea/
 
 # OS files
 .DS_Store
@@ -75,3 +36,37 @@ venv/
 .Spotlight-V100
 .Trashes
 ehthumbs.db
+Thumbs.db
+
+# IDE files
+.vscode/
+.idea/
+*.code-workspace
+
+# Example/demo directories (created during Chapter 18)
+api/
+apps/
+docker/
+models/
+
+# Keep docs/ for GitHub Pages - DO NOT IGNORE
+# docs/ should NOT be in .gitignore as it contains the rendered website
+
+# API keys and credentials (if any)
+.env
+*.key
+config/api_keys.rds
+
+# Python (if using reticulate)
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+
+# Large data files (uncomment if needed)
+# *.csv
+# *.xlsx
+# *.rds
+
+# Logs
+logs/

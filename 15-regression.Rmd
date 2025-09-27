@@ -1,5 +1,6 @@
 ---
 title: "Chapter 15: Regression Models - Theory, Implementation, and Best Practices"
+author: "David Sarrat González, Juan R González"
 date: today
 format:
   html:

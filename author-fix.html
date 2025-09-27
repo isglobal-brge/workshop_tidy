@@ -1,0 +1,12 @@
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Find all elements with class 'quarto-title-meta-heading' that contain "Author"
+    const authorHeadings = document.querySelectorAll('.quarto-title-meta-heading');
+    
+    authorHeadings.forEach(function(heading) {
+        if (heading.textContent.trim() === 'Author') {
+            heading.textContent = 'Authors';
+        }
+    });
+});
+</script>
