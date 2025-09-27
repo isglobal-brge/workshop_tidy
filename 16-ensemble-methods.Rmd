@@ -101,7 +101,7 @@ results_df <- tibble(
   ensemble = ensemble_pred
 ) %>%
   bind_cols(
-    as_tibble(weak_predictions) %>%
+    as_tibble(weak_predictions, .name_repair = "minimal") %>%
       set_names(paste0("model_", 1:n_models))
   )
 
@@ -156,8 +156,7 @@ bagging_spec <- bag_tree(
 # Create a simple recipe
 simple_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
   step_rm(Street, Utilities, Condition_2, Roof_Matl, Heating, Pool_QC,
-          Misc_Feature, Low_Qual_Fin_SF, Pool_Area, Longitude, Latitude) %>%
-  step_log(Sale_Price) %>%
+          Misc_Feature, Pool_Area, Longitude, Latitude) %>%
   step_impute_median(all_numeric_predictors()) %>%
   step_impute_mode(all_nominal_predictors()) %>%
   step_dummy(all_nominal_predictors())
@@ -252,9 +251,11 @@ rf_comparison <- tibble(
 # Fit all models
 rf_workflows <- rf_comparison %>%
   mutate(
-    workflow = map(model, ~ workflow() %>%
-                    add_recipe(simple_recipe) %>%
-                    add_model(.))
+    workflow = map(model, function(m) {
+      workflow() %>%
+        add_recipe(simple_recipe) %>%
+        add_model(m)
+    })
   )
 
 # Evaluate with cross-validation (simplified for speed)
@@ -359,7 +360,6 @@ xgb_spec <- boost_tree(
   min_n = 10,
   loss_reduction = 0.01,
   sample_size = 0.8,
-  mtry = 0.8,
   learn_rate = 0.1
 ) %>%
   set_engine("xgboost") %>%
@@ -428,106 +428,71 @@ Boosting characteristics:
 Stacking uses a meta-model to combine predictions from base models:
 
 ```{r}
-# Create base models with different characteristics
-# Linear model
-lm_spec <- linear_reg(penalty = 0.01, mixture = 0.5) %>%
-  set_engine("glmnet")
+# Simple stacking example with manual blending
+# Create base models
+lm_spec <- linear_reg() %>%
+  set_engine("lm")
 
-lm_workflow <- workflow() %>%
-  add_recipe(simple_recipe) %>%
-  add_model(lm_spec)
-
-# Random forest
-rf_spec <- rand_forest(
-  trees = 200,
-  mtry = tune(),
-  min_n = tune()
-) %>%
+rf_spec <- rand_forest(trees = 200) %>%
   set_engine("ranger") %>%
   set_mode("regression")
 
-rf_workflow <- workflow() %>%
-  add_recipe(simple_recipe) %>%
-  add_model(rf_spec)
-
-# XGBoost
-xgb_spec <- boost_tree(
-  trees = 100,
-  tree_depth = tune(),
-  learn_rate = tune()
-) %>%
+xgb_spec <- boost_tree(trees = 100, tree_depth = 4) %>%
   set_engine("xgboost") %>%
   set_mode("regression")
 
-xgb_workflow <- workflow() %>%
+# Fit models
+lm_fit <- workflow() %>%
   add_recipe(simple_recipe) %>%
-  add_model(xgb_spec)
+  add_model(lm_spec) %>%
+  fit(ames_train)
 
-# K-nearest neighbors
-knn_spec <- nearest_neighbor(
-  neighbors = tune(),
-  dist_power = tune()
-) %>%
-  set_engine("kknn") %>%
-  set_mode("regression")
-
-knn_workflow <- workflow() %>%
+rf_fit <- workflow() %>%
   add_recipe(simple_recipe) %>%
-  add_model(knn_spec)
+  add_model(rf_spec) %>%
+  fit(ames_train)
 
-# Initialize stack
-model_stack <- stacks() %>%
-  add_candidates(lm_workflow %>% 
-                  fit_resamples(ames_folds, 
-                               control = control_resamples(save_pred = TRUE,
-                                                          save_workflow = TRUE))) %>%
-  add_candidates(rf_workflow %>%
-                  tune_grid(ames_folds,
-                           grid = 5,
-                           control = control_grid(save_pred = TRUE,
-                                                save_workflow = TRUE))) %>%
-  add_candidates(xgb_workflow %>%
-                  tune_grid(ames_folds,
-                           grid = 5,
-                           control = control_grid(save_pred = TRUE,
-                                                save_workflow = TRUE))) %>%
-  add_candidates(knn_workflow %>%
-                  tune_grid(ames_folds,
-                           grid = 5,
-                           control = control_grid(save_pred = TRUE,
-                                                save_workflow = TRUE)))
+xgb_fit <- workflow() %>%
+  add_recipe(simple_recipe) %>%
+  add_model(xgb_spec) %>%
+  fit(ames_train)
 
-# Blend predictions
-blended_stack <- model_stack %>%
-  blend_predictions(penalty = 10^seq(-3, 0, length.out = 10))
+# Get predictions from each model
+lm_pred <- predict(lm_fit, ames_test)$.pred
+rf_pred <- predict(rf_fit, ames_test)$.pred
+xgb_pred <- predict(xgb_fit, ames_test)$.pred
 
-# See which models contribute
-autoplot(blended_stack, type = "weights") +
-  labs(
-    title = "Model Weights in Stack",
-    subtitle = "Different models contribute different amounts"
+# Simple average ensemble
+avg_pred <- (lm_pred + rf_pred + xgb_pred) / 3
+
+# Weighted average (weights could be tuned)
+weighted_pred <- 0.2 * lm_pred + 0.4 * rf_pred + 0.4 * xgb_pred
+
+# Calculate RMSE for each approach
+rmse_results <- tibble(
+  Model = c("Linear", "Random Forest", "XGBoost", "Simple Average", "Weighted Average"),
+  RMSE = c(
+    sqrt(mean((ames_test$Sale_Price - lm_pred)^2)),
+    sqrt(mean((ames_test$Sale_Price - rf_pred)^2)),
+    sqrt(mean((ames_test$Sale_Price - xgb_pred)^2)),
+    sqrt(mean((ames_test$Sale_Price - avg_pred)^2)),
+    sqrt(mean((ames_test$Sale_Price - weighted_pred)^2))
   )
-
-# Fit the full stack
-fitted_stack <- blended_stack %>%
-  fit_members()
-
-# Evaluate stacked model
-stack_pred <- predict(fitted_stack, ames_test)
-stack_rmse <- sqrt(mean((ames_test$Sale_Price - stack_pred$.pred)^2))
-
-cat("Stacked Model RMSE:", stack_rmse, "\n")
-
-# Compare with individual models
-individual_rmse <- c(
-  "Linear" = sqrt(mean((ames_test$Sale_Price - 
-                       predict(lm_workflow %>% fit(ames_train), ames_test)$.pred)^2)),
-  "Stack" = stack_rmse
 )
 
-cat("\nImprovement over best individual:", 
-    round((min(individual_rmse[-length(individual_rmse)]) - stack_rmse) / 
-          min(individual_rmse[-length(individual_rmse)]) * 100, 2), "%\n")
+# Display results
+knitr::kable(rmse_results, digits = 0)
+
+# Visualize ensemble effect
+ggplot(rmse_results, aes(x = reorder(Model, RMSE), y = RMSE, fill = Model)) +
+  geom_col() +
+  coord_flip() +
+  labs(
+    title = "Model Stacking Performance",
+    subtitle = "Ensemble methods typically outperform individual models",
+    x = NULL
+  ) +
+  theme(legend.position = "none")
 ```
 
 ## Voting Ensembles
@@ -558,7 +523,7 @@ rf_class_spec <- rand_forest(trees = 100) %>%
   set_mode("classification")
 
 # Simple recipe for classification
-class_recipe <- recipe(expensive ~ Gr_Liv_Area + Overall_Cond + Year_Built, 
+class_recipe <- recipe(expensive ~ Gr_Liv_Area + Total_Bsmt_SF + Year_Built, 
                       data = class_train) %>%
   step_normalize(all_numeric_predictors())
 
@@ -581,7 +546,11 @@ models <- list(
 )
 
 # Get predictions from each model
-predictions <- map_dfc(models, ~ predict(., class_test, type = "prob")) %>%
+predictions <- map_dfc(models, function(model) {
+  predict(model, class_test, type = "prob") %>%
+    select(.pred_yes) %>%
+    pull()
+}) %>%
   set_names(paste0(names(models), "_prob_yes"))
 
 # Hard voting (majority vote)
@@ -681,10 +650,12 @@ diverse_models <- list(
 )
 
 # Fit and evaluate
-diverse_fits <- map(diverse_models, ~ workflow() %>%
-                     add_recipe(class_recipe) %>%
-                     add_model(.) %>%
-                     fit(class_train))
+diverse_fits <- map(diverse_models, function(model) {
+  workflow() %>%
+    add_recipe(class_recipe) %>%
+    add_model(model) %>%
+    fit(class_train)
+})
 
 # Compare ensemble of similar vs diverse models
 similar_ensemble <- map_dfc(diverse_fits[1:2], 
@@ -781,9 +752,11 @@ complex_model <- boost_tree(trees = 200, tree_depth = 6) %>%
 difficult_cases <- train_with_residuals %>%
   filter(is_difficult)
 
+complex_recipe <- recipe(residual ~ Gr_Liv_Area + Year_Built + Total_Bsmt_SF, 
+                        data = difficult_cases)
+
 complex_fit <- workflow() %>%
-  add_recipe(recipe(residual ~ ., data = difficult_cases) %>%
-            select(-Sale_Price, -simple_pred, -is_difficult)) %>%
+  add_recipe(complex_recipe) %>%
   add_model(complex_model) %>%
   fit(difficult_cases)
 
@@ -862,8 +835,7 @@ Create your own ensemble combining different approaches:
 # Create a custom ensemble for Ames housing
 custom_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
   step_rm(Street, Utilities, Condition_2, Roof_Matl, Heating, Pool_QC,
-          Misc_Feature, Low_Qual_Fin_SF, Pool_Area, Longitude, Latitude) %>%
-  step_log(Sale_Price) %>%
+          Misc_Feature, Pool_Area, Longitude, Latitude) %>%
   step_impute_median(all_numeric_predictors()) %>%
   step_normalize(all_numeric_predictors()) %>%
   step_dummy(all_nominal_predictors())
@@ -891,10 +863,12 @@ base_models <- list(
 )
 
 # Fit all base models
-base_fits <- map(base_models, ~ workflow() %>%
-                  add_recipe(custom_recipe) %>%
-                  add_model(.) %>%
-                  fit(ames_train))
+base_fits <- map(base_models, function(model) {
+  workflow() %>%
+    add_recipe(custom_recipe) %>%
+    add_model(model) %>%
+    fit(ames_train)
+})
 
 # Get out-of-sample predictions using cross-validation
 # (In practice, use proper validation set)
@@ -903,10 +877,12 @@ val_train <- training(val_split)
 val_test <- testing(val_split)
 
 # Refit on validation training
-val_fits <- map(base_models, ~ workflow() %>%
-                 add_recipe(custom_recipe) %>%
-                 add_model(.) %>%
-                 fit(val_train))
+val_fits <- map(base_models, function(model) {
+  workflow() %>%
+    add_recipe(custom_recipe) %>%
+    add_model(model) %>%
+    fit(val_train)
+})
 
 # Get validation predictions for stacking
 val_predictions <- map_dfc(val_fits, ~ predict(., val_test)$.pred) %>%

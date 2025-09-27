@@ -55,10 +55,16 @@ ames_train <- training(ames_split)
 ames_test <- testing(ames_split)
 
 # Create a production-ready model
+# Transform outcome before recipe
+ames_train_log <- ames_train %>%
+  mutate(Sale_Price = log(Sale_Price))
+
+ames_test_log <- ames_test %>%
+  mutate(Sale_Price = log(Sale_Price))
+
 production_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + 
                           Year_Built + Neighborhood + Total_Bsmt_SF, 
-                          data = ames_train) %>%
-  step_log(Sale_Price) %>%
+                          data = ames_train_log) %>%
   step_impute_median(all_numeric_predictors()) %>%
   step_novel(all_nominal_predictors()) %>%  # Handle new categories
   step_unknown(all_nominal_predictors()) %>%  # Handle missing categories
@@ -74,11 +80,11 @@ production_workflow <- workflow() %>%
 
 # Fit the model
 production_fit <- production_workflow %>%
-  fit(ames_train)
+  fit(ames_train_log)
 
 # Evaluate
-test_predictions <- predict(production_fit, ames_test) %>%
-  bind_cols(ames_test %>% select(Sale_Price))
+test_predictions <- predict(production_fit, ames_test_log) %>%
+  bind_cols(ames_test_log %>% select(Sale_Price))
 
 test_metrics <- test_predictions %>%
   metrics(Sale_Price, .pred)
@@ -93,13 +99,15 @@ print(test_metrics)
 
 ```{r}
 # Method 1: Base R serialization
+# Create directory if it doesn't exist
+dir.create("models", showWarnings = FALSE)
 saveRDS(production_fit, "models/ames_model_v1.rds")
 
 # Load it back
 loaded_model <- readRDS("models/ames_model_v1.rds")
 
 # Verify it works
-test_pred <- predict(loaded_model, ames_test %>% slice(1:5))
+test_pred <- predict(loaded_model, ames_test_log %>% slice(1:5))
 print(test_pred)
 
 # Method 2: Using bundle package for better portability
@@ -305,6 +313,7 @@ function() {
 '
 
 # Save API file
+dir.create("api", showWarnings = FALSE)
 writeLines(api_code, "api/model_api.R")
 
 # To run the API (don't run in notebook):
@@ -722,6 +731,7 @@ shinyApp(ui = ui, server = server)
 '
 
 # Save Shiny app
+dir.create("apps", showWarnings = FALSE)
 writeLines(shiny_app, "apps/prediction_app.R")
 ```
 
@@ -758,6 +768,7 @@ EXPOSE 8000
 CMD ["R", "-e", "plumber::pr(\'api.R\') %>% plumber::pr_run(host=\'0.0.0.0\', port=8000)"]
 '
 
+dir.create("docker", showWarnings = FALSE)
 writeLines(dockerfile_content, "docker/Dockerfile")
 
 # Docker compose for multi-container deployment
@@ -832,11 +843,11 @@ create_monitoring_system <- function(model, production_data) {
 }
 
 # Simulate production data with drift
-production_sample <- ames_test %>%
+production_sample <- ames_test_log %>%
   mutate(
-    # Simulate data drift
-    Gr_Liv_Area = Gr_Liv_Area * runif(n(), 0.9, 1.1),
-    Year_Built = Year_Built + sample(-5:5, n(), replace = TRUE)
+    # Simulate data drift - keep as integer
+    Gr_Liv_Area = as.integer(Gr_Liv_Area * runif(n(), 0.9, 1.1)),
+    Year_Built = as.integer(Year_Built + sample(-5:5, n(), replace = TRUE))
   )
 
 monitoring_results <- create_monitoring_system(production_fit, production_sample)
@@ -1010,10 +1021,10 @@ alternative_model <- workflow() %>%
   add_model(rand_forest(trees = 100) %>% 
            set_engine("ranger") %>% 
            set_mode("regression")) %>%
-  fit(ames_train)
+  fit(ames_train_log)
 
 # Run A/B test
-ab_results <- ab_test_framework(production_fit, alternative_model, ames_test)
+ab_results <- ab_test_framework(production_fit, alternative_model, ames_test_log)
 
 cat("A/B Test Results:\n")
 print(ab_results$metrics)
@@ -1221,7 +1232,7 @@ registry$register(
   production_fit, 
   "ames_predictor", 
   "1.0.0",
-  list(rmse = 25432, yardstick::rsq = 0.89),
+  list(rmse = 25432, rsq = 0.89),
   list(algorithm = "elastic_net")
 )
 
@@ -1229,7 +1240,7 @@ registry$register(
   alternative_model, 
   "ames_predictor", 
   "1.1.0",
-  list(rmse = 24800, yardstick::rsq = 0.91),
+  list(rmse = 24800, rsq = 0.91),
   list(algorithm = "random_forest")
 )
 
@@ -1293,7 +1304,7 @@ create_retraining_pipeline <- function(current_model, retraining_threshold = 0.1
   execute <- function(new_data) {
     # Current performance
     current_metrics <- monitor(current_model, new_data)
-    baseline_metrics <- list(rmse = 25432, yardstick::rsq = 0.89)
+    baseline_metrics <- list(rmse = 25432, rsq = 0.89)
     
     cat("Current RMSE:", current_metrics %>% 
         filter(.metric == "rmse") %>% 
@@ -1326,7 +1337,7 @@ create_retraining_pipeline <- function(current_model, retraining_threshold = 0.1
 pipeline <- create_retraining_pipeline(production_fit)
 
 # Simulate degraded performance data
-degraded_data <- ames_test %>%
+degraded_data <- ames_test_log %>%
   mutate(Sale_Price = Sale_Price * runif(n(), 0.7, 1.3))  # Add noise
 
 result <- pipeline(degraded_data)

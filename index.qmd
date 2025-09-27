@@ -1,10 +1,10 @@
 ---
-title: "Complete Tidyverse & Machine Learning Workshop"
+title: "Tidyverse & Machine Learning Workshop"
 author: "Workshop Materials"
 date: today
 ---
 
-# Welcome to the Complete Tidyverse & Machine Learning Workshop
+# Welcome to the Tidyverse & Machine Learning Workshop
 
 ## Course Overview
 
@@ -92,6 +92,8 @@ install.packages(c(
   # Machine learning models
   "ranger",           # Random forests
   "xgboost",          # Gradient boosting
+  "tidyclust",        # Clustering for tidymodels
+  "factoextra",       # Visualization for clustering
   "glmnet",           # Regularized regression
   "kknn",             # K-nearest neighbors
   "kernlab",          # SVM
@@ -138,7 +140,24 @@ install.packages(c(
   "bonsai",           # Flexible models
   "finetune",         # Advanced tuning
   "sda",              # Shrinkage discriminant
-  "sparsediscrim"     # Sparse discriminant
+  "sparsediscrim",    # Sparse discriminant
+  "workflowsets",     # Multiple workflows
+  
+  # Additional packages
+  "shiny",            # Web apps
+  "shinydashboard",   # Dashboard UI
+  "DT",               # Interactive tables
+  "cluster",          # Clustering algorithms
+  "Rtsne",            # t-SNE
+  "dbscan",           # DBSCAN clustering
+  "isotree",          # Isolation forest
+  "arules",           # Association rules
+  "arulesViz",        # Visualize rules
+  "doParallel",       # Parallel backend
+  "dtplyr",           # dplyr for data.table
+  "jose",             # JWT tokens
+  "logger",           # Logging
+  "performance"       # Model performance
 ))
 ```
 

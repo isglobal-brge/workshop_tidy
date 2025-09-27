@@ -833,9 +833,9 @@ project_timeline <- project_tasks %>%
     
     # Next task start
     next_start = lead(end_date_business) %>% 
-      map(~next_business_day(.)) %>%
-      as_date() %>%
-      unlist()
+      map_if(~!is.na(.), ~next_business_day(.)) %>%
+      unlist() %>%
+      as_date()
   )
 
 project_timeline %>%

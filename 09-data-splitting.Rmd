@@ -254,11 +254,12 @@ assessment(first_fold) %>% nrow()  # Test data for this fold
 
 # Visualize how data is split across folds
 fold_assignments <- map_df(1:5, function(fold) {
+  assessment_rows <- which(ames_cv$splits[[fold]]$in_id == 0)
   ames_train %>%
     mutate(
       row_id = row_number(),
       fold = fold,
-      in_assessment = row_id %in% assessment(ames_cv$splits[[fold]])$row_id
+      in_assessment = row_id %in% assessment_rows
     )
 }) %>%
   filter(row_id <= 100)  # Show first 100 rows for visualization
@@ -538,14 +539,13 @@ rolling_splits <- rolling_origin(
 )
 
 # Calculate how training size grows
-rolling_summary <- map_df(1:length(rolling_splits$splits), function(i) {
-  split <- rolling_splits$splits[[i]]
-  tibble(
-    split = i,
-    train_size = nrow(analysis(split)),
-    test_size = nrow(assessment(split))
-  )
-})
+rolling_summary <- rolling_splits %>%
+  mutate(
+    train_size = map_int(splits, ~ nrow(analysis(.))),
+    test_size = map_int(splits, ~ nrow(assessment(.)))
+  ) %>%
+  select(id, train_size, test_size) %>%
+  mutate(split = row_number())
 
 ggplot(rolling_summary, aes(x = split)) +
   geom_line(aes(y = train_size, color = "Training"), linewidth = 1) +
@@ -640,10 +640,14 @@ test_set <- testing(val_split)
 
 # Use validation set for model selection
 models_to_compare <- list(
-  simple = recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond, data = train_set),
+  simple = recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond, data = train_set) %>%
+    step_dummy(all_nominal_predictors()),
   moderate = recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Year_Built + 
-                   Neighborhood, data = train_set),
-  complex = recipe(Sale_Price ~ ., data = train_set)
+                   Neighborhood, data = train_set) %>%
+    step_dummy(all_nominal_predictors()),
+  complex = recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Year_Built + 
+                  Neighborhood + Total_Bsmt_SF + First_Flr_SF, data = train_set) %>%
+    step_dummy(all_nominal_predictors())
 )
 
 # Fit models and evaluate on validation set

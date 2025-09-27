@@ -127,7 +127,6 @@ Grid search evaluates all combinations of hyperparameter values in a predefined 
 # Create a simple preprocessing recipe
 simple_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Year_Built + 
                        Neighborhood, data = ames_train) %>%
-  step_log(Sale_Price) %>%
   step_dummy(all_nominal_predictors()) %>%
   step_normalize(all_numeric_predictors())
 
@@ -254,10 +253,10 @@ random_results <- elastic_workflow %>%
 # Compare efficiency
 comparison <- bind_rows(
   grid_results %>% 
-    show_best("rmse", n = 1) %>% 
+    show_best(metric = "rmse", n = 1) %>% 
     mutate(method = "Grid (50 points)"),
   random_results %>% 
-    show_best("rmse", n = 1) %>% 
+    show_best(metric = "rmse", n = 1) %>% 
     mutate(method = "Random (30 points)")
 ) %>%
   select(method, penalty, mixture, mean, std_err)
@@ -308,9 +307,6 @@ Bayesian optimization uses past results to intelligently choose the next points 
 ```{r}
 # More complex model for Bayesian optimization demonstration
 rf_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
-  step_rm(Street, Utilities, Condition_2, Roof_Matl, Heating, Pool_QC,
-          Misc_Feature, Low_Qual_Fin_SF, Pool_Area, Longitude, Latitude) %>%
-  step_log(Sale_Price) %>%
   step_impute_median(all_numeric_predictors()) %>%
   step_normalize(all_numeric_predictors()) %>%
   step_dummy(all_nominal_predictors())
@@ -421,8 +417,8 @@ racing_summary <- tibble(
                          sum(!is.na(collect_metrics(race_results, 
                                                    summarize = FALSE)$.estimate))),
   `Best RMSE` = c(
-    show_best(grid_results, "rmse", n = 1)$mean,
-    show_best(race_results, "rmse", n = 1)$mean
+    show_best(grid_results, metric = "rmse", n = 1)$mean,
+    show_best(race_results, metric = "rmse", n = 1)$mean
   )
 )
 
@@ -497,7 +493,6 @@ tune_and_evaluate <- function(split) {
   # Create workflow with data from this fold
   fold_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Year_Built, 
                        data = train_data) %>%
-    step_log(Sale_Price) %>%
     step_normalize(all_numeric_predictors())
   
   fold_workflow <- workflow() %>%
@@ -513,7 +508,7 @@ tune_and_evaluate <- function(split) {
     )
   
   # Select best parameters
-  best_params <- select_best(tune_results, "rmse")
+  best_params <- select_best(tune_results, metric = "rmse")
   
   # Finalize workflow
   final_workflow <- fold_workflow %>%
@@ -617,9 +612,9 @@ multi_metric_results <- elastic_workflow %>%
   )
 
 # Different metrics might suggest different "best" parameters
-best_rmse <- select_best(multi_metric_results, "rmse")
-best_rsq <- select_best(multi_metric_results, "rsq")
-best_mae <- select_best(multi_metric_results, "mae")
+best_rmse <- select_best(multi_metric_results, metric = "rmse")
+best_rsq <- select_best(multi_metric_results, metric = "rsq")
+best_mae <- select_best(multi_metric_results, metric = "mae")
 
 comparison <- bind_rows(
   best_rmse %>% mutate(optimized_for = "RMSE"),
@@ -669,7 +664,7 @@ coarse_results <- elastic_workflow %>%
   )
 
 # Find promising region
-best_coarse <- select_best(coarse_results, "rmse")
+best_coarse <- select_best(coarse_results, metric = "rmse")
 
 # Refined search around best region
 fine_grid <- grid_regular(
@@ -715,7 +710,7 @@ After tuning, finalize your workflow:
 
 ```{r}
 # Select best overall parameters
-best_params <- select_best(fine_results, "rmse")
+best_params <- select_best(fine_results, metric = "rmse")
 
 # Finalize workflow
 final_workflow <- elastic_workflow %>%
@@ -893,11 +888,11 @@ lhs_time <- system.time({
 
 # Compare results
 strategy_comparison <- bind_rows(
-  show_best(regular_xgb, n = 1) %>% 
+  show_best(regular_xgb, metric = "rmse", n = 1) %>% 
     mutate(strategy = "Regular Grid", time = regular_time[3], points = 27),
-  show_best(random_xgb, n = 1) %>% 
+  show_best(random_xgb, metric = "rmse", n = 1) %>% 
     mutate(strategy = "Random", time = random_time[3], points = 15),
-  show_best(lhs_xgb, n = 1) %>% 
+  show_best(lhs_xgb, metric = "rmse", n = 1) %>% 
     mutate(strategy = "Latin Hypercube", time = lhs_time[3], points = 15)
 ) %>%
   select(strategy, points, time, mean, tree_depth, learn_rate, min_n)
@@ -938,7 +933,7 @@ iterative_tuning <- function(workflow, resamples, n_iterations = 3) {
     results[[i]] <- iter_results
     
     # Get best parameters
-    best <- select_best(iter_results, "rmse")
+    best <- select_best(iter_results, metric = "rmse")
     
     # Refine ranges for next iteration (zoom in by 50%)
     tree_width <- diff(current_range_tree) * 0.25

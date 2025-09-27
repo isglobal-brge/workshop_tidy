@@ -743,7 +743,7 @@ You've mastered the essential dplyr functions:
 
 ## What's Next?
 
-In [Chapter 4](04-data-tidying.qmd), we'll learn how to reshape and tidy messy data using tidyr, including pivoting, nesting, and handling missing values.
+In [Chapter 4](04-data-tidying.Rmd), we'll learn how to reshape and tidy messy data using tidyr, including pivoting, nesting, and handling missing values.
 
 ## Additional Resources
 

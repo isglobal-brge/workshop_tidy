@@ -149,8 +149,8 @@ nn_reg_spec <- mlp() %>%
   set_engine("nnet") %>%
   set_mode("regression")
 
-# Show all available regression models
-parsnip::show_model_info("regression")
+# Show info for linear regression
+parsnip::show_model_info("linear_reg")
 ```
 
 ### Classification Models
@@ -210,13 +210,11 @@ print(linear_engines)
 engines_to_compare <- c("lm", "glm", "glmnet")
 
 linear_comparisons <- map(engines_to_compare, function(eng) {
-  spec <- linear_reg()
-  
   # Special handling for glmnet
   if (eng == "glmnet") {
-    spec <- spec %>% set_engine(eng, penalty = 0)  # No regularization
+    spec <- linear_reg(penalty = 0) %>% set_engine(eng)  # No regularization
   } else {
-    spec <- spec %>% set_engine(eng)
+    spec <- linear_reg() %>% set_engine(eng)
   }
   
   # Fit the model
@@ -411,7 +409,6 @@ xgb_spec <- boost_tree(
   min_n = 10,             # Minimum node size
   loss_reduction = 0.01,  # Minimum loss reduction
   sample_size = 0.8,      # Subsample ratio
-  mtry = 0.8,            # Column subsample ratio
   learn_rate = 0.01       # Learning rate
 ) %>%
   set_engine("xgboost") %>%
@@ -487,7 +484,7 @@ model_evaluation <- map_df(names(fitted_models), function(model_name) {
 
 # Visualize comparison
 model_evaluation %>%
-  pivot_longer(cols = c(rmse, yardstick::mae, r_squared), 
+  pivot_longer(cols = c(rmse, mae, r_squared), 
                names_to = "metric", values_to = "value") %>%
   ggplot(aes(x = model, y = value, fill = model)) +
   geom_col() +
