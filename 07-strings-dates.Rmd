@@ -551,7 +551,7 @@ support_tickets <- tibble(
   ), n_tickets, replace = TRUE),
   priority = sample(c("Low", "Medium", "High", "Critical"), n_tickets, 
                    replace = TRUE, prob = c(0.4, 0.3, 0.2, 0.1)),
-  resolved_at = created_at + hours(rexp(n_tickets, rate = 1/24))  # Exponential resolution time
+  resolved_at = created_at + hours(round(rexp(n_tickets, rate = 1/24)))  # Exponential resolution time
 ) %>%
   mutate(
     resolved_at = if_else(runif(n_tickets) < 0.1, NA_POSIXct_, resolved_at)  # 10% unresolved

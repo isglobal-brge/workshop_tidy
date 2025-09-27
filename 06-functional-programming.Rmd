@@ -299,24 +299,26 @@ simulated_data <- pmap(params, function(n, mean, sd, distribution) {
   )
 })
 
-# Add to our data frame
-params_with_data <- params %>%
-  mutate(
+# Add to our data frame - simulated_data is already a list
+params_with_data <- bind_cols(
+  params,
+  tibble(
     data = simulated_data,
-    actual_mean = map_dbl(data, mean),
-    actual_sd = map_dbl(data, sd)
+    actual_mean = map_dbl(simulated_data, mean),
+    actual_sd = map_dbl(simulated_data, sd)
   )
+)
 
 params_with_data %>%
   select(-data)
 
 # Visualize all distributions
 params_with_data %>%
-  mutate(data = map2(data, distribution, ~ {
-    tibble(value = .x, distribution = .y)
+  mutate(plot_data = map2(data, distribution, ~ {
+    tibble(value = .x, dist_type = .y)
   })) %>%
-  select(distribution, data) %>%
-  unnest(data) %>%
+  select(distribution, plot_data) %>%
+  unnest(plot_data) %>%
   ggplot(aes(x = value, fill = distribution)) +
   geom_histogram(bins = 30, alpha = 0.7) +
   facet_wrap(~distribution, scales = "free") +
@@ -804,7 +806,7 @@ system.time({
 
 # Parallel processing
 system.time({
-  parallel_results <- future_map_df(1:100, ~ large_simulation())
+  parallel_results <- furrr::future_map_dfr(1:100, ~ large_simulation())
 })
 
 # Reset to sequential processing

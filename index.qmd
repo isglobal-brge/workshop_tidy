@@ -61,33 +61,84 @@ install.packages("tidymodels")
 
 # Additional packages for specific chapters
 install.packages(c(
-  "palmerpenguins",  # Dataset for examples
-  "gapminder",        # Dataset for examples
-  "nycflights13",     # Dataset for examples
+  # Datasets
+  "palmerpenguins",  # Penguin dataset
+  "gapminder",        # Gapminder dataset
+  "nycflights13",     # Flights dataset
   "modeldata",        # Additional datasets
-  "vip",              # Variable importance plots
-  "ranger",           # Random forests
-  "xgboost",          # Gradient boosting
-  "glmnet",           # Regularized regression
-  "kknn",             # K-nearest neighbors
-  "discrim",          # Discriminant analysis
-  "baguette",         # Bagging
-  "stacks",           # Model stacking
-  "vetiver",          # Model deployment
-  "plumber",          # API creation
-  "pins",             # Model versioning
+  
+  # Visualization and exploration
   "corrplot",         # Correlation plots
+  "viridis",          # Color palettes
   "GGally",           # Extended ggplot2
   "skimr",            # Data summaries
+  "plotly",           # Interactive plots
+  "patchwork",        # Combine plots
+  
+  # Data manipulation
   "janitor",          # Data cleaning
   "lubridate",        # Date handling
   "stringr",          # String manipulation
   "forcats",          # Factor handling
+  "readxl",           # Read Excel files
+  "haven",            # Read SPSS/SAS/Stata
+  "jsonlite",         # JSON handling
+  "xml2",             # XML handling
+  "httr",             # HTTP requests
+  "rvest",            # Web scraping
+  "DBI",              # Database interface
+  "RSQLite",          # SQLite
+  
+  # Machine learning models
+  "ranger",           # Random forests
+  "xgboost",          # Gradient boosting
+  "glmnet",           # Regularized regression
+  "kknn",             # K-nearest neighbors
+  "kernlab",          # SVM
+  "discrim",          # Discriminant analysis
+  "baguette",         # Bagging
+  "earth",            # MARS models
+  "rules",            # Rule-based models
+  "naivebayes",       # Naive Bayes
+  "klaR",             # Classification
+  "mda",              # Mixture discriminant
+  "poissonreg",       # Poisson regression
+  "nnet",             # Neural networks
+  "lightgbm",         # LightGBM
+  "dbarts",           # BART
+  
+  # Feature engineering
+  "textrecipes",      # Text preprocessing
+  "themis",           # Class imbalance
+  "embed",            # Embeddings
+  "bestNormalize",    # Normalization
+  "tidytext",         # Text mining
+  "stopwords",        # Stop words
+  "moments",          # Statistical moments
+  
+  # Performance and parallel processing
+  "microbenchmark",   # Performance benchmarking
+  "furrr",            # Parallel purrr functions
+  "future",           # Parallel processing backend
+  
+  # Model evaluation and deployment
+  "vip",              # Variable importance
   "broom",            # Model tidying
   "yardstick",        # Model metrics
   "probably",         # Uncertainty estimation
+  "stacks",           # Model stacking
+  "vetiver",          # Model deployment
+  "plumber",          # API creation
+  "pins",             # Model versioning
   "butcher",          # Model size reduction
-  "bundle"            # Model bundling
+  "bundle",           # Model bundling
+  
+  # Advanced tidymodels
+  "agua",             # H2O integration
+  "bonsai",           # Flexible models
+  "finetune",         # Advanced tuning
+  "sda",              # Shrinkage discriminant
+  "sparsediscrim"     # Sparse discriminant
 ))
 ```
 

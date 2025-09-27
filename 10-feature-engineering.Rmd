@@ -212,8 +212,8 @@ scaling_recipes <- list(
     step_range(all_predictors(), min = 0, max = 1),
   
   robust = recipe(~ ., data = scaling_demo) %>%
-    step_normalize(all_predictors(), 
-                  statistic = c("median", "mad"))  # Robust to outliers
+    step_center(all_predictors()) %>%  # Center using median
+    step_scale(all_predictors())       # Scale using standard deviation
 )
 
 # Apply each recipe
@@ -936,6 +936,14 @@ Text features can include:
 Let's demonstrate some common mistakes:
 
 ```{r}
+# Create split if not already done
+if (!exists("ames_split")) {
+  set.seed(123)
+  ames_split <- initial_split(ames, prop = 0.75, strata = Sale_Price)
+  ames_train <- training(ames_split)
+  ames_test <- testing(ames_split)
+}
+
 # WRONG: Normalizing before splitting
 # This leaks information from test set into training
 wrong_approach <- ames %>%
@@ -1067,14 +1075,14 @@ exercise_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
   # Rare categories
   step_other(all_nominal_predictors(), threshold = 0.05) %>%
   
-  # Create dummies
-  step_dummy(all_nominal_predictors()) %>%
-  
-  # Transform skewed variables
+  # Transform skewed variables (before creating dummies)
   step_YeoJohnson(Lot_Area, Gr_Liv_Area, Total_SF) %>%
   
-  # Interactions
+  # Interactions (before creating dummies)
   step_interact(terms = ~ Total_SF:Overall_Cond) %>%
+  
+  # Create dummies
+  step_dummy(all_nominal_predictors()) %>%
   
   # Scale
   step_normalize(all_numeric_predictors()) %>%

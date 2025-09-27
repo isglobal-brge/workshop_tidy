@@ -323,9 +323,9 @@ bake(penguin_prep, new_data = penguin_train %>% head())
 ```{r}
 # Specify different models
 
-# Logistic regression
-logistic_spec <- logistic_reg() %>%
-  set_engine("glm") %>%
+# Multinomial regression (for multiclass classification)
+multinom_spec <- multinom_reg() %>%
+  set_engine("nnet") %>%
   set_mode("classification")
 
 # Random forest
@@ -333,7 +333,7 @@ rf_spec <- rand_forest(
   trees = 100,
   min_n = 5
 ) %>%
-  set_engine("ranger") %>%
+  set_engine("ranger", importance = "impurity") %>%
   set_mode("classification")
 
 # Support vector machine
@@ -351,9 +351,9 @@ print("Model specifications created")
 
 ```{r}
 # Combine recipe and model into workflows
-logistic_workflow <- workflow() %>%
+multinom_workflow <- workflow() %>%
   add_recipe(penguin_recipe) %>%
-  add_model(logistic_spec)
+  add_model(multinom_spec)
 
 rf_workflow <- workflow() %>%
   add_recipe(penguin_recipe) %>%
@@ -363,28 +363,31 @@ svm_workflow <- workflow() %>%
   add_recipe(penguin_recipe) %>%
   add_model(svm_spec)
 
-logistic_workflow
+multinom_workflow
 ```
 
 ### 6. Model Training and Evaluation
 
 ```{r}
 # Fit models using cross-validation
-logistic_cv <- fit_resamples(
-  logistic_workflow,
+# For multiclass problems, we'll use accuracy and multiclass AUC
+multinom_cv <- fit_resamples(
+  multinom_workflow,
   resamples = penguin_folds,
-  metrics = metric_set(accuracy, roc_auc, precision, recall)
+  metrics = metric_set(accuracy, roc_auc),
+  control = control_resamples(save_pred = TRUE)
 )
 
 rf_cv <- fit_resamples(
   rf_workflow,
   resamples = penguin_folds,
-  metrics = metric_set(accuracy, roc_auc, precision, recall)
+  metrics = metric_set(accuracy, roc_auc),
+  control = control_resamples(save_pred = TRUE)
 )
 
 # Compare models
 model_comparison <- bind_rows(
-  collect_metrics(logistic_cv) %>% mutate(model = "Logistic Regression"),
+  collect_metrics(multinom_cv) %>% mutate(model = "Multinomial Regression"),
   collect_metrics(rf_cv) %>% mutate(model = "Random Forest")
 )
 
@@ -496,11 +499,11 @@ cv_strategies <- list(
 # Visualize fold assignments
 fold_viz <- vfold_cv(sample_data, v = 5) %>%
   mutate(fold_data = map(splits, analysis)) %>%
-  unnest(fold_data) %>%
-  select(id, Fold = id2) %>%
+  unnest(fold_data, names_sep = "_") %>%
+  select(obs_id = fold_data_id, Fold = id) %>%
   distinct()
 
-ggplot(fold_viz, aes(x = id, y = 1, fill = Fold)) +
+ggplot(fold_viz, aes(x = obs_id, y = 1, fill = Fold)) +
   geom_tile(height = 0.8) +
   scale_fill_viridis_d() +
   labs(
@@ -618,18 +621,18 @@ Compare different CV strategies on the penguins dataset:
 ```{r}
 # Your solution
 cv_comparison <- tibble(
-  strategy = c("5-Fold", "10-Fold", "LOO", "Bootstrap"),
+  strategy = c("5-Fold", "10-Fold", "Bootstrap", "Monte Carlo"),
   cv_object = list(
     vfold_cv(penguin_train, v = 5),
     vfold_cv(penguin_train, v = 10),
-    loo_cv(penguin_train),
-    bootstraps(penguin_train, times = 25)
+    bootstraps(penguin_train, times = 25),
+    mc_cv(penguin_train, prop = 0.75, times = 25)
   )
 )
 
 # Fit a simple model with each CV strategy
-simple_spec <- logistic_reg() %>%
-  set_engine("glm")
+simple_spec <- multinom_reg() %>%
+  set_engine("nnet")
 
 simple_recipe <- recipe(species ~ bill_length_mm + bill_depth_mm, 
                        data = penguin_train) %>%
