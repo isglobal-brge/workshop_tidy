@@ -5,7 +5,6 @@
     font-weight: 600;
 }
 
-/* Hide original "Author" text and replace with "Authors" */
 .quarto-title-meta-heading:contains("Author") {
     visibility: hidden;
     position: relative;
@@ -21,8 +20,8 @@
 
 /* Better styling for code output cells */
 .cell-output {
-    background-color: #fffbf0 !important; /* Light yellow background */
-    border: 1px solid #f0e68c !important; /* Soft yellow border */
+    background-color: #fffbf0 !important;
+    border: 1px solid #f0e68c !important;
     border-radius: 6px !important;
     padding: 12px !important;
     margin: 8px 0 !important;
@@ -43,17 +42,11 @@
     font-size: 0.9em !important;
 }
 
-/* Keep input cells unchanged - only style outputs */
-.cell-input {
-    /* No changes to input styling */
-}
-
-/* Fix for numbered lists without newlines */
+/* Fix for numbered lists */
 ol li {
     margin-bottom: 0.5em;
 }
 
-/* Ensure proper list formatting */
 ol, ul {
     padding-left: 1.5em;
     margin: 1em 0;
@@ -61,4 +54,26 @@ ol, ul {
 
 ol li p, ul li p {
     margin: 0.25em 0;
+}
+
+/* Hide code tools (Show code button) */
+.code-tools-button,
+.code-tools {
+    display: none !important;
+}
+
+/* Simple navbar centering */
+.navbar-nav.me-auto {
+    margin: 0 auto !important;
+}
+
+.navbar-nav {
+    align-items: center !important;
+}
+
+.navbar-nav .nav-link,
+.navbar-nav .dropdown-toggle {
+    display: flex !important;
+    align-items: center !important;
+    padding: 0.5rem 1rem !important;
 }

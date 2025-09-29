@@ -1,0 +1,75 @@
+/* Custom styles for the workshop */
+
+/* Change "Author" to "Authors" using CSS content replacement */
+.quarto-title-meta-heading {
+    font-weight: 600;
+}
+
+/* Hide original "Author" text and replace with "Authors" */
+.quarto-title-meta-heading:contains("Author") {
+    visibility: hidden;
+    position: relative;
+}
+
+.quarto-title-meta-heading:contains("Author")::before {
+    content: "Authors";
+    visibility: visible;
+    position: absolute;
+    left: 0;
+    top: 0;
+}
+
+/* Better styling for code output cells */
+.cell-output {
+    background-color: #fffbf0 !important; /* Light yellow background */
+    border: 1px solid #f0e68c !important; /* Soft yellow border */
+    border-radius: 6px !important;
+    padding: 12px !important;
+    margin: 8px 0 !important;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+    font-size: 0.9em !important;
+    line-height: 1.4 !important;
+}
+
+.cell-output pre {
+    background-color: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.cell-output code {
+    background-color: transparent !important;
+    color: #333 !important;
+    font-weight: 500 !important;
+}
+
+/* Improve code block styling */
+.sourceCode {
+    background-color: #f8f9fa !important;
+    border: 1px solid #e9ecef !important;
+    border-radius: 6px !important;
+    padding: 12px !important;
+}
+
+/* Fix for markdown lists without newlines */
+/* This ensures proper list formatting even when markdown doesn't have newlines */
+p + ol, p + ul {
+    margin-top: 0.5em !important;
+}
+
+/* Better spacing for nested lists */
+ol ol, ul ul, ol ul, ul ol {
+    margin-top: 0.25em !important;
+    margin-bottom: 0.25em !important;
+}
+
+/* Ensure list items have proper spacing */
+li {
+    margin-bottom: 0.25em !important;
+}
+
+/* Fix for lists that appear immediately after text without newline */
+*:not(li) + ol, *:not(li) + ul {
+    margin-top: 0.75em !important;
+}

@@ -57,7 +57,7 @@ format:
     css: styles.css
     toc: true
     code-fold: false
-    code-tools: true
+    code-tools: false
     code-copy: true
     highlight-style: github
     include-after-body: author-fix.html
