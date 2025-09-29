@@ -18,3 +18,47 @@
     left: 0;
     top: 0;
 }
+
+/* Better styling for code output cells */
+.cell-output {
+    background-color: #fffbf0 !important; /* Light yellow background */
+    border: 1px solid #f0e68c !important; /* Soft yellow border */
+    border-radius: 6px !important;
+    padding: 12px !important;
+    margin: 8px 0 !important;
+    font-family: 'Monaco', 'Menlo', 'Ubuntu Mono', monospace !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.1) !important;
+}
+
+.cell-output pre {
+    background-color: transparent !important;
+    border: none !important;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.cell-output code {
+    background-color: transparent !important;
+    color: #2c3e50 !important;
+    font-size: 0.9em !important;
+}
+
+/* Keep input cells unchanged - only style outputs */
+.cell-input {
+    /* No changes to input styling */
+}
+
+/* Fix for numbered lists without newlines */
+ol li {
+    margin-bottom: 0.5em;
+}
+
+/* Ensure proper list formatting */
+ol, ul {
+    padding-left: 1.5em;
+    margin: 1em 0;
+}
+
+ol li p, ul li p {
+    margin: 0.25em 0;
+}
