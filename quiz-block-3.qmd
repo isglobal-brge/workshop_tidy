@@ -241,10 +241,10 @@ format:
   <div class="question" data-question="1">
     <h3>1. What function does logistic regression use to map linear combinations to probabilities?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Linear function</li>
-      <li class="option" data-answer="b">Sigmoid (logistic) function</li>
-      <li class="option" data-answer="c">Exponential function</li>
-      <li class="option" data-answer="d">Square root function</li>
+      <li class="option" data-answer="a">Square root function</li>
+      <li class="option" data-answer="b">Exponential function</li>
+      <li class="option" data-answer="c">Sigmoid (logistic) function</li>
+      <li class="option" data-answer="d">Linear function</li>
     </ul>
     <div class="feedback" id="feedback-1"></div>
   </div>
@@ -263,10 +263,10 @@ format:
   <div class="question" data-question="3">
     <h3>3. What is the main purpose of regularization in regression models?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">To increase model complexity</li>
-      <li class="option" data-answer="b">To prevent overfitting by penalizing large coefficients</li>
-      <li class="option" data-answer="c">To speed up training</li>
-      <li class="option" data-answer="d">To handle missing values</li>
+      <li class="option" data-answer="a">To handle missing values</li>
+      <li class="option" data-answer="b">To speed up training</li>
+      <li class="option" data-answer="c">To increase model complexity</li>
+      <li class="option" data-answer="d">To prevent overfitting by penalizing large coefficients</li>
     </ul>
     <div class="feedback" id="feedback-3"></div>
   </div>
@@ -274,10 +274,10 @@ format:
   <div class="question" data-question="4">
     <h3>4. What is the key difference between Ridge and Lasso regularization?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Ridge uses L2 penalty, Lasso uses L1 penalty</li>
-      <li class="option" data-answer="b">Ridge is for classification, Lasso is for regression</li>
+      <li class="option" data-answer="a">They are identical methods</li>
+      <li class="option" data-answer="b">Ridge uses L2 penalty, Lasso uses L1 penalty</li>
       <li class="option" data-answer="c">Ridge is faster, Lasso is more accurate</li>
-      <li class="option" data-answer="d">They are identical methods</li>
+      <li class="option" data-answer="d">Ridge is for classification, Lasso is for regression</li>
     </ul>
     <div class="feedback" id="feedback-4"></div>
   </div>
@@ -296,10 +296,10 @@ format:
   <div class="question" data-question="6">
     <h3>6. What is the main difference between bagging and boosting?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Bagging trains models in parallel, boosting trains them sequentially</li>
-      <li class="option" data-answer="b">Bagging is for regression, boosting is for classification</li>
+      <li class="option" data-answer="a">There is no difference</li>
+      <li class="option" data-answer="b">Bagging trains models in parallel, boosting trains them sequentially</li>
       <li class="option" data-answer="c">Bagging uses decision trees, boosting uses linear models</li>
-      <li class="option" data-answer="d">There is no difference</li>
+      <li class="option" data-answer="d">Bagging is for regression, boosting is for classification</li>
     </ul>
     <div class="feedback" id="feedback-6"></div>
   </div>
@@ -307,10 +307,10 @@ format:
   <div class="question" data-question="7">
     <h3>7. What is the primary goal of K-means clustering?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">To predict class labels for new data</li>
-      <li class="option" data-answer="b">To minimize within-cluster variance</li>
+      <li class="option" data-answer="a">To minimize within-cluster variance</li>
+      <li class="option" data-answer="b">To reduce the number of features</li>
       <li class="option" data-answer="c">To maximize between-cluster variance</li>
-      <li class="option" data-answer="d">To reduce the number of features</li>
+      <li class="option" data-answer="d">To predict class labels for new data</li>
     </ul>
     <div class="feedback" id="feedback-7"></div>
   </div>
@@ -318,10 +318,10 @@ format:
   <div class="question" data-question="8">
     <h3>8. Why is data scaling important before applying K-means clustering?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">To improve algorithm speed</li>
-      <li class="option" data-answer="b">K-means uses distance measures that can be dominated by variables with large scales</li>
-      <li class="option" data-answer="c">To reduce memory usage</li>
-      <li class="option" data-answer="d">Scaling is not necessary for K-means</li>
+      <li class="option" data-answer="a">Scaling is not necessary for K-means</li>
+      <li class="option" data-answer="b">To reduce memory usage</li>
+      <li class="option" data-answer="c">K-means uses distance measures that can be dominated by variables with large scales</li>
+      <li class="option" data-answer="d">To improve algorithm speed</li>
     </ul>
     <div class="feedback" id="feedback-8"></div>
   </div>
@@ -330,9 +330,9 @@ format:
     <h3>9. What does PCA (Principal Component Analysis) accomplish?</h3>
     <ul class="options">
       <li class="option" data-answer="a">It clusters similar observations together</li>
-      <li class="option" data-answer="b">It reduces dimensionality while preserving variance</li>
+      <li class="option" data-answer="b">It improves classification accuracy</li>
       <li class="option" data-answer="c">It handles missing values in datasets</li>
-      <li class="option" data-answer="d">It improves classification accuracy</li>
+      <li class="option" data-answer="d">It reduces dimensionality while preserving variance</li>
     </ul>
     <div class="feedback" id="feedback-9"></div>
   </div>
@@ -340,10 +340,10 @@ format:
   <div class="question" data-question="10">
     <h3>10. What is the "elbow method" used for in clustering?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Choosing the optimal number of clusters</li>
-      <li class="option" data-answer="b">Selecting the best clustering algorithm</li>
-      <li class="option" data-answer="c">Determining outliers in the data</li>
-      <li class="option" data-answer="d">Scaling the features appropriately</li>
+      <li class="option" data-answer="a">Scaling the features appropriately</li>
+      <li class="option" data-answer="b">Determining outliers in the data</li>
+      <li class="option" data-answer="c">Selecting the best clustering algorithm</li>
+      <li class="option" data-answer="d">Choosing the optimal number of clusters</li>
     </ul>
     <div class="feedback" id="feedback-10"></div>
   </div>
@@ -351,10 +351,10 @@ format:
   <div class="question" data-question="11">
     <h3>11. What is model stacking in ensemble methods?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Training multiple models with identical parameters</li>
-      <li class="option" data-answer="b">Using a meta-model to combine predictions from multiple base models</li>
-      <li class="option" data-answer="c">Storing models in a hierarchical structure</li>
-      <li class="option" data-answer="d">Training models on different datasets</li>
+      <li class="option" data-answer="a">Training models on different datasets</li>
+      <li class="option" data-answer="b">Storing models in a hierarchical structure</li>
+      <li class="option" data-answer="c">Using a meta-model to combine predictions from multiple base models</li>
+      <li class="option" data-answer="d">Training multiple models with identical parameters</li>
     </ul>
     <div class="feedback" id="feedback-11"></div>
   </div>
@@ -362,10 +362,10 @@ format:
   <div class="question" data-question="12">
     <h3>12. What is the main challenge with deploying machine learning models to production?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Models always perform worse in production</li>
-      <li class="option" data-answer="b">Ensuring reliability, scalability, and maintainability</li>
+      <li class="option" data-answer="a">Ensuring reliability, scalability, and maintainability</li>
+      <li class="option" data-answer="b">Models become obsolete immediately</li>
       <li class="option" data-answer="c">Production environments don't support R</li>
-      <li class="option" data-answer="d">Models become obsolete immediately</li>
+      <li class="option" data-answer="d">Models always perform worse in production</li>
     </ul>
     <div class="feedback" id="feedback-12"></div>
   </div>
@@ -373,10 +373,10 @@ format:
   <div class="question" data-question="13">
     <h3>13. What is the purpose of the plumber package in R?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">To fix data pipeline errors</li>
-      <li class="option" data-answer="b">To create REST APIs from R functions</li>
-      <li class="option" data-answer="c">To deploy Shiny applications</li>
-      <li class="option" data-answer="d">To manage package dependencies</li>
+      <li class="option" data-answer="a">To manage package dependencies</li>
+      <li class="option" data-answer="b">To deploy Shiny applications</li>
+      <li class="option" data-answer="c">To create REST APIs from R functions</li>
+      <li class="option" data-answer="d">To fix data pipeline errors</li>
     </ul>
     <div class="feedback" id="feedback-13"></div>
   </div>
@@ -384,10 +384,10 @@ format:
   <div class="question" data-question="14">
     <h3>14. What is Docker containerization useful for in model deployment?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">It makes models run faster</li>
-      <li class="option" data-answer="b">It ensures consistent environments across development and production</li>
+      <li class="option" data-answer="a">It ensures consistent environments across development and production</li>
+      <li class="option" data-answer="b">It improves model accuracy</li>
       <li class="option" data-answer="c">It automatically tunes hyperparameters</li>
-      <li class="option" data-answer="d">It improves model accuracy</li>
+      <li class="option" data-answer="d">It makes models run faster</li>
     </ul>
     <div class="feedback" id="feedback-14"></div>
   </div>
@@ -420,12 +420,12 @@ format:
 <script>
 const questions = {
   1: {
-    correct: 'b',
+    correct: 'c',
     explanations: {
-      a: 'Incorrect. Linear functions cannot constrain outputs to the [0,1] probability range.',
-      b: 'Correct! The sigmoid (logistic) function maps any real number to a value between 0 and 1, making it perfect for probabilities.',
-      c: 'Incorrect. The exponential function grows without bound and is not suitable for probabilities.',
-      d: 'Incorrect. The square root function does not have the right range or properties for probability modeling.'
+      a: 'Incorrect. The square root function does not have the right range or properties for probability modeling.',
+      b: 'Incorrect. The exponential function grows without bound and is not suitable for probabilities.',
+      c: 'Correct! The sigmoid (logistic) function maps any real number to a value between 0 and 1, making it perfect for probabilities.',
+      d: 'Incorrect. Linear functions cannot constrain outputs to the [0,1] probability range.'
     }
   },
   2: {
@@ -438,21 +438,21 @@ const questions = {
     }
   },
   3: {
-    correct: 'b',
+    correct: 'd',
     explanations: {
-      a: 'Incorrect. Regularization actually reduces model complexity by constraining parameters.',
-      b: 'Correct! Regularization adds a penalty term to prevent overfitting by discouraging large coefficient values.',
-      c: 'Incorrect. Regularization may actually slow training slightly but the main purpose is preventing overfitting.',
-      d: 'Incorrect. Regularization does not handle missing values; that is done during preprocessing.'
+      a: 'Incorrect. Regularization does not handle missing values; that is done during preprocessing.',
+      b: 'Incorrect. Regularization may actually slow training slightly but the main purpose is preventing overfitting.',
+      c: 'Incorrect. Regularization actually reduces model complexity by constraining parameters.',
+      d: 'Correct! Regularization adds a penalty term to prevent overfitting by discouraging large coefficient values.'
     }
   },
   4: {
-    correct: 'a',
+    correct: 'b',
     explanations: {
-      a: 'Correct! Ridge uses L2 penalty (sum of squared coefficients), Lasso uses L1 penalty (sum of absolute values).',
-      b: 'Incorrect. Both Ridge and Lasso can be used for classification and regression.',
+      a: 'Incorrect. Ridge and Lasso use different penalty functions with different properties.',
+      b: 'Correct! Ridge uses L2 penalty (sum of squared coefficients), Lasso uses L1 penalty (sum of absolute values).',
       c: 'Incorrect. Speed and accuracy differences depend on the specific problem and implementation.',
-      d: 'Incorrect. Ridge and Lasso use different penalty functions with different properties.'
+      d: 'Incorrect. Both Ridge and Lasso can be used for classification and regression.'
     }
   },
   5: {
@@ -465,84 +465,84 @@ const questions = {
     }
   },
   6: {
-    correct: 'a',
+    correct: 'b',
     explanations: {
-      a: 'Correct! Bagging trains models independently in parallel, while boosting trains them sequentially, each learning from previous mistakes.',
-      b: 'Incorrect. Both can be used for classification and regression.',
+      a: 'Incorrect. Bagging and boosting are fundamentally different ensemble approaches.',
+      b: 'Correct! Bagging trains models independently in parallel, while boosting trains them sequentially, each learning from previous mistakes.',
       c: 'Incorrect. Both can use various types of base models, not restricted to specific algorithms.',
-      d: 'Incorrect. Bagging and boosting are fundamentally different ensemble approaches.'
+      d: 'Incorrect. Both can be used for classification and regression.'
     }
   },
   7: {
-    correct: 'b',
+    correct: 'a',
     explanations: {
-      a: 'Incorrect. K-means is unsupervised and does not predict class labels for new data.',
-      b: 'Correct! K-means aims to minimize the within-cluster sum of squares (variance).',
+      a: 'Correct! K-means aims to minimize the within-cluster sum of squares (variance).',
+      b: 'Incorrect. Feature reduction is the goal of dimensionality reduction techniques like PCA, not K-means.',
       c: 'Incorrect. While maximizing between-cluster variance is desirable, the algorithm directly minimizes within-cluster variance.',
-      d: 'Incorrect. Feature reduction is the goal of dimensionality reduction techniques like PCA, not K-means.'
+      d: 'Incorrect. K-means is unsupervised and does not predict class labels for new data.'
     }
   },
   8: {
-    correct: 'b',
+    correct: 'c',
     explanations: {
-      a: 'Incorrect. Scaling may slightly affect speed but that is not the main reason.',
-      b: 'Correct! K-means uses distance measures, so variables with larger scales can dominate the clustering if not scaled.',
-      c: 'Incorrect. Scaling does not significantly affect memory usage.',
-      d: 'Incorrect. Scaling is crucial for distance-based algorithms like K-means.'
+      a: 'Incorrect. Scaling is crucial for distance-based algorithms like K-means.',
+      b: 'Incorrect. Scaling does not significantly affect memory usage.',
+      c: 'Correct! K-means uses distance measures, so variables with larger scales can dominate the clustering if not scaled.',
+      d: 'Incorrect. Scaling may slightly affect speed but that is not the main reason.'
     }
   },
   9: {
-    correct: 'b',
+    correct: 'd',
     explanations: {
       a: 'Incorrect. PCA is a dimensionality reduction technique, not a clustering method.',
-      b: 'Correct! PCA finds linear combinations of variables that capture maximum variance while reducing dimensions.',
+      b: 'Incorrect. PCA is primarily for dimensionality reduction, not directly for improving classification accuracy.',
       c: 'Incorrect. PCA does not handle missing values; preprocessing is needed beforehand.',
-      d: 'Incorrect. PCA is primarily for dimensionality reduction, not directly for improving classification accuracy.'
+      d: 'Correct! PCA finds linear combinations of variables that capture maximum variance while reducing dimensions.'
     }
   },
   10: {
-    correct: 'a',
+    correct: 'd',
     explanations: {
-      a: 'Correct! The elbow method plots within-cluster sum of squares vs number of clusters to find the optimal K.',
-      b: 'Incorrect. The elbow method is specifically for choosing the number of clusters, not the algorithm.',
-      c: 'Incorrect. Outlier detection uses different methods, not the elbow method.',
-      d: 'Incorrect. Feature scaling is a preprocessing step, not related to the elbow method.'
+      a: 'Incorrect. Feature scaling is a preprocessing step, not related to the elbow method.',
+      b: 'Incorrect. Outlier detection uses different methods, not the elbow method.',
+      c: 'Incorrect. The elbow method is specifically for choosing the number of clusters, not the algorithm.',
+      d: 'Correct! The elbow method plots within-cluster sum of squares vs number of clusters to find the optimal K.'
     }
   },
   11: {
-    correct: 'b',
+    correct: 'c',
     explanations: {
-      a: 'Incorrect. Model stacking uses diverse models with different parameters.',
-      b: 'Correct! Stacking uses a meta-model (often called a blender) to learn how to best combine predictions from multiple base models.',
-      c: 'Incorrect. Stacking refers to the prediction combination strategy, not storage structure.',
-      d: 'Incorrect. While models may be trained on different datasets, stacking specifically refers to the meta-model approach.'
+      a: 'Incorrect. While models may be trained on different datasets, stacking specifically refers to the meta-model approach.',
+      b: 'Incorrect. Stacking refers to the prediction combination strategy, not storage structure.',
+      c: 'Correct! Stacking uses a meta-model (often called a blender) to learn how to best combine predictions from multiple base models.',
+      d: 'Incorrect. Model stacking uses diverse models with different parameters.'
     }
   },
   12: {
-    correct: 'b',
+    correct: 'a',
     explanations: {
-      a: 'Incorrect. Models can perform well in production with proper implementation.',
-      b: 'Correct! Production systems require reliability (24/7 operation), scalability (handling load), and maintainability (updates and monitoring).',
+      a: 'Correct! Production systems require reliability (24/7 operation), scalability (handling load), and maintainability (updates and monitoring).',
+      b: 'Incorrect. Well-designed models can remain useful for extended periods with proper monitoring and maintenance.',
       c: 'Incorrect. Many production environments support R through various deployment options.',
-      d: 'Incorrect. Well-designed models can remain useful for extended periods with proper monitoring and maintenance.'
+      d: 'Incorrect. Models can perform well in production with proper implementation.'
     }
   },
   13: {
-    correct: 'b',
+    correct: 'c',
     explanations: {
-      a: 'Incorrect. Plumber does not fix pipeline errors; it creates web APIs.',
-      b: 'Correct! Plumber allows you to create REST APIs from R functions using special comments and decorators.',
-      c: 'Incorrect. Shiny applications are deployed using different tools, not plumber.',
-      d: 'Incorrect. Package dependency management is handled by tools like renv, not plumber.'
+      a: 'Incorrect. Package dependency management is handled by tools like renv, not plumber.',
+      b: 'Incorrect. Shiny applications are deployed using different tools, not plumber.',
+      c: 'Correct! Plumber allows you to create REST APIs from R functions using special comments and decorators.',
+      d: 'Incorrect. Plumber does not fix pipeline errors; it creates web APIs.'
     }
   },
   14: {
-    correct: 'b',
+    correct: 'a',
     explanations: {
-      a: 'Incorrect. Docker does not inherently make models run faster.',
-      b: 'Correct! Docker containers package the application and all its dependencies, ensuring consistent environments across different systems.',
+      a: 'Correct! Docker containers package the application and all its dependencies, ensuring consistent environments across different systems.',
+      b: 'Incorrect. Docker affects deployment, not the statistical accuracy of models.',
       c: 'Incorrect. Docker is for deployment consistency, not hyperparameter tuning.',
-      d: 'Incorrect. Docker affects deployment, not the statistical accuracy of models.'
+      d: 'Incorrect. Docker does not inherently make models run faster.'
     }
   },
   15: {

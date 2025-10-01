@@ -296,10 +296,10 @@ format:
   <div class="question" data-question="6">
     <h3>6. Which readr function would you use to import a CSV file with custom column types?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">read.csv() with stringsAsFactors = FALSE</li>
-      <li class="option" data-answer="b">read_csv() with the col_types argument</li>
-      <li class="option" data-answer="c">import_csv() with type specifications</li>
-      <li class="option" data-answer="d">load_csv() with custom parameters</li>
+      <li class="option" data-answer="a">import_csv() with type specifications</li>
+      <li class="option" data-answer="b">load_csv() with custom parameters</li>
+      <li class="option" data-answer="c">read_csv() with the col_types argument</li>
+      <li class="option" data-answer="d">read.csv() with stringsAsFactors = FALSE</li>
     </ul>
     <div class="feedback" id="feedback-6"></div>
   </div>
@@ -307,10 +307,10 @@ format:
   <div class="question" data-question="7">
     <h3>7. What does the purrr::map() function return?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Always returns a vector</li>
-      <li class="option" data-answer="b">Always returns a list</li>
+      <li class="option" data-answer="a">Returns the same type as the input</li>
+      <li class="option" data-answer="b">Always returns a vector</li>
       <li class="option" data-answer="c">Always returns a data frame</li>
-      <li class="option" data-answer="d">Returns the same type as the input</li>
+      <li class="option" data-answer="d">Always returns a list</li>
     </ul>
     <div class="feedback" id="feedback-7"></div>
   </div>
@@ -340,10 +340,10 @@ format:
   <div class="question" data-question="10">
     <h3>10. What is the main advantage of using tibbles over data.frames?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Tibbles are faster for large datasets</li>
-      <li class="option" data-answer="b">Tibbles provide better printing, preserve data types, and have stricter subset behavior</li>
+      <li class="option" data-answer="a">Tibbles provide better printing, preserve data types, and have stricter subset behavior</li>
+      <li class="option" data-answer="b">Tibbles automatically remove missing values</li>
       <li class="option" data-answer="c">Tibbles can only contain numeric data</li>
-      <li class="option" data-answer="d">Tibbles automatically remove missing values</li>
+      <li class="option" data-answer="d">Tibbles are faster for large datasets</li>
     </ul>
     <div class="feedback" id="feedback-10"></div>
   </div>
@@ -362,10 +362,10 @@ format:
   <div class="question" data-question="12">
     <h3>12. In lubridate, which function would you use to extract the year from a date?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">get_year()</li>
-      <li class="option" data-answer="b">year()</li>
-      <li class="option" data-answer="c">extract_year()</li>
-      <li class="option" data-answer="d">date_year()</li>
+      <li class="option" data-answer="a">date_year()</li>
+      <li class="option" data-answer="b">extract_year()</li>
+      <li class="option" data-answer="c">year()</li>
+      <li class="option" data-answer="d">get_year()</li>
     </ul>
     <div class="feedback" id="feedback-12"></div>
   </div>
@@ -384,10 +384,10 @@ format:
   <div class="question" data-question="14">
     <h3>14. Which ggplot2 function would you use to create subplots based on a categorical variable?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">geom_subplot()</li>
-      <li class="option" data-answer="b">facet_wrap() or facet_grid()</li>
-      <li class="option" data-answer="c">group_plot()</li>
-      <li class="option" data-answer="d">split_plot()</li>
+      <li class="option" data-answer="a">split_plot()</li>
+      <li class="option" data-answer="b">group_plot()</li>
+      <li class="option" data-answer="c">facet_wrap() or facet_grid()</li>
+      <li class="option" data-answer="d">geom_subplot()</li>
     </ul>
     <div class="feedback" id="feedback-14"></div>
   </div>
@@ -465,21 +465,21 @@ const questions = {
     }
   },
   6: {
-    correct: 'b',
+    correct: 'c',
     explanations: {
-      a: 'Incorrect. read.csv() is base R, and this question asks about readr functions.',
-      b: 'Correct! read_csv() with col_types allows you to specify custom column types.',
-      c: 'Incorrect. import_csv() is not a readr function.',
-      d: 'Incorrect. load_csv() is not a readr function.'
+      a: 'Incorrect. import_csv() is not a readr function.',
+      b: 'Incorrect. load_csv() is not a readr function.',
+      c: 'Correct! read_csv() with col_types allows you to specify custom column types.',
+      d: 'Incorrect. read.csv() is base R, and this question asks about readr functions.'
     }
   },
   7: {
-    correct: 'b',
+    correct: 'd',
     explanations: {
-      a: 'Incorrect. map() always returns a list, not a vector.',
-      b: 'Correct! The basic map() function always returns a list.',
+      a: 'Incorrect. map() always returns a list regardless of input type.',
+      b: 'Incorrect. map() always returns a list, not a vector.',
       c: 'Incorrect. map() returns a list, not a data frame.',
-      d: 'Incorrect. map() always returns a list regardless of input type.'
+      d: 'Correct! The basic map() function always returns a list.'
     }
   },
   8: {
@@ -501,12 +501,12 @@ const questions = {
     }
   },
   10: {
-    correct: 'b',
+    correct: 'a',
     explanations: {
-      a: 'Incorrect. Speed is not the main advantage.',
-      b: 'Correct! Tibbles offer better printing, preserve column types, and have stricter subsetting behavior.',
+      a: 'Correct! Tibbles offer better printing, preserve column types, and have stricter subsetting behavior.',
+      b: 'Incorrect. Tibbles don\'t automatically remove missing values.',
       c: 'Incorrect. Tibbles can contain any data type.',
-      d: 'Incorrect. Tibbles don\'t automatically remove missing values.'
+      d: 'Incorrect. Speed is not the main advantage.'
     }
   },
   11: {
@@ -519,12 +519,12 @@ const questions = {
     }
   },
   12: {
-    correct: 'b',
+    correct: 'c',
     explanations: {
-      a: 'Incorrect. get_year() is not a lubridate function.',
-      b: 'Correct! year() extracts the year component from a date.',
-      c: 'Incorrect. extract_year() is not a lubridate function.',
-      d: 'Incorrect. date_year() is not a lubridate function.'
+      a: 'Incorrect. date_year() is not a lubridate function.',
+      b: 'Incorrect. extract_year() is not a lubridate function.',
+      c: 'Correct! year() extracts the year component from a date.',
+      d: 'Incorrect. get_year() is not a lubridate function.'
     }
   },
   13: {
@@ -537,12 +537,12 @@ const questions = {
     }
   },
   14: {
-    correct: 'b',
+    correct: 'c',
     explanations: {
-      a: 'Incorrect. geom_subplot() is not a ggplot2 function.',
-      b: 'Correct! facet_wrap() and facet_grid() create subplots based on categorical variables.',
-      c: 'Incorrect. group_plot() is not a ggplot2 function.',
-      d: 'Incorrect. split_plot() is not a ggplot2 function.'
+      a: 'Incorrect. split_plot() is not a ggplot2 function.',
+      b: 'Incorrect. group_plot() is not a ggplot2 function.',
+      c: 'Correct! facet_wrap() and facet_grid() create subplots based on categorical variables.',
+      d: 'Incorrect. geom_subplot() is not a ggplot2 function.'
     }
   },
   15: {

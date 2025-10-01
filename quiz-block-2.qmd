@@ -241,10 +241,10 @@ format:
   <div class="question" data-question="1">
     <h3>1. What is the main cause of overfitting in machine learning?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">The model is too simple for the data</li>
-      <li class="option" data-answer="b">The model learns patterns specific to the training data, including noise</li>
-      <li class="option" data-answer="c">The dataset is too small</li>
-      <li class="option" data-answer="d">The learning rate is too high</li>
+      <li class="option" data-answer="a">The learning rate is too high</li>
+      <li class="option" data-answer="b">The dataset is too small</li>
+      <li class="option" data-answer="c">The model is too simple for the data</li>
+      <li class="option" data-answer="d">The model learns patterns specific to the training data, including noise</li>
     </ul>
     <div class="feedback" id="feedback-1"></div>
   </div>
@@ -263,10 +263,10 @@ format:
   <div class="question" data-question="3">
     <h3>3. What is the main advantage of k-fold cross-validation over a single train-test split?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">It's faster to compute</li>
-      <li class="option" data-answer="b">It provides more reliable estimates of model performance</li>
-      <li class="option" data-answer="c">It prevents overfitting completely</li>
-      <li class="option" data-answer="d">It requires less data</li>
+      <li class="option" data-answer="a">It provides more reliable estimates of model performance</li>
+      <li class="option" data-answer="b">It requires less data</li>
+      <li class="option" data-answer="c">It's faster to compute</li>
+      <li class="option" data-answer="d">It prevents overfitting completely</li>
     </ul>
     <div class="feedback" id="feedback-3"></div>
   </div>
@@ -274,10 +274,10 @@ format:
   <div class="question" data-question="4">
     <h3>4. In the tidymodels framework, what is the purpose of a 'recipe'?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">To specify which model algorithm to use</li>
-      <li class="option" data-answer="b">To define data preprocessing and feature engineering steps</li>
-      <li class="option" data-answer="c">To set hyperparameter values</li>
-      <li class="option" data-answer="d">To evaluate model performance</li>
+      <li class="option" data-answer="a">To evaluate model performance</li>
+      <li class="option" data-answer="b">To set hyperparameter values</li>
+      <li class="option" data-answer="c">To specify which model algorithm to use</li>
+      <li class="option" data-answer="d">To define data preprocessing and feature engineering steps</li>
     </ul>
     <div class="feedback" id="feedback-4"></div>
   </div>
@@ -296,10 +296,10 @@ format:
   <div class="question" data-question="6">
     <h3>6. What is the main philosophy of the parsnip package?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">To create faster modeling algorithms</li>
-      <li class="option" data-answer="b">To provide a unified interface for different modeling engines</li>
+      <li class="option" data-answer="a">To provide a unified interface for different modeling engines</li>
+      <li class="option" data-answer="b">To handle missing values in datasets</li>
       <li class="option" data-answer="c">To automatically select the best model</li>
-      <li class="option" data-answer="d">To handle missing values in datasets</li>
+      <li class="option" data-answer="d">To create faster modeling algorithms</li>
     </ul>
     <div class="feedback" id="feedback-6"></div>
   </div>
@@ -307,10 +307,10 @@ format:
   <div class="question" data-question="7">
     <h3>7. In parsnip, what does setting the 'mode' of a model specification do?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">It determines whether the model is for regression or classification</li>
-      <li class="option" data-answer="b">It selects the computational engine</li>
+      <li class="option" data-answer="a">It specifies the data format</li>
+      <li class="option" data-answer="b">It determines whether the model is for regression or classification</li>
       <li class="option" data-answer="c">It sets the hyperparameter values</li>
-      <li class="option" data-answer="d">It specifies the data format</li>
+      <li class="option" data-answer="d">It selects the computational engine</li>
     </ul>
     <div class="feedback" id="feedback-7"></div>
   </div>
@@ -318,10 +318,10 @@ format:
   <div class="question" data-question="8">
     <h3>8. What is the main benefit of using workflows in tidymodels?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Workflows make models run faster</li>
-      <li class="option" data-answer="b">Workflows bundle preprocessing and modeling to ensure consistency</li>
-      <li class="option" data-answer="c">Workflows automatically tune hyperparameters</li>
-      <li class="option" data-answer="d">Workflows eliminate the need for cross-validation</li>
+      <li class="option" data-answer="a">Workflows automatically tune hyperparameters</li>
+      <li class="option" data-answer="b">Workflows eliminate the need for cross-validation</li>
+      <li class="option" data-answer="c">Workflows make models run faster</li>
+      <li class="option" data-answer="d">Workflows bundle preprocessing and modeling to ensure consistency</li>
     </ul>
     <div class="feedback" id="feedback-8"></div>
   </div>
@@ -340,10 +340,10 @@ format:
   <div class="question" data-question="10">
     <h3>10. What is the difference between parameters and hyperparameters?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Parameters are learned from data, hyperparameters are set before training</li>
-      <li class="option" data-answer="b">Parameters are for classification, hyperparameters are for regression</li>
+      <li class="option" data-answer="a">Parameters are numeric, hyperparameters are categorical</li>
+      <li class="option" data-answer="b">Parameters are learned from data, hyperparameters are set before training</li>
       <li class="option" data-answer="c">There is no difference, they are synonymous</li>
-      <li class="option" data-answer="d">Parameters are numeric, hyperparameters are categorical</li>
+      <li class="option" data-answer="d">Parameters are for classification, hyperparameters are for regression</li>
     </ul>
     <div class="feedback" id="feedback-10"></div>
   </div>
@@ -351,10 +351,10 @@ format:
   <div class="question" data-question="11">
     <h3>11. What does the tune() function indicate in a model specification?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">The parameter should be fixed at its default value</li>
-      <li class="option" data-answer="b">The parameter should be optimized during tuning</li>
-      <li class="option" data-answer="c">The parameter should be removed from the model</li>
-      <li class="option" data-answer="d">The parameter should be manually specified by the user</li>
+      <li class="option" data-answer="a">The parameter should be manually specified by the user</li>
+      <li class="option" data-answer="b">The parameter should be removed from the model</li>
+      <li class="option" data-answer="c">The parameter should be optimized during tuning</li>
+      <li class="option" data-answer="d">The parameter should be fixed at its default value</li>
     </ul>
     <div class="feedback" id="feedback-11"></div>
   </div>
@@ -362,8 +362,8 @@ format:
   <div class="question" data-question="12">
     <h3>12. Which tuning approach explores the hyperparameter space most systematically?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Random search</li>
-      <li class="option" data-answer="b">Grid search</li>
+      <li class="option" data-answer="a">Grid search</li>
+      <li class="option" data-answer="b">Random search</li>
       <li class="option" data-answer="c">Bayesian optimization</li>
       <li class="option" data-answer="d">Simulated annealing</li>
     </ul>
@@ -373,10 +373,10 @@ format:
   <div class="question" data-question="13">
     <h3>13. What is the main purpose of the initial_split() function?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">To create cross-validation folds</li>
-      <li class="option" data-answer="b">To divide data into training and testing sets</li>
+      <li class="option" data-answer="a">To divide data into training and testing sets</li>
+      <li class="option" data-answer="b">To separate features from the target variable</li>
       <li class="option" data-answer="c">To split categorical variables into dummy variables</li>
-      <li class="option" data-answer="d">To separate features from the target variable</li>
+      <li class="option" data-answer="d">To create cross-validation folds</li>
     </ul>
     <div class="feedback" id="feedback-13"></div>
   </div>
@@ -384,10 +384,10 @@ format:
   <div class="question" data-question="14">
     <h3>14. In the bias-variance tradeoff, what typically happens when you increase model complexity?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Both bias and variance increase</li>
-      <li class="option" data-answer="b">Both bias and variance decrease</li>
-      <li class="option" data-answer="c">Bias decreases and variance increases</li>
-      <li class="option" data-answer="d">Bias increases and variance decreases</li>
+      <li class="option" data-answer="a">Bias increases and variance decreases</li>
+      <li class="option" data-answer="b">Bias decreases and variance increases</li>
+      <li class="option" data-answer="c">Both bias and variance decrease</li>
+      <li class="option" data-answer="d">Both bias and variance increase</li>
     </ul>
     <div class="feedback" id="feedback-14"></div>
   </div>
@@ -395,8 +395,8 @@ format:
   <div class="question" data-question="15">
     <h3>15. What is the recommended way to select the final hyperparameters after tuning?</h3>
     <ul class="options">
-      <li class="option" data-answer="a">Choose the values that minimize training error</li>
-      <li class="option" data-answer="b">Choose the values that perform best on cross-validation</li>
+      <li class="option" data-answer="a">Choose the values that perform best on cross-validation</li>
+      <li class="option" data-answer="b">Choose the values that minimize training error</li>
       <li class="option" data-answer="c">Choose the values that are closest to the defaults</li>
       <li class="option" data-answer="d">Choose the values randomly from the tested range</li>
     </ul>
@@ -420,12 +420,12 @@ format:
 <script>
 const questions = {
   1: {
-    correct: 'b',
+    correct: 'd',
     explanations: {
-      a: 'Incorrect. Too simple models typically cause underfitting, not overfitting.',
-      b: 'Correct! Overfitting occurs when a model learns patterns specific to the training data, including noise, making it perform poorly on new data.',
-      c: 'Incorrect. Small datasets can contribute to overfitting, but overfitting is about learning training-specific patterns, not dataset size per se.',
-      d: 'Incorrect. Learning rate affects convergence speed, not overfitting directly.'
+      a: 'Incorrect. Learning rate affects convergence speed, not overfitting directly.',
+      b: 'Incorrect. Small datasets can contribute to overfitting, but overfitting is about learning training-specific patterns, not dataset size per se.',
+      c: 'Incorrect. Too simple models typically cause underfitting, not overfitting.',
+      d: 'Correct! Overfitting occurs when a model learns patterns specific to the training data, including noise, making it perform poorly on new data.'
     }
   },
   2: {
@@ -438,21 +438,21 @@ const questions = {
     }
   },
   3: {
-    correct: 'b',
+    correct: 'a',
     explanations: {
-      a: 'Incorrect. Cross-validation requires more computation than a single split.',
-      b: 'Correct! Cross-validation provides more reliable estimates by averaging performance across multiple folds, reducing dependence on a single train-test split.',
-      c: 'Incorrect. Cross-validation helps detect overfitting but does not prevent it completely.',
-      d: 'Incorrect. Cross-validation uses the same amount of data, just splits it differently.'
+      a: 'Correct! Cross-validation provides more reliable estimates by averaging performance across multiple folds, reducing dependence on a single train-test split.',
+      b: 'Incorrect. Cross-validation uses the same amount of data, just splits it differently.',
+      c: 'Incorrect. Cross-validation requires more computation than a single split.',
+      d: 'Incorrect. Cross-validation helps detect overfitting but does not prevent it completely.'
     }
   },
   4: {
-    correct: 'b',
+    correct: 'd',
     explanations: {
-      a: 'Incorrect. Model specification is handled by parsnip functions like linear_reg(), not recipes.',
-      b: 'Correct! Recipes define the preprocessing and feature engineering steps that prepare data for modeling.',
-      c: 'Incorrect. Hyperparameter values are set in model specifications or during tuning.',
-      d: 'Incorrect. Model evaluation is handled by yardstick functions and metrics.'
+      a: 'Incorrect. Model evaluation is handled by yardstick functions and metrics.',
+      b: 'Incorrect. Hyperparameter values are set in model specifications or during tuning.',
+      c: 'Incorrect. Model specification is handled by parsnip functions like linear_reg(), not recipes.',
+      d: 'Correct! Recipes define the preprocessing and feature engineering steps that prepare data for modeling.'
     }
   },
   5: {
@@ -465,30 +465,30 @@ const questions = {
     }
   },
   6: {
-    correct: 'b',
+    correct: 'a',
     explanations: {
-      a: 'Incorrect. Parsnip does not create new algorithms, it provides interfaces to existing ones.',
-      b: 'Correct! Parsnip provides a unified, consistent interface across different modeling packages and engines.',
+      a: 'Correct! Parsnip provides a unified, consistent interface across different modeling packages and engines.',
+      b: 'Incorrect. Missing value handling is typically done in recipes, not parsnip.',
       c: 'Incorrect. Parsnip does not perform automatic model selection.',
-      d: 'Incorrect. Missing value handling is typically done in recipes, not parsnip.'
+      d: 'Incorrect. Parsnip does not create new algorithms, it provides interfaces to existing ones.'
     }
   },
   7: {
-    correct: 'a',
+    correct: 'b',
     explanations: {
-      a: 'Correct! The mode determines whether the model will be used for regression or classification.',
-      b: 'Incorrect. The engine is set separately with set_engine().',
+      a: 'Incorrect. Data format is handled by recipes and data preparation.',
+      b: 'Correct! The mode determines whether the model will be used for regression or classification.',
       c: 'Incorrect. Hyperparameters are set in the model specification arguments.',
-      d: 'Incorrect. Data format is handled by recipes and data preparation.'
+      d: 'Incorrect. The engine is set separately with set_engine().'
     }
   },
   8: {
-    correct: 'b',
+    correct: 'd',
     explanations: {
-      a: 'Incorrect. Workflows do not inherently improve computational speed.',
-      b: 'Correct! Workflows bundle preprocessing steps and models together, ensuring the same transformations are applied consistently.',
-      c: 'Incorrect. Hyperparameter tuning requires additional steps beyond basic workflows.',
-      d: 'Incorrect. Cross-validation is still recommended for model evaluation.'
+      a: 'Incorrect. Hyperparameter tuning requires additional steps beyond basic workflows.',
+      b: 'Incorrect. Cross-validation is still recommended for model evaluation.',
+      c: 'Incorrect. Workflows do not inherently improve computational speed.',
+      d: 'Correct! Workflows bundle preprocessing steps and models together, ensuring the same transformations are applied consistently.'
     }
   },
   9: {
@@ -501,55 +501,55 @@ const questions = {
     }
   },
   10: {
-    correct: 'a',
+    correct: 'b',
     explanations: {
-      a: 'Correct! Parameters are learned from data during training, while hyperparameters are set before training begins.',
-      b: 'Incorrect. Both types of models can have parameters and hyperparameters.',
+      a: 'Incorrect. Both can be numeric or categorical depending on the context.',
+      b: 'Correct! Parameters are learned from data during training, while hyperparameters are set before training begins.',
       c: 'Incorrect. Parameters and hyperparameters serve different roles in machine learning.',
-      d: 'Incorrect. Both can be numeric or categorical depending on the context.'
+      d: 'Incorrect. Both types of models can have parameters and hyperparameters.'
     }
   },
   11: {
-    correct: 'b',
+    correct: 'c',
     explanations: {
-      a: 'Incorrect. tune() marks a parameter for optimization, not for using defaults.',
-      b: 'Correct! tune() indicates that the parameter value should be determined through hyperparameter tuning.',
-      c: 'Incorrect. tune() does not remove parameters from the model.',
-      d: 'Incorrect. tune() automates parameter selection rather than requiring manual specification.'
+      a: 'Incorrect. tune() automates parameter selection rather than requiring manual specification.',
+      b: 'Incorrect. tune() does not remove parameters from the model.',
+      c: 'Correct! tune() indicates that the parameter value should be determined through hyperparameter tuning.',
+      d: 'Incorrect. tune() marks a parameter for optimization, not for using defaults.'
     }
   },
   12: {
-    correct: 'b',
+    correct: 'a',
     explanations: {
-      a: 'Incorrect. Random search explores the space randomly, not systematically.',
-      b: 'Correct! Grid search systematically evaluates all combinations of specified parameter values.',
+      a: 'Correct! Grid search systematically evaluates all combinations of specified parameter values.',
+      b: 'Incorrect. Random search explores the space randomly, not systematically.',
       c: 'Incorrect. Bayesian optimization is more efficient but less systematic than grid search.',
       d: 'Incorrect. Simulated annealing uses probabilistic exploration, not systematic coverage.'
     }
   },
   13: {
-    correct: 'b',
+    correct: 'a',
     explanations: {
-      a: 'Incorrect. Cross-validation folds are created with functions like vfold_cv().',
-      b: 'Correct! initial_split() divides the data into training and testing portions.',
+      a: 'Correct! initial_split() divides the data into training and testing portions.',
+      b: 'Incorrect. Feature-target separation is done during model specification.',
       c: 'Incorrect. Creating dummy variables is handled by step_dummy() in recipes.',
-      d: 'Incorrect. Feature-target separation is done during model specification.'
+      d: 'Incorrect. Cross-validation folds are created with functions like vfold_cv().'
     }
   },
   14: {
-    correct: 'c',
+    correct: 'b',
     explanations: {
-      a: 'Incorrect. Bias typically decreases as model complexity increases.',
-      b: 'Incorrect. Variance typically increases as model complexity increases.',
-      c: 'Correct! As model complexity increases, bias typically decreases (better fit) but variance increases (more sensitive to training data).',
-      d: 'Incorrect. This describes the opposite relationship.'
+      a: 'Incorrect. This describes the opposite relationship.',
+      b: 'Correct! As model complexity increases, bias typically decreases (better fit) but variance increases (more sensitive to training data).',
+      c: 'Incorrect. Variance typically increases as model complexity increases.',
+      d: 'Incorrect. Bias typically decreases as model complexity increases.'
     }
   },
   15: {
-    correct: 'b',
+    correct: 'a',
     explanations: {
-      a: 'Incorrect. Training error is biased and can lead to overfitting.',
-      b: 'Correct! Cross-validation provides unbiased estimates of performance for hyperparameter selection.',
+      a: 'Correct! Cross-validation provides unbiased estimates of performance for hyperparameter selection.',
+      b: 'Incorrect. Training error is biased and can lead to overfitting.',
       c: 'Incorrect. Default values may not be optimal for your specific dataset.',
       d: 'Incorrect. Random selection ignores performance information from tuning.'
     }
