@@ -24,6 +24,9 @@ website:
             text: "Ch 6: Functional Programming with purrr"
           - href: 07-strings-dates.Rmd
             text: "Ch 7: Strings and Dates"
+          - text: "---"
+          - href: quiz-block-1.qmd
+            text: "Block 1 Assessment"
       - text: "Part 2: Tidymodels"
         menu:
           - href: 08-tidymodels-intro.Rmd
@@ -38,6 +41,9 @@ website:
             text: "Ch 12: Workflows & Evaluation"
           - href: 13-hyperparameter-tuning.Rmd
             text: "Ch 13: Hyperparameter Tuning"
+          - text: "---"
+          - href: quiz-block-2.qmd
+            text: "Block 2 Assessment"
       - text: "Part 3: Machine Learning"
         menu:
           - href: 14-classification.Rmd
@@ -50,6 +56,9 @@ website:
             text: "Ch 17: Unsupervised Learning"
           - href: 18-model-deployment.Rmd
             text: "Ch 18: Model Deployment"
+          - text: "---"
+          - href: quiz-block-3.qmd
+            text: "Block 3 Assessment"
 
 format:
   html:

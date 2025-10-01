@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Sarrat González, Juan R González">
-<meta name="dcterms.date" content="2025-09-29">
+<meta name="dcterms.date" content="2025-10-01">
 
 <title>Chapter 18: Model Deployment and Production - From Prototype to Product – Tidyverse &amp; Machine Learning Workshop</title>
 <style>
@@ -163,6 +163,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="./07-strings-dates.html">
  <span class="dropdown-text">Ch 7: Strings and Dates</span></a>
   </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="./quiz-block-1.html">
+ <span class="dropdown-text">Block 1 Assessment</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -194,6 +199,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="./13-hyperparameter-tuning.html">
  <span class="dropdown-text">Ch 13: Hyperparameter Tuning</span></a>
   </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="./quiz-block-2.html">
+ <span class="dropdown-text">Block 2 Assessment</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -220,6 +230,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li>
     <a class="dropdown-item" href="./18-model-deployment.html">
  <span class="dropdown-text">Ch 18: Model Deployment</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="./quiz-block-3.html">
+ <span class="dropdown-text">Block 3 Assessment</span></a>
   </li>  
     </ul>
   </li>
@@ -274,6 +289,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
   <li><a href="#exercise-3-create-performance-dashboard" id="toc-exercise-3-create-performance-dashboard" class="nav-link" data-scroll-target="#exercise-3-create-performance-dashboard">Exercise 3: Create Performance Dashboard</a></li>
   </ul></li>
   <li><a href="#summary" id="toc-summary" class="nav-link" data-scroll-target="#summary">Summary</a></li>
+  <li><a href="#final-assessment" id="toc-final-assessment" class="nav-link" data-scroll-target="#final-assessment">Final Assessment</a></li>
   <li><a href="#course-conclusion" id="toc-course-conclusion" class="nav-link" data-scroll-target="#course-conclusion">Course Conclusion</a></li>
   <li><a href="#additional-resources" id="toc-additional-resources" class="nav-link" data-scroll-target="#additional-resources">Additional Resources</a></li>
   </ul>
@@ -301,7 +317,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 29, 2025</p>
+      <p class="date">October 1, 2025</p>
     </div>
   </div>
   
@@ -559,11 +575,14 @@ The following objects are masked from 'package:shiny':
 <span id="cb27-26"><a href="#cb27-26" aria-hidden="true" tabindex="-1"></a>model_board <span class="sc">%&gt;%</span></span>
 <span id="cb27-27"><a href="#cb27-27" aria-hidden="true" tabindex="-1"></a>  <span class="fu">pin_versions</span>(<span class="st">"ames_price_model"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code># A tibble: 2 x 3
+<pre><code># A tibble: 5 x 3
   version                created             hash 
   &lt;chr&gt;                  &lt;dttm&gt;              &lt;chr&gt;
 1 20250927T131955Z-95ee1 2025-09-27 15:19:55 95ee1
-2 20250927T143618Z-06c96 2025-09-27 16:36:18 06c96</code></pre>
+2 20250927T143618Z-06c96 2025-09-27 16:36:18 06c96
+3 20251001T111314Z-b12c5 2025-10-01 13:13:14 b12c5
+4 20251001T112218Z-76001 2025-10-01 13:22:18 76001
+5 20251001T112538Z-3e8e8 2025-10-01 13:25:38 3e8e8</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb29"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb29-1"><a href="#cb29-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Load specific version</span></span>
 <span id="cb29-2"><a href="#cb29-2" aria-hidden="true" tabindex="-1"></a>retrieved_model <span class="ot">&lt;-</span> model_board <span class="sc">%&gt;%</span></span>
@@ -2000,8 +2019,8 @@ Action Items:</code></pre>
 <pre><code># A tibble: 2 x 4
   version date        rmse   rsq
   &lt;chr&gt;   &lt;date&gt;     &lt;dbl&gt; &lt;dbl&gt;
-1 1.0.0   2025-09-27 25432  0.89
-2 1.1.0   2025-09-27 24800  0.91</code></pre>
+1 1.0.0   2025-10-01 25432  0.89
+2 1.1.0   2025-10-01 24800  0.91</code></pre>
 </div>
 </div>
 </section>
@@ -2210,18 +2229,72 @@ Dashboard Summary (Last 30 Days):</code></pre>
 <section id="summary" class="level2">
 <h2 class="anchored" data-anchor-id="summary">Summary</h2>
 <p>In this comprehensive final chapter, you’ve mastered:</p>
-<p>✅ <strong>Model deployment fundamentals</strong> - Serialization and versioning - Model registries - Production readiness</p>
-<p>✅ <strong>API development</strong> - REST APIs with plumber - Authentication and rate limiting - Error handling and logging</p>
-<p>✅ <strong>Application development</strong> - Shiny dashboards - User interfaces - Batch processing</p>
-<p>✅ <strong>Containerization</strong> - Docker for R models - Multi-container orchestration - Environment consistency</p>
-<p>✅ <strong>Monitoring and maintenance</strong> - Performance tracking - Data drift detection - Automated retraining</p>
-<p>✅ <strong>Production best practices</strong> - A/B testing - Gradual rollouts - Production checklists</p>
-<p>Key takeaways: - Deployment is as important as model development - Monitor everything in production - Version control is crucial for models - Automate retraining pipelines - Plan for failure and rollback - Documentation is essential</p>
+<p>✅ <strong>Model deployment fundamentals</strong></p>
+<ul>
+<li>Serialization and versioning</li>
+<li>Model registries</li>
+<li>Production readiness</li>
+</ul>
+<p>✅ <strong>API development</strong></p>
+<ul>
+<li>REST APIs with plumber</li>
+<li>Authentication and rate limiting</li>
+<li>Error handling and logging</li>
+</ul>
+<p>✅ <strong>Application development</strong></p>
+<ul>
+<li>Shiny dashboards</li>
+<li>User interfaces</li>
+<li>Batch processing</li>
+</ul>
+<p>✅ <strong>Containerization</strong></p>
+<ul>
+<li>Docker for R models</li>
+<li>Multi-container orchestration</li>
+<li>Environment consistency</li>
+</ul>
+<p>✅ <strong>Monitoring and maintenance</strong></p>
+<ul>
+<li>Performance tracking</li>
+<li>Data drift detection</li>
+<li>Automated retraining</li>
+</ul>
+<p>✅ <strong>Production best practices</strong></p>
+<ul>
+<li>A/B testing</li>
+<li>Gradual rollouts</li>
+<li>Production checklists</li>
+</ul>
+<p>Key takeaways:</p>
+<ul>
+<li>Deployment is as important as model development</li>
+<li>Monitor everything in production</li>
+<li>Version control is crucial for models</li>
+<li>Automate retraining pipelines</li>
+<li>Plan for failure and rollback</li>
+<li>Documentation is essential</li>
+</ul>
+</section>
+<section id="final-assessment" class="level2">
+<h2 class="anchored" data-anchor-id="final-assessment">Final Assessment</h2>
+<p>Congratulations on completing Block 3! Before we conclude this comprehensive workshop, we recommend taking our <strong><a href="./quiz-block-3.html">Block 3 Assessment</a></strong> to test your mastery of advanced machine learning concepts including classification, regression, ensemble methods, unsupervised learning, and model deployment.</p>
+<p>This final assessment will help consolidate your understanding of the sophisticated techniques you’ve learned and prepare you for real-world machine learning applications.</p>
 </section>
 <section id="course-conclusion" class="level2">
 <h2 class="anchored" data-anchor-id="course-conclusion">Course Conclusion</h2>
-<p>Congratulations! You’ve completed a comprehensive journey through: - <strong>Tidyverse</strong> fundamentals and advanced techniques - <strong>Tidymodels</strong> framework for machine learning - <strong>Production deployment</strong> of ML systems</p>
-<p>You now have the skills to: - Wrangle and visualize data efficiently - Build and evaluate machine learning models - Deploy models to production systems - Monitor and maintain ML applications</p>
+<p>Congratulations! You’ve completed a comprehensive journey through:</p>
+<ul>
+<li><strong>Tidyverse</strong> fundamentals and advanced techniques</li>
+<li><strong>Tidymodels</strong> framework for machine learning</li>
+<li><strong>Production deployment</strong> of ML systems</li>
+</ul>
+<p>You now have the skills to:</p>
+<ul>
+<li>Wrangle and visualize data efficiently</li>
+<li>Build and evaluate machine learning models</li>
+<li>Deploy models to production systems</li>
+<li>Monitor and maintain ML applications</li>
+</ul>
 <p>Remember: The journey doesn’t end here. Continue practicing, stay curious, and keep learning!</p>
 </section>
 <section id="additional-resources" class="level2">
@@ -4131,65 +4204,80 @@ document.addEventListener('DOMContentLoaded', function() {
 <span id="cb77-1457"><a href="#cb77-1457" aria-hidden="true" tabindex="-1"></a>In this comprehensive final chapter, you've mastered:</span>
 <span id="cb77-1458"><a href="#cb77-1458" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb77-1459"><a href="#cb77-1459" aria-hidden="true" tabindex="-1"></a>✅ **Model deployment fundamentals**</span>
-<span id="cb77-1460"><a href="#cb77-1460" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Serialization and versioning</span>
-<span id="cb77-1461"><a href="#cb77-1461" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Model registries</span>
-<span id="cb77-1462"><a href="#cb77-1462" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Production readiness</span>
-<span id="cb77-1463"><a href="#cb77-1463" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1464"><a href="#cb77-1464" aria-hidden="true" tabindex="-1"></a>✅ **API development**</span>
-<span id="cb77-1465"><a href="#cb77-1465" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>REST APIs with plumber</span>
-<span id="cb77-1466"><a href="#cb77-1466" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Authentication and rate limiting</span>
-<span id="cb77-1467"><a href="#cb77-1467" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Error handling and logging</span>
-<span id="cb77-1468"><a href="#cb77-1468" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1469"><a href="#cb77-1469" aria-hidden="true" tabindex="-1"></a>✅ **Application development**</span>
-<span id="cb77-1470"><a href="#cb77-1470" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Shiny dashboards</span>
-<span id="cb77-1471"><a href="#cb77-1471" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>User interfaces</span>
-<span id="cb77-1472"><a href="#cb77-1472" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Batch processing</span>
-<span id="cb77-1473"><a href="#cb77-1473" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1474"><a href="#cb77-1474" aria-hidden="true" tabindex="-1"></a>✅ **Containerization**</span>
-<span id="cb77-1475"><a href="#cb77-1475" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Docker for R models</span>
-<span id="cb77-1476"><a href="#cb77-1476" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Multi-container orchestration</span>
-<span id="cb77-1477"><a href="#cb77-1477" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Environment consistency</span>
+<span id="cb77-1460"><a href="#cb77-1460" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1461"><a href="#cb77-1461" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Serialization and versioning</span>
+<span id="cb77-1462"><a href="#cb77-1462" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Model registries</span>
+<span id="cb77-1463"><a href="#cb77-1463" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Production readiness</span>
+<span id="cb77-1464"><a href="#cb77-1464" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1465"><a href="#cb77-1465" aria-hidden="true" tabindex="-1"></a>✅ **API development**</span>
+<span id="cb77-1466"><a href="#cb77-1466" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1467"><a href="#cb77-1467" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>REST APIs with plumber</span>
+<span id="cb77-1468"><a href="#cb77-1468" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Authentication and rate limiting</span>
+<span id="cb77-1469"><a href="#cb77-1469" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Error handling and logging</span>
+<span id="cb77-1470"><a href="#cb77-1470" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1471"><a href="#cb77-1471" aria-hidden="true" tabindex="-1"></a>✅ **Application development**</span>
+<span id="cb77-1472"><a href="#cb77-1472" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1473"><a href="#cb77-1473" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Shiny dashboards</span>
+<span id="cb77-1474"><a href="#cb77-1474" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>User interfaces</span>
+<span id="cb77-1475"><a href="#cb77-1475" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Batch processing</span>
+<span id="cb77-1476"><a href="#cb77-1476" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1477"><a href="#cb77-1477" aria-hidden="true" tabindex="-1"></a>✅ **Containerization**</span>
 <span id="cb77-1478"><a href="#cb77-1478" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1479"><a href="#cb77-1479" aria-hidden="true" tabindex="-1"></a>✅ **Monitoring and maintenance**</span>
-<span id="cb77-1480"><a href="#cb77-1480" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Performance tracking</span>
-<span id="cb77-1481"><a href="#cb77-1481" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Data drift detection</span>
-<span id="cb77-1482"><a href="#cb77-1482" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Automated retraining</span>
-<span id="cb77-1483"><a href="#cb77-1483" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1484"><a href="#cb77-1484" aria-hidden="true" tabindex="-1"></a>✅ **Production best practices**</span>
-<span id="cb77-1485"><a href="#cb77-1485" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>A/B testing</span>
-<span id="cb77-1486"><a href="#cb77-1486" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Gradual rollouts</span>
-<span id="cb77-1487"><a href="#cb77-1487" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Production checklists</span>
+<span id="cb77-1479"><a href="#cb77-1479" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Docker for R models</span>
+<span id="cb77-1480"><a href="#cb77-1480" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Multi-container orchestration</span>
+<span id="cb77-1481"><a href="#cb77-1481" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Environment consistency</span>
+<span id="cb77-1482"><a href="#cb77-1482" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1483"><a href="#cb77-1483" aria-hidden="true" tabindex="-1"></a>✅ **Monitoring and maintenance**</span>
+<span id="cb77-1484"><a href="#cb77-1484" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1485"><a href="#cb77-1485" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Performance tracking</span>
+<span id="cb77-1486"><a href="#cb77-1486" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Data drift detection</span>
+<span id="cb77-1487"><a href="#cb77-1487" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Automated retraining</span>
 <span id="cb77-1488"><a href="#cb77-1488" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1489"><a href="#cb77-1489" aria-hidden="true" tabindex="-1"></a>Key takeaways:</span>
-<span id="cb77-1490"><a href="#cb77-1490" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Deployment is as important as model development</span>
-<span id="cb77-1491"><a href="#cb77-1491" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Monitor everything in production</span>
-<span id="cb77-1492"><a href="#cb77-1492" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Version control is crucial for models</span>
-<span id="cb77-1493"><a href="#cb77-1493" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Automate retraining pipelines</span>
-<span id="cb77-1494"><a href="#cb77-1494" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Plan for failure and rollback</span>
-<span id="cb77-1495"><a href="#cb77-1495" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Documentation is essential</span>
+<span id="cb77-1489"><a href="#cb77-1489" aria-hidden="true" tabindex="-1"></a>✅ **Production best practices**</span>
+<span id="cb77-1490"><a href="#cb77-1490" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1491"><a href="#cb77-1491" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>A/B testing</span>
+<span id="cb77-1492"><a href="#cb77-1492" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Gradual rollouts</span>
+<span id="cb77-1493"><a href="#cb77-1493" aria-hidden="true" tabindex="-1"></a><span class="ss">  - </span>Production checklists</span>
+<span id="cb77-1494"><a href="#cb77-1494" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1495"><a href="#cb77-1495" aria-hidden="true" tabindex="-1"></a>Key takeaways:</span>
 <span id="cb77-1496"><a href="#cb77-1496" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1497"><a href="#cb77-1497" aria-hidden="true" tabindex="-1"></a><span class="fu">## Course Conclusion</span></span>
-<span id="cb77-1498"><a href="#cb77-1498" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1499"><a href="#cb77-1499" aria-hidden="true" tabindex="-1"></a>Congratulations! You've completed a comprehensive journey through:</span>
-<span id="cb77-1500"><a href="#cb77-1500" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Tidyverse** fundamentals and advanced techniques</span>
-<span id="cb77-1501"><a href="#cb77-1501" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Tidymodels** framework for machine learning</span>
-<span id="cb77-1502"><a href="#cb77-1502" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Production deployment** of ML systems</span>
+<span id="cb77-1497"><a href="#cb77-1497" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Deployment is as important as model development</span>
+<span id="cb77-1498"><a href="#cb77-1498" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Monitor everything in production</span>
+<span id="cb77-1499"><a href="#cb77-1499" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Version control is crucial for models</span>
+<span id="cb77-1500"><a href="#cb77-1500" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Automate retraining pipelines</span>
+<span id="cb77-1501"><a href="#cb77-1501" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Plan for failure and rollback</span>
+<span id="cb77-1502"><a href="#cb77-1502" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Documentation is essential</span>
 <span id="cb77-1503"><a href="#cb77-1503" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1504"><a href="#cb77-1504" aria-hidden="true" tabindex="-1"></a>You now have the skills to:</span>
-<span id="cb77-1505"><a href="#cb77-1505" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Wrangle and visualize data efficiently</span>
-<span id="cb77-1506"><a href="#cb77-1506" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Build and evaluate machine learning models</span>
-<span id="cb77-1507"><a href="#cb77-1507" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Deploy models to production systems</span>
-<span id="cb77-1508"><a href="#cb77-1508" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Monitor and maintain ML applications</span>
+<span id="cb77-1504"><a href="#cb77-1504" aria-hidden="true" tabindex="-1"></a><span class="fu">## Final Assessment</span></span>
+<span id="cb77-1505"><a href="#cb77-1505" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1506"><a href="#cb77-1506" aria-hidden="true" tabindex="-1"></a>Congratulations on completing Block 3! Before we conclude this comprehensive workshop, we recommend taking our **[Block 3 Assessment](quiz-block-3.qmd)** to test your mastery of advanced machine learning concepts including classification, regression, ensemble methods, unsupervised learning, and model deployment.</span>
+<span id="cb77-1507"><a href="#cb77-1507" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1508"><a href="#cb77-1508" aria-hidden="true" tabindex="-1"></a>This final assessment will help consolidate your understanding of the sophisticated techniques you've learned and prepare you for real-world machine learning applications.</span>
 <span id="cb77-1509"><a href="#cb77-1509" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1510"><a href="#cb77-1510" aria-hidden="true" tabindex="-1"></a>Remember: The journey doesn't end here. Continue practicing, stay curious, and keep learning!</span>
+<span id="cb77-1510"><a href="#cb77-1510" aria-hidden="true" tabindex="-1"></a><span class="fu">## Course Conclusion</span></span>
 <span id="cb77-1511"><a href="#cb77-1511" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1512"><a href="#cb77-1512" aria-hidden="true" tabindex="-1"></a><span class="fu">## Additional Resources</span></span>
+<span id="cb77-1512"><a href="#cb77-1512" aria-hidden="true" tabindex="-1"></a>Congratulations! You've completed a comprehensive journey through:</span>
 <span id="cb77-1513"><a href="#cb77-1513" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb77-1514"><a href="#cb77-1514" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Engineering Production Machine Learning Systems</span><span class="co">](https://www.oreilly.com/library/view/building-machine-learning/9781492053187/)</span></span>
-<span id="cb77-1515"><a href="#cb77-1515" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">plumber Documentation</span><span class="co">](https://www.rplumber.io/)</span></span>
-<span id="cb77-1516"><a href="#cb77-1516" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Shiny Documentation</span><span class="co">](https://shiny.rstudio.com/)</span></span>
-<span id="cb77-1517"><a href="#cb77-1517" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Docker for Data Science</span><span class="co">](https://www.docker.com/blog/docker-for-data-science/)</span></span>
-<span id="cb77-1518"><a href="#cb77-1518" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">MLOps: Continuous Delivery for ML</span><span class="co">](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning)</span></span>
+<span id="cb77-1514"><a href="#cb77-1514" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Tidyverse** fundamentals and advanced techniques</span>
+<span id="cb77-1515"><a href="#cb77-1515" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Tidymodels** framework for machine learning</span>
+<span id="cb77-1516"><a href="#cb77-1516" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>**Production deployment** of ML systems</span>
+<span id="cb77-1517"><a href="#cb77-1517" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1518"><a href="#cb77-1518" aria-hidden="true" tabindex="-1"></a>You now have the skills to:</span>
+<span id="cb77-1519"><a href="#cb77-1519" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1520"><a href="#cb77-1520" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Wrangle and visualize data efficiently</span>
+<span id="cb77-1521"><a href="#cb77-1521" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Build and evaluate machine learning models</span>
+<span id="cb77-1522"><a href="#cb77-1522" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Deploy models to production systems</span>
+<span id="cb77-1523"><a href="#cb77-1523" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span>Monitor and maintain ML applications</span>
+<span id="cb77-1524"><a href="#cb77-1524" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1525"><a href="#cb77-1525" aria-hidden="true" tabindex="-1"></a>Remember: The journey doesn't end here. Continue practicing, stay curious, and keep learning!</span>
+<span id="cb77-1526"><a href="#cb77-1526" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1527"><a href="#cb77-1527" aria-hidden="true" tabindex="-1"></a><span class="fu">## Additional Resources</span></span>
+<span id="cb77-1528"><a href="#cb77-1528" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb77-1529"><a href="#cb77-1529" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Engineering Production Machine Learning Systems</span><span class="co">](https://www.oreilly.com/library/view/building-machine-learning/9781492053187/)</span></span>
+<span id="cb77-1530"><a href="#cb77-1530" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">plumber Documentation</span><span class="co">](https://www.rplumber.io/)</span></span>
+<span id="cb77-1531"><a href="#cb77-1531" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Shiny Documentation</span><span class="co">](https://shiny.rstudio.com/)</span></span>
+<span id="cb77-1532"><a href="#cb77-1532" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Docker for Data Science</span><span class="co">](https://www.docker.com/blog/docker-for-data-science/)</span></span>
+<span id="cb77-1533"><a href="#cb77-1533" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">MLOps: Continuous Delivery for ML</span><span class="co">](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning)</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

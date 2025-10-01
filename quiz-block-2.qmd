@@ -1,0 +1,685 @@
+---
+title: "Block 2 Assessment: Tidymodels and Machine Learning Foundations"
+author: "David Sarrat González, Juan R González"
+date: today
+format:
+  html:
+    code-fold: false
+    code-tools: false
+    theme: cosmo
+    css: quiz-styles.css
+---
+
+```{=html}
+<style>
+.quiz-container {
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.question {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 32px 0;
+  border-left: 5px solid #007bff;
+  transition: all 0.3s ease;
+}
+
+.question:hover {
+  box-shadow: 0 4px 16px rgba(0,123,255,0.1);
+}
+
+.question h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 1.2em;
+}
+
+.options {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.option {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.option:hover {
+  background: #f8f9fa;
+  border-color: #007bff;
+  transform: translateY(-2px);
+}
+
+.option.selected {
+  background: #e3f2fd;
+  border-color: #2196f3;
+}
+
+.option.correct {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+.option.incorrect {
+  background: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+.option.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.feedback {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  display: none;
+}
+
+.feedback.show {
+  display: block;
+}
+
+.feedback.correct {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.feedback.incorrect {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.score-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  border: 2px solid #007bff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(0,123,255,0.15);
+  z-index: 1000;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: #007bff;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+.final-results {
+  background: #f8f9fa;
+  border: 3px solid #007bff;
+  border-radius: 8px;
+  padding: 32px;
+  text-align: center;
+  margin: 32px 0;
+  display: none;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+}
+
+.final-results h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.final-results h3 {
+  color: #495057;
+}
+
+.final-results p {
+  color: #495057;
+}
+
+.final-results.show {
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 500;
+  margin: 8px 4px;
+}
+
+.badge.excellent { background: #28a745; color: white; }
+.badge.good { background: #ffc107; color: #212529; }
+.badge.needs-review { background: #dc3545; color: white; }
+
+.reset-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.3s ease;
+}
+
+.reset-btn:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+.continue-btn {
+  display: inline-block;
+  background: #28a745;
+  color: white;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  margin-left: 16px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.continue-btn:hover {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  color: white;
+  text-decoration: none;
+}
+</style>
+
+<div class="quiz-container">
+  <div class="score-container">
+    <h4 style="margin: 0 0 12px 0;">Progress</h4>
+    <div id="score">Score: <span id="current-score">0</span>/<span id="total-questions">15</span></div>
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
+    <div style="font-size: 0.9em; margin-top: 8px;">
+      <span id="answered-count">0</span> questions answered
+    </div>
+  </div>
+
+  <h1 style="text-align: center; color: #2c3e50; margin-bottom: 2em;">
+    Block 2 Assessment: Tidymodels and Machine Learning Foundations
+  </h1>
+
+  <div style="background: #e3f2fd; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
+    <h3 style="margin-top: 0;">Instructions</h3>
+    <p>This quiz covers the tidymodels concepts from Block 2 (Chapters 8-13). Click on your chosen answer for each question. You'll receive immediate feedback with explanations for incorrect options.</p>
+  </div>
+
+  <div class="question" data-question="1">
+    <h3>1. What is the main cause of overfitting in machine learning?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">The model is too simple for the data</li>
+      <li class="option" data-answer="b">The model learns patterns specific to the training data, including noise</li>
+      <li class="option" data-answer="c">The dataset is too small</li>
+      <li class="option" data-answer="d">The learning rate is too high</li>
+    </ul>
+    <div class="feedback" id="feedback-1"></div>
+  </div>
+
+  <div class="question" data-question="2">
+    <h3>2. Which type of data splitting would you use for a highly imbalanced classification dataset?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">Random splitting</li>
+      <li class="option" data-answer="b">Stratified splitting</li>
+      <li class="option" data-answer="c">Time-based splitting</li>
+      <li class="option" data-answer="d">Bootstrap splitting</li>
+    </ul>
+    <div class="feedback" id="feedback-2"></div>
+  </div>
+
+  <div class="question" data-question="3">
+    <h3>3. What is the main advantage of k-fold cross-validation over a single train-test split?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">It's faster to compute</li>
+      <li class="option" data-answer="b">It provides more reliable estimates of model performance</li>
+      <li class="option" data-answer="c">It prevents overfitting completely</li>
+      <li class="option" data-answer="d">It requires less data</li>
+    </ul>
+    <div class="feedback" id="feedback-3"></div>
+  </div>
+
+  <div class="question" data-question="4">
+    <h3>4. In the tidymodels framework, what is the purpose of a 'recipe'?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">To specify which model algorithm to use</li>
+      <li class="option" data-answer="b">To define data preprocessing and feature engineering steps</li>
+      <li class="option" data-answer="c">To set hyperparameter values</li>
+      <li class="option" data-answer="d">To evaluate model performance</li>
+    </ul>
+    <div class="feedback" id="feedback-4"></div>
+  </div>
+
+  <div class="question" data-question="5">
+    <h3>5. Which step would you use in a recipe to handle categorical variables with too many levels?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">step_normalize()</li>
+      <li class="option" data-answer="b">step_dummy()</li>
+      <li class="option" data-answer="c">step_other()</li>
+      <li class="option" data-answer="d">step_pca()</li>
+    </ul>
+    <div class="feedback" id="feedback-5"></div>
+  </div>
+
+  <div class="question" data-question="6">
+    <h3>6. What is the main philosophy of the parsnip package?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">To create faster modeling algorithms</li>
+      <li class="option" data-answer="b">To provide a unified interface for different modeling engines</li>
+      <li class="option" data-answer="c">To automatically select the best model</li>
+      <li class="option" data-answer="d">To handle missing values in datasets</li>
+    </ul>
+    <div class="feedback" id="feedback-6"></div>
+  </div>
+
+  <div class="question" data-question="7">
+    <h3>7. In parsnip, what does setting the 'mode' of a model specification do?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">It determines whether the model is for regression or classification</li>
+      <li class="option" data-answer="b">It selects the computational engine</li>
+      <li class="option" data-answer="c">It sets the hyperparameter values</li>
+      <li class="option" data-answer="d">It specifies the data format</li>
+    </ul>
+    <div class="feedback" id="feedback-7"></div>
+  </div>
+
+  <div class="question" data-question="8">
+    <h3>8. What is the main benefit of using workflows in tidymodels?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">Workflows make models run faster</li>
+      <li class="option" data-answer="b">Workflows bundle preprocessing and modeling to ensure consistency</li>
+      <li class="option" data-answer="c">Workflows automatically tune hyperparameters</li>
+      <li class="option" data-answer="d">Workflows eliminate the need for cross-validation</li>
+    </ul>
+    <div class="feedback" id="feedback-8"></div>
+  </div>
+
+  <div class="question" data-question="9">
+    <h3>9. Which yardstick metric is specifically designed for classification problems?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">rmse()</li>
+      <li class="option" data-answer="b">rsq()</li>
+      <li class="option" data-answer="c">roc_auc()</li>
+      <li class="option" data-answer="d">mae()</li>
+    </ul>
+    <div class="feedback" id="feedback-9"></div>
+  </div>
+
+  <div class="question" data-question="10">
+    <h3>10. What is the difference between parameters and hyperparameters?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">Parameters are learned from data, hyperparameters are set before training</li>
+      <li class="option" data-answer="b">Parameters are for classification, hyperparameters are for regression</li>
+      <li class="option" data-answer="c">There is no difference, they are synonymous</li>
+      <li class="option" data-answer="d">Parameters are numeric, hyperparameters are categorical</li>
+    </ul>
+    <div class="feedback" id="feedback-10"></div>
+  </div>
+
+  <div class="question" data-question="11">
+    <h3>11. What does the tune() function indicate in a model specification?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">The parameter should be fixed at its default value</li>
+      <li class="option" data-answer="b">The parameter should be optimized during tuning</li>
+      <li class="option" data-answer="c">The parameter should be removed from the model</li>
+      <li class="option" data-answer="d">The parameter should be manually specified by the user</li>
+    </ul>
+    <div class="feedback" id="feedback-11"></div>
+  </div>
+
+  <div class="question" data-question="12">
+    <h3>12. Which tuning approach explores the hyperparameter space most systematically?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">Random search</li>
+      <li class="option" data-answer="b">Grid search</li>
+      <li class="option" data-answer="c">Bayesian optimization</li>
+      <li class="option" data-answer="d">Simulated annealing</li>
+    </ul>
+    <div class="feedback" id="feedback-12"></div>
+  </div>
+
+  <div class="question" data-question="13">
+    <h3>13. What is the main purpose of the initial_split() function?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">To create cross-validation folds</li>
+      <li class="option" data-answer="b">To divide data into training and testing sets</li>
+      <li class="option" data-answer="c">To split categorical variables into dummy variables</li>
+      <li class="option" data-answer="d">To separate features from the target variable</li>
+    </ul>
+    <div class="feedback" id="feedback-13"></div>
+  </div>
+
+  <div class="question" data-question="14">
+    <h3>14. In the bias-variance tradeoff, what typically happens when you increase model complexity?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">Both bias and variance increase</li>
+      <li class="option" data-answer="b">Both bias and variance decrease</li>
+      <li class="option" data-answer="c">Bias decreases and variance increases</li>
+      <li class="option" data-answer="d">Bias increases and variance decreases</li>
+    </ul>
+    <div class="feedback" id="feedback-14"></div>
+  </div>
+
+  <div class="question" data-question="15">
+    <h3>15. What is the recommended way to select the final hyperparameters after tuning?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">Choose the values that minimize training error</li>
+      <li class="option" data-answer="b">Choose the values that perform best on cross-validation</li>
+      <li class="option" data-answer="c">Choose the values that are closest to the defaults</li>
+      <li class="option" data-answer="d">Choose the values randomly from the tested range</li>
+    </ul>
+    <div class="feedback" id="feedback-15"></div>
+  </div>
+
+  <div class="final-results" id="final-results">
+    <h2>Quiz Complete!</h2>
+    <div id="final-score-display"></div>
+    <div id="performance-badge"></div>
+    <div id="learning-suggestions"></div>
+    <div style="margin-top: 24px;">
+      <button class="reset-btn" onclick="resetQuiz()">Retake Quiz</button>
+      <a href="14-classification.html" class="continue-btn">
+        Continue to Chapter 14: Classification
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = {
+  1: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. Too simple models typically cause underfitting, not overfitting.',
+      b: 'Correct! Overfitting occurs when a model learns patterns specific to the training data, including noise, making it perform poorly on new data.',
+      c: 'Incorrect. Small datasets can contribute to overfitting, but overfitting is about learning training-specific patterns, not dataset size per se.',
+      d: 'Incorrect. Learning rate affects convergence speed, not overfitting directly.'
+    }
+  },
+  2: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. Random splitting might not preserve the class balance in train/test sets.',
+      b: 'Correct! Stratified splitting ensures that both training and testing sets maintain the same proportion of each class.',
+      c: 'Incorrect. Time-based splitting is for temporal data, not class imbalance.',
+      d: 'Incorrect. Bootstrap is a resampling method, not specifically for handling imbalance in splits.'
+    }
+  },
+  3: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. Cross-validation requires more computation than a single split.',
+      b: 'Correct! Cross-validation provides more reliable estimates by averaging performance across multiple folds, reducing dependence on a single train-test split.',
+      c: 'Incorrect. Cross-validation helps detect overfitting but does not prevent it completely.',
+      d: 'Incorrect. Cross-validation uses the same amount of data, just splits it differently.'
+    }
+  },
+  4: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. Model specification is handled by parsnip functions like linear_reg(), not recipes.',
+      b: 'Correct! Recipes define the preprocessing and feature engineering steps that prepare data for modeling.',
+      c: 'Incorrect. Hyperparameter values are set in model specifications or during tuning.',
+      d: 'Incorrect. Model evaluation is handled by yardstick functions and metrics.'
+    }
+  },
+  5: {
+    correct: 'c',
+    explanations: {
+      a: 'Incorrect. step_normalize() centers and scales numeric variables.',
+      b: 'Incorrect. step_dummy() creates dummy variables but does not reduce the number of levels.',
+      c: 'Correct! step_other() collapses infrequent categorical levels into an "other" category.',
+      d: 'Incorrect. step_pca() performs principal component analysis on numeric variables.'
+    }
+  },
+  6: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. Parsnip does not create new algorithms, it provides interfaces to existing ones.',
+      b: 'Correct! Parsnip provides a unified, consistent interface across different modeling packages and engines.',
+      c: 'Incorrect. Parsnip does not perform automatic model selection.',
+      d: 'Incorrect. Missing value handling is typically done in recipes, not parsnip.'
+    }
+  },
+  7: {
+    correct: 'a',
+    explanations: {
+      a: 'Correct! The mode determines whether the model will be used for regression or classification.',
+      b: 'Incorrect. The engine is set separately with set_engine().',
+      c: 'Incorrect. Hyperparameters are set in the model specification arguments.',
+      d: 'Incorrect. Data format is handled by recipes and data preparation.'
+    }
+  },
+  8: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. Workflows do not inherently improve computational speed.',
+      b: 'Correct! Workflows bundle preprocessing steps and models together, ensuring the same transformations are applied consistently.',
+      c: 'Incorrect. Hyperparameter tuning requires additional steps beyond basic workflows.',
+      d: 'Incorrect. Cross-validation is still recommended for model evaluation.'
+    }
+  },
+  9: {
+    correct: 'c',
+    explanations: {
+      a: 'Incorrect. rmse() (Root Mean Square Error) is for regression problems.',
+      b: 'Incorrect. rsq() (R-squared) is for regression problems.',
+      c: 'Correct! roc_auc() (Area Under the ROC Curve) is specifically for binary classification.',
+      d: 'Incorrect. mae() (Mean Absolute Error) is for regression problems.'
+    }
+  },
+  10: {
+    correct: 'a',
+    explanations: {
+      a: 'Correct! Parameters are learned from data during training, while hyperparameters are set before training begins.',
+      b: 'Incorrect. Both types of models can have parameters and hyperparameters.',
+      c: 'Incorrect. Parameters and hyperparameters serve different roles in machine learning.',
+      d: 'Incorrect. Both can be numeric or categorical depending on the context.'
+    }
+  },
+  11: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. tune() marks a parameter for optimization, not for using defaults.',
+      b: 'Correct! tune() indicates that the parameter value should be determined through hyperparameter tuning.',
+      c: 'Incorrect. tune() does not remove parameters from the model.',
+      d: 'Incorrect. tune() automates parameter selection rather than requiring manual specification.'
+    }
+  },
+  12: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. Random search explores the space randomly, not systematically.',
+      b: 'Correct! Grid search systematically evaluates all combinations of specified parameter values.',
+      c: 'Incorrect. Bayesian optimization is more efficient but less systematic than grid search.',
+      d: 'Incorrect. Simulated annealing uses probabilistic exploration, not systematic coverage.'
+    }
+  },
+  13: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. Cross-validation folds are created with functions like vfold_cv().',
+      b: 'Correct! initial_split() divides the data into training and testing portions.',
+      c: 'Incorrect. Creating dummy variables is handled by step_dummy() in recipes.',
+      d: 'Incorrect. Feature-target separation is done during model specification.'
+    }
+  },
+  14: {
+    correct: 'c',
+    explanations: {
+      a: 'Incorrect. Bias typically decreases as model complexity increases.',
+      b: 'Incorrect. Variance typically increases as model complexity increases.',
+      c: 'Correct! As model complexity increases, bias typically decreases (better fit) but variance increases (more sensitive to training data).',
+      d: 'Incorrect. This describes the opposite relationship.'
+    }
+  },
+  15: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. Training error is biased and can lead to overfitting.',
+      b: 'Correct! Cross-validation provides unbiased estimates of performance for hyperparameter selection.',
+      c: 'Incorrect. Default values may not be optimal for your specific dataset.',
+      d: 'Incorrect. Random selection ignores performance information from tuning.'
+    }
+  }
+};
+
+let score = 0;
+let answered = 0;
+
+function handleAnswer(questionNum, selectedAnswer) {
+  const question = document.querySelector(`[data-question="${questionNum}"]`);
+  const options = question.querySelectorAll('.option');
+  const feedback = question.querySelector('.feedback');
+  const correctAnswer = questions[questionNum].correct;
+  const isCorrect = selectedAnswer === correctAnswer;
+
+  // Disable all options
+  options.forEach(option => {
+    option.classList.add('disabled');
+    const answer = option.getAttribute('data-answer');
+    if (answer === correctAnswer) {
+      option.classList.add('correct');
+    } else if (answer === selectedAnswer && !isCorrect) {
+      option.classList.add('incorrect');
+    }
+  });
+
+  // Show feedback
+  feedback.innerHTML = questions[questionNum].explanations[selectedAnswer];
+  feedback.classList.add('show');
+  feedback.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+  // Update score if not already answered
+  if (!question.classList.contains('answered')) {
+    answered++;
+    if (isCorrect) score++;
+    question.classList.add('answered');
+    updateScore();
+  }
+}
+
+function updateScore() {
+  document.getElementById('current-score').textContent = score;
+  document.getElementById('answered-count').textContent = answered;
+  
+  const progress = (answered / 15) * 100;
+  document.getElementById('progress').style.width = progress + '%';
+
+  if (answered === 15) {
+    setTimeout(showFinalResults, 500);
+  }
+}
+
+function showFinalResults() {
+  const percentage = Math.round((score / 15) * 100);
+  const resultsDiv = document.getElementById('final-results');
+  const scoreDisplay = document.getElementById('final-score-display');
+  const badgeDiv = document.getElementById('performance-badge');
+  const suggestionsDiv = document.getElementById('learning-suggestions');
+
+  scoreDisplay.innerHTML = `
+    <h3>Final Score: ${score}/15 (${percentage}%)</h3>
+  `;
+
+  let badge, suggestions;
+  if (percentage >= 85) {
+    badge = '<span class="badge excellent">Excellent!</span>';
+    suggestions = '<p><strong>Outstanding performance!</strong> You have mastered the tidymodels framework. You are ready for advanced machine learning topics.</p>';
+  } else if (percentage >= 70) {
+    badge = '<span class="badge good">Good Job!</span>';
+    suggestions = '<p><strong>Good work!</strong> You have a solid understanding of tidymodels concepts. Review the questions you missed to strengthen your foundation.</p>';
+  } else {
+    badge = '<span class="badge needs-review">Needs Review</span>';
+    suggestions = '<p><strong>Keep learning!</strong> Focus on reviewing Block 2 chapters. Practice with the exercises and try the quiz again.</p>';
+  }
+
+  badgeDiv.innerHTML = badge;
+  suggestionsDiv.innerHTML = suggestions;
+  resultsDiv.classList.add('show');
+
+  // Scroll to results
+  resultsDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetQuiz() {
+  score = 0;
+  answered = 0;
+  
+  // Reset all questions
+  document.querySelectorAll('.question').forEach(question => {
+    question.classList.remove('answered');
+    const options = question.querySelectorAll('.option');
+    const feedback = question.querySelector('.feedback');
+    
+    options.forEach(option => {
+      option.classList.remove('disabled', 'correct', 'incorrect', 'selected');
+    });
+    
+    feedback.classList.remove('show', 'correct', 'incorrect');
+  });
+
+  // Reset score display
+  updateScore();
+  
+  // Hide final results
+  document.getElementById('final-results').classList.remove('show');
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Add click event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.option').forEach(option => {
+    option.addEventListener('click', function() {
+      if (this.classList.contains('disabled')) return;
+      
+      const question = this.closest('.question');
+      const questionNum = parseInt(question.getAttribute('data-question'));
+      const selectedAnswer = this.getAttribute('data-answer');
+      
+      // Visual selection
+      question.querySelectorAll('.option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      this.classList.add('selected');
+      
+      handleAnswer(questionNum, selectedAnswer);
+    });
+  });
+});
+</script>
+```

@@ -1427,36 +1427,43 @@ cat("Total Data Errors:", summary_stats$total_errors, "\n")
 In this comprehensive final chapter, you've mastered:
 
 ✅ **Model deployment fundamentals**
+
   - Serialization and versioning
   - Model registries
   - Production readiness
 
 ✅ **API development**
+
   - REST APIs with plumber
   - Authentication and rate limiting
   - Error handling and logging
 
 ✅ **Application development**
+
   - Shiny dashboards
   - User interfaces
   - Batch processing
 
 ✅ **Containerization**
+
   - Docker for R models
   - Multi-container orchestration
   - Environment consistency
 
 ✅ **Monitoring and maintenance**
+
   - Performance tracking
   - Data drift detection
   - Automated retraining
 
 ✅ **Production best practices**
+
   - A/B testing
   - Gradual rollouts
   - Production checklists
 
 Key takeaways:
+
 - Deployment is as important as model development
 - Monitor everything in production
 - Version control is crucial for models
@@ -1464,14 +1471,22 @@ Key takeaways:
 - Plan for failure and rollback
 - Documentation is essential
 
+## Final Assessment
+
+Congratulations on completing Block 3! Before we conclude this comprehensive workshop, we recommend taking our **[Block 3 Assessment](quiz-block-3.qmd)** to test your mastery of advanced machine learning concepts including classification, regression, ensemble methods, unsupervised learning, and model deployment.
+
+This final assessment will help consolidate your understanding of the sophisticated techniques you've learned and prepare you for real-world machine learning applications.
+
 ## Course Conclusion
 
 Congratulations! You've completed a comprehensive journey through:
+
 - **Tidyverse** fundamentals and advanced techniques
 - **Tidymodels** framework for machine learning
 - **Production deployment** of ML systems
 
 You now have the skills to:
+
 - Wrangle and visualize data efficiently
 - Build and evaluate machine learning models
 - Deploy models to production systems

@@ -1129,7 +1129,9 @@ Key takeaways:
 
 ## What's Next?
 
-In [Chapter 8](08-tidymodels-intro.Rmd), we transition to machine learning with tidymodels, building on our data manipulation skills.
+Congratulations! You've completed all the fundamental tidyverse concepts from Block 1. Before moving to machine learning, we recommend taking our **[Block 1 Assessment](quiz-block-1.qmd)** to test your understanding of the core R and tidyverse concepts you've learned.
+
+Once you've mastered these fundamentals, continue to [Chapter 8](08-tidymodels-intro.Rmd) where we transition to machine learning with tidymodels, building on your data manipulation skills.
 
 ## Additional Resources
 

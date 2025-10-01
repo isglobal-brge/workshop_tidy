@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Sarrat González, Juan R González">
-<meta name="dcterms.date" content="2025-09-29">
+<meta name="dcterms.date" content="2025-10-01">
 
 <title>Chapter 7: Working with Strings and Dates - Text and Time in the Tidyverse – Tidyverse &amp; Machine Learning Workshop</title>
 <style>
@@ -163,6 +163,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="./07-strings-dates.html">
  <span class="dropdown-text">Ch 7: Strings and Dates</span></a>
   </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="./quiz-block-1.html">
+ <span class="dropdown-text">Block 1 Assessment</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -194,6 +199,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="./13-hyperparameter-tuning.html">
  <span class="dropdown-text">Ch 13: Hyperparameter Tuning</span></a>
   </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="./quiz-block-2.html">
+ <span class="dropdown-text">Block 2 Assessment</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -220,6 +230,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li>
     <a class="dropdown-item" href="./18-model-deployment.html">
  <span class="dropdown-text">Ch 18: Model Deployment</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="./quiz-block-3.html">
+ <span class="dropdown-text">Block 3 Assessment</span></a>
   </li>  
     </ul>
   </li>
@@ -303,7 +318,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 29, 2025</p>
+      <p class="date">October 1, 2025</p>
     </div>
   </div>
   
@@ -671,11 +686,11 @@ The following object is masked from 'package:lubridate':
 <div class="sourceCode cell-code" id="cb28"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb28-1"><a href="#cb28-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Today's date and current time</span></span>
 <span id="cb28-2"><a href="#cb28-2" aria-hidden="true" tabindex="-1"></a><span class="fu">today</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "2025-09-27"</code></pre>
+<pre><code>[1] "2025-10-01"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb30"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb30-1"><a href="#cb30-1" aria-hidden="true" tabindex="-1"></a><span class="fu">now</span>()</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>[1] "2025-09-27 16:36:13 CEST"</code></pre>
+<pre><code>[1] "2025-10-01 12:48:28 CEST"</code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb32"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb32-1"><a href="#cb32-1" aria-hidden="true" tabindex="-1"></a><span class="co"># Parse dates from strings - lubridate is smart!</span></span>
 <span id="cb32-2"><a href="#cb32-2" aria-hidden="true" tabindex="-1"></a>date_strings <span class="ot">&lt;-</span> <span class="fu">c</span>(</span>
@@ -1432,10 +1447,10 @@ The following object is masked from 'package:lubridate':
 <pre><code># A tibble: 4 x 5
   name    age_exact next_birthday days_to_birthday birthday_weekday
   &lt;chr&gt;       &lt;dbl&gt; &lt;date&gt;                   &lt;dbl&gt; &lt;ord&gt;           
-1 Alice          35 2026-03-15                 169 Sunday          
-2 Bob            40 2026-07-22                 298 Wednesday       
-3 Charlie        29 2025-12-01                  65 Monday          
-4 Diana          25 2026-01-30                 125 Friday          </code></pre>
+1 Alice          35 2026-03-15                 165 Sunday          
+2 Bob            40 2026-07-22                 294 Wednesday       
+3 Charlie        29 2025-12-01                  61 Monday          
+4 Diana          25 2026-01-30                 121 Friday          </code></pre>
 </div>
 </div>
 </section>
@@ -1668,7 +1683,8 @@ The following object is masked from 'package:lubridate':
 </section>
 <section id="whats-next" class="level2">
 <h2 class="anchored" data-anchor-id="whats-next">What’s Next?</h2>
-<p>In <a href="./08-tidymodels-intro.html">Chapter 8</a>, we transition to machine learning with tidymodels, building on our data manipulation skills.</p>
+<p>Congratulations! You’ve completed all the fundamental tidyverse concepts from Block 1. Before moving to machine learning, we recommend taking our <strong><a href="./quiz-block-1.html">Block 1 Assessment</a></strong> to test your understanding of the core R and tidyverse concepts you’ve learned.</p>
+<p>Once you’ve mastered these fundamentals, continue to <a href="./08-tidymodels-intro.html">Chapter 8</a> where we transition to machine learning with tidymodels, building on your data manipulation skills.</p>
 </section>
 <section id="additional-resources" class="level2">
 <h2 class="anchored" data-anchor-id="additional-resources">Additional Resources</h2>
@@ -3280,16 +3296,18 @@ document.addEventListener('DOMContentLoaded', function() {
 <span id="cb80-1169"><a href="#cb80-1169" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb80-1170"><a href="#cb80-1170" aria-hidden="true" tabindex="-1"></a><span class="fu">## What's Next?</span></span>
 <span id="cb80-1171"><a href="#cb80-1171" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb80-1172"><a href="#cb80-1172" aria-hidden="true" tabindex="-1"></a>In <span class="co">[</span><span class="ot">Chapter 8</span><span class="co">](08-tidymodels-intro.Rmd)</span>, we transition to machine learning with tidymodels, building on our data manipulation skills.</span>
+<span id="cb80-1172"><a href="#cb80-1172" aria-hidden="true" tabindex="-1"></a>Congratulations! You've completed all the fundamental tidyverse concepts from Block 1. Before moving to machine learning, we recommend taking our **[Block 1 Assessment](quiz-block-1.qmd)** to test your understanding of the core R and tidyverse concepts you've learned.</span>
 <span id="cb80-1173"><a href="#cb80-1173" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb80-1174"><a href="#cb80-1174" aria-hidden="true" tabindex="-1"></a><span class="fu">## Additional Resources</span></span>
+<span id="cb80-1174"><a href="#cb80-1174" aria-hidden="true" tabindex="-1"></a>Once you've mastered these fundamentals, continue to <span class="co">[</span><span class="ot">Chapter 8</span><span class="co">](08-tidymodels-intro.Rmd)</span> where we transition to machine learning with tidymodels, building on your data manipulation skills.</span>
 <span id="cb80-1175"><a href="#cb80-1175" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb80-1176"><a href="#cb80-1176" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">stringr Documentation</span><span class="co">](https://stringr.tidyverse.org/)</span></span>
-<span id="cb80-1177"><a href="#cb80-1177" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">lubridate Documentation</span><span class="co">](https://lubridate.tidyverse.org/)</span></span>
-<span id="cb80-1178"><a href="#cb80-1178" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Regular Expression Testing</span><span class="co">](https://regex101.com/)</span></span>
-<span id="cb80-1179"><a href="#cb80-1179" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">R for Data Science - Strings</span><span class="co">](https://r4ds.had.co.nz/strings.html)</span></span>
-<span id="cb80-1180"><a href="#cb80-1180" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">R for Data Science - Dates and Times</span><span class="co">](https://r4ds.had.co.nz/dates-and-times.html)</span></span>
-<span id="cb80-1181"><a href="#cb80-1181" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Time Zone Database</span><span class="co">](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)</span></span>
+<span id="cb80-1176"><a href="#cb80-1176" aria-hidden="true" tabindex="-1"></a><span class="fu">## Additional Resources</span></span>
+<span id="cb80-1177"><a href="#cb80-1177" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb80-1178"><a href="#cb80-1178" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">stringr Documentation</span><span class="co">](https://stringr.tidyverse.org/)</span></span>
+<span id="cb80-1179"><a href="#cb80-1179" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">lubridate Documentation</span><span class="co">](https://lubridate.tidyverse.org/)</span></span>
+<span id="cb80-1180"><a href="#cb80-1180" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Regular Expression Testing</span><span class="co">](https://regex101.com/)</span></span>
+<span id="cb80-1181"><a href="#cb80-1181" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">R for Data Science - Strings</span><span class="co">](https://r4ds.had.co.nz/strings.html)</span></span>
+<span id="cb80-1182"><a href="#cb80-1182" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">R for Data Science - Dates and Times</span><span class="co">](https://r4ds.had.co.nz/dates-and-times.html)</span></span>
+<span id="cb80-1183"><a href="#cb80-1183" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Time Zone Database</span><span class="co">](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

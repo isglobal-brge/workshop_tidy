@@ -1,0 +1,685 @@
+---
+title: "Block 1 Assessment: R and Tidyverse Fundamentals"
+author: "David Sarrat González, Juan R González"
+date: today
+format:
+  html:
+    code-fold: false
+    code-tools: false
+    theme: cosmo
+    css: quiz-styles.css
+---
+
+```{=html}
+<style>
+.quiz-container {
+  max-width: 800px;
+  margin: 0 auto;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+}
+
+.question {
+  background: #f8f9fa;
+  border-radius: 12px;
+  padding: 24px;
+  margin: 32px 0;
+  border-left: 5px solid #007bff;
+  transition: all 0.3s ease;
+}
+
+.question:hover {
+  box-shadow: 0 4px 16px rgba(0,123,255,0.1);
+}
+
+.question h3 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+  font-size: 1.2em;
+}
+
+.options {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.option {
+  background: white;
+  border: 2px solid #e9ecef;
+  border-radius: 8px;
+  padding: 16px;
+  margin: 12px 0;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  position: relative;
+}
+
+.option:hover {
+  background: #f8f9fa;
+  border-color: #007bff;
+  transform: translateY(-2px);
+}
+
+.option.selected {
+  background: #e3f2fd;
+  border-color: #2196f3;
+}
+
+.option.correct {
+  background: #d4edda;
+  border-color: #28a745;
+  color: #155724;
+}
+
+.option.incorrect {
+  background: #f8d7da;
+  border-color: #dc3545;
+  color: #721c24;
+}
+
+.option.disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.feedback {
+  margin-top: 16px;
+  padding: 16px;
+  border-radius: 8px;
+  display: none;
+}
+
+.feedback.show {
+  display: block;
+}
+
+.feedback.correct {
+  background: #d4edda;
+  border: 1px solid #c3e6cb;
+  color: #155724;
+}
+
+.feedback.incorrect {
+  background: #f8d7da;
+  border: 1px solid #f5c6cb;
+  color: #721c24;
+}
+
+.score-container {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  background: white;
+  border: 2px solid #007bff;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 4px 16px rgba(0,123,255,0.15);
+  z-index: 1000;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: #e9ecef;
+  border-radius: 4px;
+  margin: 20px 0;
+  overflow: hidden;
+}
+
+.progress {
+  height: 100%;
+  background: #007bff;
+  width: 0%;
+  transition: width 0.5s ease;
+}
+
+.final-results {
+  background: #f8f9fa;
+  border: 3px solid #007bff;
+  border-radius: 8px;
+  padding: 32px;
+  text-align: center;
+  margin: 32px 0;
+  display: none;
+  box-shadow: 0 2px 8px rgba(0,123,255,0.15);
+}
+
+.final-results h2 {
+  color: #2c3e50;
+  margin-bottom: 20px;
+}
+
+.final-results h3 {
+  color: #495057;
+}
+
+.final-results p {
+  color: #495057;
+}
+
+.final-results.show {
+  display: block;
+  animation: fadeIn 0.5s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.badge {
+  display: inline-block;
+  padding: 8px 16px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  font-weight: 500;
+  margin: 8px 4px;
+}
+
+.badge.excellent { background: #28a745; color: white; }
+.badge.good { background: #ffc107; color: #212529; }
+.badge.needs-review { background: #dc3545; color: white; }
+
+.reset-btn {
+  background: #6c757d;
+  color: white;
+  border: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.3s ease;
+}
+
+.reset-btn:hover {
+  background: #5a6268;
+  transform: translateY(-2px);
+}
+
+.continue-btn {
+  display: inline-block;
+  background: #28a745;
+  color: white;
+  text-decoration: none;
+  padding: 12px 24px;
+  border-radius: 6px;
+  margin-left: 16px;
+  transition: all 0.3s ease;
+  font-weight: 500;
+}
+
+.continue-btn:hover {
+  background: #218838;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
+  color: white;
+  text-decoration: none;
+}
+</style>
+
+<div class="quiz-container">
+  <div class="score-container">
+    <h4 style="margin: 0 0 12px 0;">Progress</h4>
+    <div id="score">Score: <span id="current-score">0</span>/<span id="total-questions">15</span></div>
+    <div class="progress-bar">
+      <div class="progress" id="progress"></div>
+    </div>
+    <div style="font-size: 0.9em; margin-top: 8px;">
+      <span id="answered-count">0</span> questions answered
+    </div>
+  </div>
+
+  <h1 style="text-align: center; color: #2c3e50; margin-bottom: 2em;">
+    Block 1 Assessment: R and Tidyverse Fundamentals
+  </h1>
+
+  <div style="background: #e3f2fd; border-radius: 8px; padding: 20px; margin-bottom: 32px;">
+    <h3 style="margin-top: 0;">Instructions</h3>
+    <p>This quiz covers the fundamental concepts from Block 1 (Chapters 1-7). Click on your chosen answer for each question. You'll receive immediate feedback with explanations for incorrect options.</p>
+  </div>
+
+  <div class="question" data-question="1">
+    <h3>1. What are the three fundamental rules of tidy data?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">Each variable forms a column, each observation forms a row, each cell contains a value</li>
+      <li class="option" data-answer="b">Data should be in wide format, column names should be descriptive, no missing values allowed</li>
+      <li class="option" data-answer="c">Use factors for categorical data, dates should be character strings, all numeric data should be integers</li>
+      <li class="option" data-answer="d">Sort by the first column, use consistent naming, remove duplicates</li>
+    </ul>
+    <div class="feedback" id="feedback-1"></div>
+  </div>
+
+  <div class="question" data-question="2">
+    <h3>2. Which pipe operator is recommended for new code in R 4.1+?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">-> (assignment pipe)</li>
+      <li class="option" data-answer="b">%>% (magrittr pipe)</li>
+      <li class="option" data-answer="c">|> (native R pipe)</li>
+      <li class="option" data-answer="d">%<% (reverse pipe)</li>
+    </ul>
+    <div class="feedback" id="feedback-2"></div>
+  </div>
+
+  <div class="question" data-question="3">
+    <h3>3. What does the dplyr::filter() function do?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">Selects specific columns from a dataset</li>
+      <li class="option" data-answer="b">Keeps rows that match specified conditions</li>
+      <li class="option" data-answer="c">Sorts the data in ascending order</li>
+      <li class="option" data-answer="d">Groups the data by categories</li>
+    </ul>
+    <div class="feedback" id="feedback-3"></div>
+  </div>
+
+  <div class="question" data-question="4">
+    <h3>4. In ggplot2, what does the aes() function define?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">The statistical transformation to apply</li>
+      <li class="option" data-answer="b">The color theme of the plot</li>
+      <li class="option" data-answer="c">The size of the plot window</li>
+      <li class="option" data-answer="d">The aesthetic mappings between data variables and visual properties</li>
+    </ul>
+    <div class="feedback" id="feedback-4"></div>
+  </div>
+
+  <div class="question" data-question="5">
+    <h3>5. What is the main difference between pivot_longer() and pivot_wider()?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">pivot_longer() converts wide data to long format, pivot_wider() does the opposite</li>
+      <li class="option" data-answer="b">pivot_longer() is for numeric data, pivot_wider() is for categorical data</li>
+      <li class="option" data-answer="c">pivot_longer() removes missing values, pivot_wider() keeps them</li>
+      <li class="option" data-answer="d">They are identical functions with different names</li>
+    </ul>
+    <div class="feedback" id="feedback-5"></div>
+  </div>
+
+  <div class="question" data-question="6">
+    <h3>6. Which readr function would you use to import a CSV file with custom column types?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">read.csv() with stringsAsFactors = FALSE</li>
+      <li class="option" data-answer="b">read_csv() with the col_types argument</li>
+      <li class="option" data-answer="c">import_csv() with type specifications</li>
+      <li class="option" data-answer="d">load_csv() with custom parameters</li>
+    </ul>
+    <div class="feedback" id="feedback-6"></div>
+  </div>
+
+  <div class="question" data-question="7">
+    <h3>7. What does the purrr::map() function return?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">Always returns a vector</li>
+      <li class="option" data-answer="b">Always returns a list</li>
+      <li class="option" data-answer="c">Always returns a data frame</li>
+      <li class="option" data-answer="d">Returns the same type as the input</li>
+    </ul>
+    <div class="feedback" id="feedback-7"></div>
+  </div>
+
+  <div class="question" data-question="8">
+    <h3>8. In dplyr, what is the purpose of group_by()?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">To sort data by groups</li>
+      <li class="option" data-answer="b">To split data into groups for subsequent operations</li>
+      <li class="option" data-answer="c">To create new grouping variables</li>
+      <li class="option" data-answer="d">To filter out groups with few observations</li>
+    </ul>
+    <div class="feedback" id="feedback-8"></div>
+  </div>
+
+  <div class="question" data-question="9">
+    <h3>9. Which stringr function would you use to detect if a pattern exists in strings?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">str_count()</li>
+      <li class="option" data-answer="b">str_detect()</li>
+      <li class="option" data-answer="c">str_locate()</li>
+      <li class="option" data-answer="d">str_extract()</li>
+    </ul>
+    <div class="feedback" id="feedback-9"></div>
+  </div>
+
+  <div class="question" data-question="10">
+    <h3>10. What is the main advantage of using tibbles over data.frames?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">Tibbles are faster for large datasets</li>
+      <li class="option" data-answer="b">Tibbles provide better printing, preserve data types, and have stricter subset behavior</li>
+      <li class="option" data-answer="c">Tibbles can only contain numeric data</li>
+      <li class="option" data-answer="d">Tibbles automatically remove missing values</li>
+    </ul>
+    <div class="feedback" id="feedback-10"></div>
+  </div>
+
+  <div class="question" data-question="11">
+    <h3>11. What type of join would you use to keep all rows from both tables, regardless of matches?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">inner_join()</li>
+      <li class="option" data-answer="b">left_join()</li>
+      <li class="option" data-answer="c">right_join()</li>
+      <li class="option" data-answer="d">full_join()</li>
+    </ul>
+    <div class="feedback" id="feedback-11"></div>
+  </div>
+
+  <div class="question" data-question="12">
+    <h3>12. In lubridate, which function would you use to extract the year from a date?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">get_year()</li>
+      <li class="option" data-answer="b">year()</li>
+      <li class="option" data-answer="c">extract_year()</li>
+      <li class="option" data-answer="d">date_year()</li>
+    </ul>
+    <div class="feedback" id="feedback-12"></div>
+  </div>
+
+  <div class="question" data-question="13">
+    <h3>13. What does the tidyr::separate() function do?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">Splits one column into multiple columns</li>
+      <li class="option" data-answer="b">Removes rows with missing values</li>
+      <li class="option" data-answer="c">Creates separate datasets from groups</li>
+      <li class="option" data-answer="d">Divides numeric values by a constant</li>
+    </ul>
+    <div class="feedback" id="feedback-13"></div>
+  </div>
+
+  <div class="question" data-question="14">
+    <h3>14. Which ggplot2 function would you use to create subplots based on a categorical variable?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">geom_subplot()</li>
+      <li class="option" data-answer="b">facet_wrap() or facet_grid()</li>
+      <li class="option" data-answer="c">group_plot()</li>
+      <li class="option" data-answer="d">split_plot()</li>
+    </ul>
+    <div class="feedback" id="feedback-14"></div>
+  </div>
+
+  <div class="question" data-question="15">
+    <h3>15. What is the main purpose of the purrr::safely() function?</h3>
+    <ul class="options">
+      <li class="option" data-answer="a">To make functions run faster</li>
+      <li class="option" data-answer="b">To handle errors gracefully and return results with error information</li>
+      <li class="option" data-answer="c">To validate input data types</li>
+      <li class="option" data-answer="d">To create backup copies of data</li>
+    </ul>
+    <div class="feedback" id="feedback-15"></div>
+  </div>
+
+  <div class="final-results" id="final-results">
+    <h2>Quiz Complete!</h2>
+    <div id="final-score-display"></div>
+    <div id="performance-badge"></div>
+    <div id="learning-suggestions"></div>
+    <div style="margin-top: 24px;">
+      <button class="reset-btn" onclick="resetQuiz()">Retake Quiz</button>
+      <a href="08-tidymodels-intro.html" class="continue-btn">
+        Continue to Chapter 8: Tidymodels
+      </a>
+    </div>
+  </div>
+</div>
+
+<script>
+const questions = {
+  1: {
+    correct: 'a',
+    explanations: {
+      a: 'Correct! These are the three fundamental rules of tidy data as defined by Hadley Wickham.',
+      b: 'Incorrect. Tidy data can be in long format, column names being descriptive is good practice but not a rule of tidy data, and missing values are allowed.',
+      c: 'Incorrect. These are general data handling suggestions but not the core principles of tidy data.',
+      d: 'Incorrect. These are data cleaning practices but not the fundamental rules of tidy data structure.'
+    }
+  },
+  2: {
+    correct: 'c',
+    explanations: {
+      a: 'Incorrect. -> is an assignment operator, not a pipe.',
+      b: 'Incorrect. While %>% from magrittr is widely used, |> is now the recommended native pipe.',
+      c: 'Correct! The native pipe |> is recommended for new code in R 4.1+ as it\'s built into base R.',
+      d: 'Incorrect. %<% is not a standard pipe operator.'
+    }
+  },
+  3: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. select() is used for selecting columns, not filter().',
+      b: 'Correct! filter() keeps rows that meet the specified logical conditions.',
+      c: 'Incorrect. arrange() is used for sorting data.',
+      d: 'Incorrect. group_by() is used for grouping data.'
+    }
+  },
+  4: {
+    correct: 'd',
+    explanations: {
+      a: 'Incorrect. Statistical transformations are defined by stat_* functions or stat arguments.',
+      b: 'Incorrect. Themes control the overall appearance, not aes().',
+      c: 'Incorrect. Plot size is controlled by figure options, not aes().',
+      d: 'Correct! aes() maps data variables to visual properties like x, y, color, size, etc.'
+    }
+  },
+  5: {
+    correct: 'a',
+    explanations: {
+      a: 'Correct! pivot_longer() reshapes wide data to long format, while pivot_wider() does the reverse.',
+      b: 'Incorrect. Both functions work with any data type.',
+      c: 'Incorrect. Both functions handle missing values similarly.',
+      d: 'Incorrect. They perform opposite operations.'
+    }
+  },
+  6: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. read.csv() is base R, and this question asks about readr functions.',
+      b: 'Correct! read_csv() with col_types allows you to specify custom column types.',
+      c: 'Incorrect. import_csv() is not a readr function.',
+      d: 'Incorrect. load_csv() is not a readr function.'
+    }
+  },
+  7: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. map() always returns a list, not a vector.',
+      b: 'Correct! The basic map() function always returns a list.',
+      c: 'Incorrect. map() returns a list, not a data frame.',
+      d: 'Incorrect. map() always returns a list regardless of input type.'
+    }
+  },
+  8: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. arrange() is used for sorting.',
+      b: 'Correct! group_by() splits data into groups for subsequent grouped operations.',
+      c: 'Incorrect. group_by() uses existing variables to create groups.',
+      d: 'Incorrect. group_by() creates groups, it doesn\'t filter them out.'
+    }
+  },
+  9: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. str_count() counts occurrences, doesn\'t just detect presence.',
+      b: 'Correct! str_detect() returns TRUE/FALSE indicating whether a pattern is found.',
+      c: 'Incorrect. str_locate() finds the position of matches.',
+      d: 'Incorrect. str_extract() extracts the matching text.'
+    }
+  },
+  10: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. Speed is not the main advantage.',
+      b: 'Correct! Tibbles offer better printing, preserve column types, and have stricter subsetting behavior.',
+      c: 'Incorrect. Tibbles can contain any data type.',
+      d: 'Incorrect. Tibbles don\'t automatically remove missing values.'
+    }
+  },
+  11: {
+    correct: 'd',
+    explanations: {
+      a: 'Incorrect. inner_join() only keeps matching rows from both tables.',
+      b: 'Incorrect. left_join() keeps all rows from the left table.',
+      c: 'Incorrect. right_join() keeps all rows from the right table.',
+      d: 'Correct! full_join() keeps all rows from both tables, regardless of matches.'
+    }
+  },
+  12: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. get_year() is not a lubridate function.',
+      b: 'Correct! year() extracts the year component from a date.',
+      c: 'Incorrect. extract_year() is not a lubridate function.',
+      d: 'Incorrect. date_year() is not a lubridate function.'
+    }
+  },
+  13: {
+    correct: 'a',
+    explanations: {
+      a: 'Correct! separate() splits one column into multiple columns based on a separator.',
+      b: 'Incorrect. drop_na() removes rows with missing values.',
+      c: 'Incorrect. nest() creates nested datasets from groups.',
+      d: 'Incorrect. separate() works with character data, not numeric division.'
+    }
+  },
+  14: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. geom_subplot() is not a ggplot2 function.',
+      b: 'Correct! facet_wrap() and facet_grid() create subplots based on categorical variables.',
+      c: 'Incorrect. group_plot() is not a ggplot2 function.',
+      d: 'Incorrect. split_plot() is not a ggplot2 function.'
+    }
+  },
+  15: {
+    correct: 'b',
+    explanations: {
+      a: 'Incorrect. safely() doesn\'t improve performance.',
+      b: 'Correct! safely() wraps functions to handle errors gracefully and return both results and errors.',
+      c: 'Incorrect. safely() handles errors, not input validation.',
+      d: 'Incorrect. safely() handles function execution, not data backup.'
+    }
+  }
+};
+
+let score = 0;
+let answered = 0;
+
+function handleAnswer(questionNum, selectedAnswer) {
+  const question = document.querySelector(`[data-question="${questionNum}"]`);
+  const options = question.querySelectorAll('.option');
+  const feedback = question.querySelector('.feedback');
+  const correctAnswer = questions[questionNum].correct;
+  const isCorrect = selectedAnswer === correctAnswer;
+
+  // Disable all options
+  options.forEach(option => {
+    option.classList.add('disabled');
+    const answer = option.getAttribute('data-answer');
+    if (answer === correctAnswer) {
+      option.classList.add('correct');
+    } else if (answer === selectedAnswer && !isCorrect) {
+      option.classList.add('incorrect');
+    }
+  });
+
+  // Show feedback
+  feedback.innerHTML = questions[questionNum].explanations[selectedAnswer];
+  feedback.classList.add('show');
+  feedback.classList.add(isCorrect ? 'correct' : 'incorrect');
+
+  // Update score if not already answered
+  if (!question.classList.contains('answered')) {
+    answered++;
+    if (isCorrect) score++;
+    question.classList.add('answered');
+    updateScore();
+  }
+}
+
+function updateScore() {
+  document.getElementById('current-score').textContent = score;
+  document.getElementById('answered-count').textContent = answered;
+  
+  const progress = (answered / 15) * 100;
+  document.getElementById('progress').style.width = progress + '%';
+
+  if (answered === 15) {
+    setTimeout(showFinalResults, 500);
+  }
+}
+
+function showFinalResults() {
+  const percentage = Math.round((score / 15) * 100);
+  const resultsDiv = document.getElementById('final-results');
+  const scoreDisplay = document.getElementById('final-score-display');
+  const badgeDiv = document.getElementById('performance-badge');
+  const suggestionsDiv = document.getElementById('learning-suggestions');
+
+  scoreDisplay.innerHTML = `
+    <h3>Final Score: ${score}/15 (${percentage}%)</h3>
+  `;
+
+  let badge, suggestions;
+  if (percentage >= 85) {
+    badge = '<span class="badge excellent">Excellent!</span>';
+    suggestions = '<p><strong>Outstanding performance!</strong> You have mastered the fundamentals of R and the tidyverse. You\'re ready to move on to advanced topics.</p>';
+  } else if (percentage >= 70) {
+    badge = '<span class="badge good">Good Job!</span>';
+    suggestions = '<p><strong>Good work!</strong> You have a solid understanding of most concepts. Review the questions you missed to strengthen your foundation.</p>';
+  } else {
+    badge = '<span class="badge needs-review">Needs Review</span>';
+    suggestions = '<p><strong>Keep learning!</strong> Focus on reviewing the chapters covered in Block 1. Practice with the exercises and try the quiz again.</p>';
+  }
+
+  badgeDiv.innerHTML = badge;
+  suggestionsDiv.innerHTML = suggestions;
+  resultsDiv.classList.add('show');
+
+  // Scroll to results
+  resultsDiv.scrollIntoView({ behavior: 'smooth' });
+}
+
+function resetQuiz() {
+  score = 0;
+  answered = 0;
+  
+  // Reset all questions
+  document.querySelectorAll('.question').forEach(question => {
+    question.classList.remove('answered');
+    const options = question.querySelectorAll('.option');
+    const feedback = question.querySelector('.feedback');
+    
+    options.forEach(option => {
+      option.classList.remove('disabled', 'correct', 'incorrect', 'selected');
+    });
+    
+    feedback.classList.remove('show', 'correct', 'incorrect');
+  });
+
+  // Reset score display
+  updateScore();
+  
+  // Hide final results
+  document.getElementById('final-results').classList.remove('show');
+
+  // Scroll to top
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+// Add click event listeners
+document.addEventListener('DOMContentLoaded', function() {
+  document.querySelectorAll('.option').forEach(option => {
+    option.addEventListener('click', function() {
+      if (this.classList.contains('disabled')) return;
+      
+      const question = this.closest('.question');
+      const questionNum = parseInt(question.getAttribute('data-question'));
+      const selectedAnswer = this.getAttribute('data-answer');
+      
+      // Visual selection
+      question.querySelectorAll('.option').forEach(opt => {
+        opt.classList.remove('selected');
+      });
+      this.classList.add('selected');
+      
+      handleAnswer(questionNum, selectedAnswer);
+    });
+  });
+});
+</script>
+```

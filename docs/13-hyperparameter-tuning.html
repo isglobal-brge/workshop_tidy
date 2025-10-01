@@ -7,7 +7,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes">
 
 <meta name="author" content="David Sarrat González, Juan R González">
-<meta name="dcterms.date" content="2025-09-29">
+<meta name="dcterms.date" content="2025-10-01">
 
 <title>Chapter 13: Hyperparameter Tuning - Finding the Sweet Spot – Tidyverse &amp; Machine Learning Workshop</title>
 <style>
@@ -163,6 +163,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="./07-strings-dates.html">
  <span class="dropdown-text">Ch 7: Strings and Dates</span></a>
   </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="./quiz-block-1.html">
+ <span class="dropdown-text">Block 1 Assessment</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -194,6 +199,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <a class="dropdown-item" href="./13-hyperparameter-tuning.html">
  <span class="dropdown-text">Ch 13: Hyperparameter Tuning</span></a>
   </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="./quiz-block-2.html">
+ <span class="dropdown-text">Block 2 Assessment</span></a>
+  </li>  
     </ul>
   </li>
   <li class="nav-item dropdown ">
@@ -220,6 +230,11 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
         <li>
     <a class="dropdown-item" href="./18-model-deployment.html">
  <span class="dropdown-text">Ch 18: Model Deployment</span></a>
+  </li>  
+        <li><hr class="dropdown-divider"></li>
+        <li>
+    <a class="dropdown-item" href="./quiz-block-3.html">
+ <span class="dropdown-text">Block 3 Assessment</span></a>
   </li>  
     </ul>
   </li>
@@ -299,7 +314,7 @@ pre > code.sourceCode > span > a:first-child::before { text-decoration: underlin
     <div>
     <div class="quarto-title-meta-heading">Published</div>
     <div class="quarto-title-meta-contents">
-      <p class="date">September 29, 2025</p>
+      <p class="date">October 1, 2025</p>
     </div>
   </div>
   
@@ -1092,12 +1107,12 @@ This gives unbiased estimate of generalization performance</code></pre>
 <span id="cb37-23"><a href="#cb37-23" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb37-24"><a href="#cb37-24" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"Tuning completed in"</span>, <span class="fu">round</span>(parallel_time, <span class="dv">2</span>), <span class="fu">units</span>(parallel_time), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>Tuning completed in 2.69 secs </code></pre>
+<pre><code>Tuning completed in 2.96 secs </code></pre>
 </div>
 <div class="sourceCode cell-code" id="cb39"><pre class="sourceCode r code-with-copy"><code class="sourceCode r"><span id="cb39-1"><a href="#cb39-1" aria-hidden="true" tabindex="-1"></a><span class="fu">cat</span>(<span class="st">"With sequential processing, this would take approximately"</span>, </span>
 <span id="cb39-2"><a href="#cb39-2" aria-hidden="true" tabindex="-1"></a>    <span class="fu">round</span>(parallel_time <span class="sc">*</span> cores, <span class="dv">2</span>), <span class="fu">units</span>(parallel_time), <span class="st">"</span><span class="sc">\n</span><span class="st">"</span>)</span></code><button title="Copy to Clipboard" class="code-copy-button"><i class="bi"></i></button></pre></div>
 <div class="cell-output cell-output-stdout">
-<pre><code>With sequential processing, this would take approximately 18.83 secs </code></pre>
+<pre><code>With sequential processing, this would take approximately 20.7 secs </code></pre>
 </div>
 </div>
 <p>Parallelization strategies: - <strong>Over resamples</strong>: Each fold processed on different core - <strong>Over models</strong>: Each hyperparameter combination on different core - <strong>Hybrid</strong>: Both, depending on problem size</p>
@@ -1581,7 +1596,7 @@ Computational engine: glmnet </code></pre>
 <tr class="odd">
 <td style="text-align: left;">Regular Grid</td>
 <td style="text-align: right;">27</td>
-<td style="text-align: right;">84.911</td>
+<td style="text-align: right;">90.705</td>
 <td style="text-align: right;">33501.18</td>
 <td style="text-align: right;">3</td>
 <td style="text-align: right;">0.1000</td>
@@ -1590,7 +1605,7 @@ Computational engine: glmnet </code></pre>
 <tr class="even">
 <td style="text-align: left;">Random</td>
 <td style="text-align: right;">15</td>
-<td style="text-align: right;">54.714</td>
+<td style="text-align: right;">63.571</td>
 <td style="text-align: right;">34230.75</td>
 <td style="text-align: right;">4</td>
 <td style="text-align: right;">0.2096</td>
@@ -1599,7 +1614,7 @@ Computational engine: glmnet </code></pre>
 <tr class="odd">
 <td style="text-align: left;">Latin Hypercube</td>
 <td style="text-align: right;">15</td>
-<td style="text-align: right;">49.750</td>
+<td style="text-align: right;">57.519</td>
 <td style="text-align: right;">33799.37</td>
 <td style="text-align: right;">7</td>
 <td style="text-align: right;">0.0628</td>
@@ -1777,7 +1792,8 @@ Computational engine: glmnet </code></pre>
 </section>
 <section id="whats-next" class="level2">
 <h2 class="anchored" data-anchor-id="whats-next">What’s Next?</h2>
-<p>In <a href="./16-ensemble-methods.html">Chapter 16</a>, we’ll explore ensemble methods that combine multiple models for superior performance.</p>
+<p>You’ve completed Block 2 of the workshop, covering all the essential tidymodels concepts! Before diving into advanced machine learning topics, we recommend taking our <strong><a href="./quiz-block-2.html">Block 2 Assessment</a></strong> to test your understanding of the tidymodels framework and machine learning foundations.</p>
+<p>After mastering these concepts, continue to <a href="./14-classification.html">Chapter 14</a> to explore classification models in depth.</p>
 </section>
 <section id="additional-resources" class="level2">
 <h2 class="anchored" data-anchor-id="additional-resources">Additional Resources</h2>
@@ -3334,15 +3350,17 @@ document.addEventListener('DOMContentLoaded', function() {
 <span id="cb64-1117"><a href="#cb64-1117" aria-hidden="true" tabindex="-1"></a></span>
 <span id="cb64-1118"><a href="#cb64-1118" aria-hidden="true" tabindex="-1"></a><span class="fu">## What's Next?</span></span>
 <span id="cb64-1119"><a href="#cb64-1119" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-1120"><a href="#cb64-1120" aria-hidden="true" tabindex="-1"></a>In <span class="co">[</span><span class="ot">Chapter 16</span><span class="co">](16-ensemble-methods.Rmd)</span>, we'll explore ensemble methods that combine multiple models for superior performance.</span>
+<span id="cb64-1120"><a href="#cb64-1120" aria-hidden="true" tabindex="-1"></a>You've completed Block 2 of the workshop, covering all the essential tidymodels concepts! Before diving into advanced machine learning topics, we recommend taking our **[Block 2 Assessment](quiz-block-2.qmd)** to test your understanding of the tidymodels framework and machine learning foundations.</span>
 <span id="cb64-1121"><a href="#cb64-1121" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-1122"><a href="#cb64-1122" aria-hidden="true" tabindex="-1"></a><span class="fu">## Additional Resources</span></span>
+<span id="cb64-1122"><a href="#cb64-1122" aria-hidden="true" tabindex="-1"></a>After mastering these concepts, continue to <span class="co">[</span><span class="ot">Chapter 14</span><span class="co">](14-classification.Rmd)</span> to explore classification models in depth.</span>
 <span id="cb64-1123"><a href="#cb64-1123" aria-hidden="true" tabindex="-1"></a></span>
-<span id="cb64-1124"><a href="#cb64-1124" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">tune Documentation</span><span class="co">](https://tune.tidymodels.org/)</span></span>
-<span id="cb64-1125"><a href="#cb64-1125" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">finetune Documentation</span><span class="co">](https://finetune.tidymodels.org/)</span></span>
-<span id="cb64-1126"><a href="#cb64-1126" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">dials Documentation</span><span class="co">](https://dials.tidymodels.org/)</span></span>
-<span id="cb64-1127"><a href="#cb64-1127" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Hyperparameter Optimization Review</span><span class="co">](https://arxiv.org/abs/1502.02127)</span></span>
-<span id="cb64-1128"><a href="#cb64-1128" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Practical Bayesian Optimization</span><span class="co">](https://arxiv.org/abs/1206.2944)</span></span>
+<span id="cb64-1124"><a href="#cb64-1124" aria-hidden="true" tabindex="-1"></a><span class="fu">## Additional Resources</span></span>
+<span id="cb64-1125"><a href="#cb64-1125" aria-hidden="true" tabindex="-1"></a></span>
+<span id="cb64-1126"><a href="#cb64-1126" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">tune Documentation</span><span class="co">](https://tune.tidymodels.org/)</span></span>
+<span id="cb64-1127"><a href="#cb64-1127" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">finetune Documentation</span><span class="co">](https://finetune.tidymodels.org/)</span></span>
+<span id="cb64-1128"><a href="#cb64-1128" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">dials Documentation</span><span class="co">](https://dials.tidymodels.org/)</span></span>
+<span id="cb64-1129"><a href="#cb64-1129" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Hyperparameter Optimization Review</span><span class="co">](https://arxiv.org/abs/1502.02127)</span></span>
+<span id="cb64-1130"><a href="#cb64-1130" aria-hidden="true" tabindex="-1"></a><span class="ss">- </span><span class="co">[</span><span class="ot">Practical Bayesian Optimization</span><span class="co">](https://arxiv.org/abs/1206.2944)</span></span>
 </code><button title="Copy to Clipboard" class="code-copy-button" data-in-quarto-modal=""><i class="bi"></i></button></pre></div>
 </div></div></div></div></div>
 </div> <!-- /content -->

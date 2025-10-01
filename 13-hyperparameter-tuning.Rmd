@@ -1075,7 +1075,9 @@ Key takeaways:
 
 ## What's Next?
 
-In [Chapter 16](16-ensemble-methods.Rmd), we'll explore ensemble methods that combine multiple models for superior performance.
+You've completed Block 2 of the workshop, covering all the essential tidymodels concepts! Before diving into advanced machine learning topics, we recommend taking our **[Block 2 Assessment](quiz-block-2.qmd)** to test your understanding of the tidymodels framework and machine learning foundations.
+
+After mastering these concepts, continue to [Chapter 14](14-classification.Rmd) to explore classification models in depth.
 
 ## Additional Resources
 
