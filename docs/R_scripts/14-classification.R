@@ -1,51 +1,3 @@
----
-title: "Chapter 14: Classification Models - Theory and Implementation"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will understand:
-
-- Classification theory and concepts
-- Binary vs multiclass classification
-- Logistic regression mathematics
-- Decision trees and random forests theory
-- Support vector machines (SVM) concepts
-- Evaluation metrics for classification
-- Class imbalance handling
-- Practical implementation with tidymodels
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 14-classification.R](R_scripts/14-classification.R){.btn .btn-primary download="14-classification.R"}
-:::
-
-## Classification Theory
-
-### What is Classification?
-
-Classification is a supervised learning task where we predict discrete class labels. Unlike regression (continuous outputs), classification assigns observations to categories.
-
-**Mathematical Framework:**
-
-Given features $X = (x_1, x_2, ..., x_p)$ and classes $Y \in \{C_1, C_2, ..., C_k\}$, we seek:
-
-$$P(Y = C_k | X)$$
-
-The predicted class is:
-$$\hat{y} = \arg\max_{k} P(Y = C_k | X)$$
-
-## Setup
-
-```{r}
-#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)
@@ -62,21 +14,7 @@ theme_set(theme_minimal())
 # Load datasets
 data(credit_data)  # Credit default dataset
 data(cells)        # Cell segmentation dataset
-```
 
-## Logistic Regression Theory
-
-### Binary Classification
-
-For binary classification with classes 0 and 1, logistic regression models:
-
-$$P(Y = 1 | X) = \frac{1}{1 + e^{-(\beta_0 + \beta_1x_1 + ... + \beta_px_p)}}$$
-
-This is the **logistic (sigmoid) function**:
-
-```{r}
-#| fig-width: 10
-#| fig-height: 6
 # Visualize sigmoid function
 x <- seq(-10, 10, 0.1)
 sigmoid <- function(x) 1 / (1 + exp(-x))
@@ -119,27 +57,7 @@ boundary_plot <- ggplot(binary_data, aes(x = x1, y = x2, color = class)) +
   )
 
 sigmoid_plot + boundary_plot
-```
 
-### Odds and Log-Odds
-
-The **odds** of an event:
-$$\text{Odds} = \frac{P(Y = 1)}{P(Y = 0)} = \frac{p}{1-p}$$
-
-The **log-odds (logit)**:
-$$\text{logit}(p) = \log\left(\frac{p}{1-p}\right) = \beta_0 + \beta_1x_1 + ... + \beta_px_p$$
-
-### Maximum Likelihood Estimation
-
-Parameters are estimated by maximizing the likelihood:
-
-$$L(\beta) = \prod_{i=1}^{n} p_i^{y_i}(1-p_i)^{1-y_i}$$
-
-Where $p_i = P(Y_i = 1 | X_i)$
-
-## Implementing Logistic Regression
-
-```{r}
 # Prepare credit data
 credit_clean <- credit_data %>%
   drop_na() %>%
@@ -187,29 +105,7 @@ ggplot(logistic_coefs %>% head(10),
     x = "Feature",
     y = "Coefficient (log-odds)"
   )
-```
 
-## Decision Trees Theory
-
-### How Decision Trees Work
-
-Decision trees recursively partition the feature space using binary splits.
-
-**Splitting Criteria:**
-
-For classification, common criteria include:
-
-1. **Gini Impurity:**
-$$G = \sum_{k=1}^{K} p_k(1 - p_k)$$
-
-2. **Entropy (Information Gain):**
-$$H = -\sum_{k=1}^{K} p_k \log_2(p_k)$$
-
-Where $p_k$ is the proportion of samples in class $k$.
-
-```{r}
-#| fig-width: 12
-#| fig-height: 8
 # Visualize decision tree concepts
 # Create sample data for visualization
 tree_data <- tibble(
@@ -260,11 +156,7 @@ impurity_plot <- ggplot(impurity_data, aes(x = p, y = Impurity, color = Measure)
   )
 
 tree_boundary_plot + impurity_plot
-```
 
-### Implementing Decision Trees
-
-```{r}
 # Decision tree specification
 tree_spec <- decision_tree(
   cost_complexity = 0.01,
@@ -296,26 +188,7 @@ tree_imp <- tree_fit %>%
   vip(num_features = 10)
 
 tree_imp + labs(title = "Decision Tree Feature Importance")
-```
 
-## Random Forests Theory
-
-### Ensemble Learning
-
-Random Forests combine multiple decision trees through:
-
-1. **Bootstrap Aggregating (Bagging):** Train each tree on a bootstrap sample
-2. **Feature Randomness:** Consider random subset of features at each split
-3. **Voting:** Aggregate predictions (majority vote for classification)
-
-**Why it works:**
-- Reduces overfitting through averaging
-- Decorrelates trees through randomness
-- Maintains low bias while reducing variance
-
-```{r}
-#| fig-width: 12
-#| fig-height: 8
 # Random Forest implementation
 rf_spec <- rand_forest(
   trees = 500,
@@ -352,30 +225,7 @@ rf_roc <- rf_cv %>%
 autoplot(rf_roc) +
   labs(title = "Random Forest ROC Curve",
        subtitle = "5-fold cross-validation results")
-```
 
-## Support Vector Machines Theory
-
-### Maximum Margin Classifier
-
-SVMs find the hyperplane that maximizes the margin between classes.
-
-**Linear SVM Optimization:**
-$$\min_{w,b} \frac{1}{2}||w||^2$$
-Subject to: $y_i(w^Tx_i + b) \geq 1$ for all $i$
-
-### The Kernel Trick
-
-For non-linear boundaries, SVMs use kernel functions to map data to higher dimensions:
-
-**Common Kernels:**
-1. **Linear:** $K(x_i, x_j) = x_i^T x_j$
-2. **Polynomial:** $K(x_i, x_j) = (x_i^T x_j + c)^d$
-3. **RBF (Gaussian):** $K(x_i, x_j) = \exp(-\gamma||x_i - x_j||^2)$
-
-```{r}
-#| fig-width: 12
-#| fig-height: 8
 # Demonstrate SVM with different kernels
 # Create non-linear data
 set.seed(123)
@@ -437,13 +287,7 @@ p_rbf <- ggplot() +
   theme(legend.position = "none")
 
 p_linear + p_rbf
-```
 
-## Classification Metrics
-
-### Understanding Different Metrics
-
-```{r}
 # Fit final model
 final_rf <- rf_wf %>%
   fit(credit_train)
@@ -474,37 +318,7 @@ metrics_summary <- credit_pred %>%
 
 metrics_summary %>%
   knitr::kable(digits = 3)
-```
 
-### Metrics Explained
-
-**Confusion Matrix Terms:**
-- **True Positives (TP):** Correctly predicted positive
-- **True Negatives (TN):** Correctly predicted negative
-- **False Positives (FP):** Type I error
-- **False Negatives (FN):** Type II error
-
-**Key Metrics:**
-
-$$\text{Accuracy} = \frac{TP + TN}{TP + TN + FP + FN}$$
-
-$$\text{Precision} = \frac{TP}{TP + FP}$$
-
-$$\text{Recall (Sensitivity)} = \frac{TP}{TP + FN}$$
-
-$$\text{Specificity} = \frac{TN}{TN + FP}$$
-
-$$\text{F1 Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}$$
-
-## Handling Class Imbalance
-
-### The Problem
-
-Class imbalance occurs when one class is much more frequent than others.
-
-```{r}
-#| fig-width: 12
-#| fig-height: 8
 # Create imbalanced dataset
 set.seed(123)
 imbalanced_data <- tibble(
@@ -529,11 +343,7 @@ ggplot(class_dist, aes(x = class, y = n, fill = class)) +
     y = "Count"
   ) +
   theme(legend.position = "none")
-```
 
-### Solutions for Class Imbalance
-
-```{r}
 # 1. Class weights
 weighted_spec <- logistic_reg(penalty = 0.01) %>%
   set_engine("glmnet", 
@@ -578,17 +388,7 @@ sampling_comparison %>%
     title = "Effect of Different Sampling Strategies",
     y = "Count"
   )
-```
 
-## Multiclass Classification
-
-### One-vs-Rest and One-vs-One
-
-For K classes:
-- **One-vs-Rest:** Train K binary classifiers
-- **One-vs-One:** Train K(K-1)/2 binary classifiers
-
-```{r}
 # Multiclass example with penguins
 penguins_clean <- palmerpenguins::penguins %>%
   drop_na()
@@ -642,17 +442,7 @@ penguin_pred %>%
       roc_auc(truth = species, .pred_Adelie:.pred_Gentoo)
   ) %>%
   knitr::kable(digits = 3)
-```
 
-## Calibration and Probability Thresholds
-
-### Probability Calibration
-
-Well-calibrated models produce probabilities that match actual frequencies.
-
-```{r}
-#| fig-width: 12
-#| fig-height: 6
 # Calibration plot
 calibration_data <- credit_pred %>%
   mutate(
@@ -705,13 +495,7 @@ thresh_plot <- threshold_metrics %>%
   )
 
 calib_plot + thresh_plot
-```
 
-## Model Comparison
-
-```{r}
-#| fig-width: 12
-#| fig-height: 10
 # Compare multiple models
 models <- list(
   "Logistic Regression" = logistic_spec,
@@ -772,15 +556,7 @@ ggplot(roc_data, aes(x = 1 - specificity, y = sensitivity, color = model)) +
     y = "True Positive Rate (Sensitivity)"
   ) +
   coord_equal()
-```
 
-## Exercises
-
-### Exercise 1: Implement Different Classifiers
-
-Build and compare three different classifiers on the cells dataset:
-
-```{r}
 # Your solution
 # Prepare data
 cells_clean <- cells %>%
@@ -835,13 +611,7 @@ ggplot(results_ex1, aes(x = model, y = mean, fill = .metric)) +
   scale_fill_viridis_d() +
   labs(title = "Model Comparison on Cells Dataset",
        y = "Score")
-```
 
-### Exercise 2: Handle Class Imbalance
-
-Work with an imbalanced dataset and apply different techniques:
-
-```{r}
 # Your solution
 # Create severely imbalanced data
 set.seed(456)
@@ -905,13 +675,7 @@ ggplot(imb_results, aes(x = method, y = .estimate, fill = .metric)) +
   labs(title = "Handling Class Imbalance: Method Comparison",
        y = "Score") +
   facet_wrap(~.metric, scales = "free_y")
-```
 
-### Exercise 3: Optimize Classification Threshold
-
-Find the optimal threshold for a specific business objective:
-
-```{r}
 # Your solution
 # Business scenario: False negatives cost 5x more than false positives
 cost_fn <- 5  # Cost of false negative
@@ -974,28 +738,3 @@ ggplot(threshold_costs, aes(x = threshold)) +
 
 print(paste("Optimal threshold:", optimal_thresh$threshold))
 print(paste("Total cost at optimal threshold:", optimal_thresh$total_cost))
-```
-
-## Summary
-
-You've mastered classification theory and practice:
-
-✅ Logistic regression mathematics and implementation  
-✅ Decision trees and splitting criteria  
-✅ Random forests and ensemble methods  
-✅ Support vector machines and kernel trick  
-✅ Classification metrics and their interpretation  
-✅ Handling class imbalance  
-✅ Multiclass classification strategies  
-✅ Probability calibration and threshold optimization  
-
-## What's Next?
-
-In [Chapter 15](15-regression.Rmd), we'll explore regression models with similar depth in theory and practice.
-
-## Additional Resources
-
-- [The Elements of Statistical Learning](https://hastie.su.domains/ElemStatLearn/)
-- [Pattern Recognition and Machine Learning](https://www.microsoft.com/en-us/research/uploads/prod/2006/01/Bishop-Pattern-Recognition-and-Machine-Learning-2006.pdf)
-- [Applied Predictive Modeling](http://appliedpredictivemodeling.com/)
-- [Classification and Regression Trees](https://www.taylorfrancis.com/books/mono/10.1201/9781315139470/classification-regression-trees-leo-breiman)

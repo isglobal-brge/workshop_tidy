@@ -1,51 +1,3 @@
----
-title: "Chapter 10: Feature Engineering with recipes - The Art and Science of Data Preparation"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- The philosophy and importance of feature engineering
-- Creating and applying recipes in tidymodels
-- Numeric transformations and scaling
-- Handling categorical variables
-- Creating interaction terms and polynomial features
-- Dealing with missing data systematically
-- Feature selection and dimensionality reduction
-- Time-based and text features
-- Best practices and common pitfalls
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 10-feature-engineering.R](R_scripts/10-feature-engineering.R){.btn .btn-primary download="10-feature-engineering.R"}
-:::
-
-## What is Feature Engineering?
-
-Feature engineering is the process of transforming raw data into features that better represent the underlying problem to predictive models. It's often said that "data and features determine the upper limit of machine learning, while models and algorithms only approach this limit."
-
-### Why Feature Engineering Matters
-
-Think of feature engineering as translating your data into a language that your model can better understand. Even the most sophisticated algorithm will struggle with poorly prepared data, while a simple model can perform remarkably well with thoughtfully engineered features.
-
-Consider these scenarios:
-- **Raw timestamps** → Extract hour of day, day of week, is_weekend, season
-- **Text addresses** → Extract zip code, city, distance from city center
-- **Numerical ratios** → Price per square foot instead of just price and area
-- **Domain knowledge** → Age of house at sale instead of just year built and sale year
-
-Let's see this in action:
-
-```{r}
-#| message: false
 library(tidymodels)
 library(tidyverse)
 library(lubridate)
@@ -92,29 +44,7 @@ tibble(
   `R-squared` = c(summary(bad_model)$r.squared, summary(good_model)$r.squared)
 ) %>%
   knitr::kable(digits = 3)
-```
 
-Notice the dramatic improvement! The model with engineered features captures patterns that the raw date couldn't represent.
-
-## The recipes Package Philosophy
-
-The `recipes` package provides a domain-specific language for feature engineering. Think of it like writing a recipe for a meal:
-
-1. **Ingredients** (raw data): What you start with
-2. **Instructions** (steps): How to transform the ingredients
-3. **Preparation** (prep): Getting everything ready with your training data
-4. **Baking** (bake): Applying the recipe to new data
-
-This approach ensures:
-- **Reproducibility**: The same transformations applied consistently
-- **Modularity**: Easy to add, remove, or modify steps
-- **Prevention of data leakage**: Transformations learned only from training data
-
-## Creating Your First Recipe
-
-Let's start with a basic recipe and build complexity gradually:
-
-```{r}
 # Prepare the Ames housing data
 ames_train <- ames %>%
   filter(Sale_Price > 0) %>%
@@ -130,15 +60,7 @@ basic_recipe <- recipe(Sale_Price ~ Lot_Area + Year_Built + Overall_Cond,
 
 # View the recipe
 basic_recipe
-```
 
-At this point, the recipe is just a specification - it hasn't done anything yet. It's like having a recipe card but not having cooked the meal.
-
-### Adding Steps to the Recipe
-
-Now let's add transformation steps. Each step transforms the data in a specific way:
-
-```{r}
 # Enhanced recipe with multiple steps
 enhanced_recipe <- recipe(Sale_Price ~ Lot_Area + Year_Built + Overall_Cond + 
                           Neighborhood + Gr_Liv_Area, 
@@ -155,15 +77,7 @@ enhanced_recipe <- recipe(Sale_Price ~ Lot_Area + Year_Built + Overall_Cond +
   step_dummy(all_nominal_predictors())
 
 enhanced_recipe
-```
 
-Each step is performed in order, and the output of one step becomes the input to the next. This is crucial to understand - order matters!
-
-### Preparing and Baking the Recipe
-
-Now we need to "prepare" the recipe using the training data, then "bake" it to apply the transformations:
-
-```{r}
 # Prepare the recipe (learn parameters from training data)
 prepped_recipe <- prep(enhanced_recipe, training = ames_train)
 
@@ -184,21 +98,6 @@ tibble(
   Columns = c(ncol(baked_train), ncol(baked_test))
 ) %>%
   knitr::kable()
-```
-
-The key insight: `prep()` learns any necessary parameters (like mean and SD for normalization) from the training data, and `bake()` applies these learned transformations to any dataset.
-
-## Numeric Transformations
-
-Numeric features often need transformation to work well with models. Let's explore the most important transformations:
-
-### Scaling and Normalization
-
-Different scaling methods serve different purposes:
-
-```{r}
-#| fig-width: 14
-#| fig-height: 10
 
 # Create example data with different scales
 scaling_demo <- tibble(
@@ -246,20 +145,6 @@ ggplot(scaled_data, aes(x = value, fill = scaling_method)) +
     y = "Count"
   ) +
   theme(legend.position = "none")
-```
-
-Key insights about scaling:
-- **Normalization** (z-score): Centers at 0, scales by standard deviation. Good for normally distributed features.
-- **Range scaling**: Forces values between min and max. Preserves shape but sensitive to outliers.
-- **Robust scaling**: Uses median and MAD, resistant to outliers.
-
-### Transformations for Skewed Data
-
-Many real-world variables are skewed. Let's handle them properly:
-
-```{r}
-#| fig-width: 12
-#| fig-height: 8
 
 # Create skewed data
 skewed_data <- tibble(
@@ -315,22 +200,7 @@ skewness_comparison %>%
   ) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "none")
-```
 
-The Yeo-Johnson transformation is particularly useful because it:
-- Automatically finds the optimal transformation parameter
-- Handles both positive and negative values
-- Often achieves near-normal distributions
-
-## Handling Categorical Variables
-
-Categorical variables require special treatment. The approach depends on the model type and the nature of the categories.
-
-### Dummy Variables (One-Hot Encoding)
-
-This is the most common approach for linear models:
-
-```{r}
 # Example with different types of categorical variables
 cat_data <- tibble(
   color = factor(c("red", "blue", "green", "red", "blue")),
@@ -349,15 +219,7 @@ dummy_result <- dummy_recipe %>%
   bake(new_data = NULL)
 
 dummy_result
-```
 
-Notice how each category becomes its own binary column, except one category is dropped (reference level) to avoid perfect multicollinearity.
-
-### Advanced Categorical Encoding
-
-For high-cardinality categorical variables (many unique values), simple dummy encoding can create too many features:
-
-```{r}
 # Create high-cardinality example
 high_card_data <- ames_train %>%
   select(Sale_Price, Neighborhood, MS_SubClass) %>%
@@ -417,21 +279,6 @@ feature_counts %>%
     y = "Number of Features"
   ) +
   theme(legend.position = "none")
-```
-
-Each method has trade-offs:
-- **Dummy encoding**: Simple but creates many features
-- **Frequency encoding**: Single feature but loses category identity
-- **Target encoding**: Powerful but risks overfitting
-- **Lumping**: Reduces features while preserving main categories
-
-## Creating Interaction Terms
-
-Interactions capture relationships between features that aren't additive:
-
-```{r}
-#| fig-width: 14
-#| fig-height: 8
 
 # Generate data with interaction effect
 set.seed(123)
@@ -500,28 +347,6 @@ tibble(
   )
 ) %>%
   knitr::kable(digits = 3)
-```
-
-The interaction term allows the model to capture how the effect of one variable depends on another. This is crucial in many real-world scenarios:
-- Price elasticity depending on income level
-- Drug effectiveness depending on patient age
-- Marketing response depending on customer segment
-
-## Handling Missing Data
-
-Missing data is ubiquitous in real-world datasets. The strategy depends on why data is missing:
-
-### Types of Missingness
-
-1. **Missing Completely at Random (MCAR)**: Missingness is independent of all variables
-2. **Missing at Random (MAR)**: Missingness depends on observed variables
-3. **Missing Not at Random (MNAR)**: Missingness depends on the missing value itself
-
-Let's explore different imputation strategies:
-
-```{r}
-#| fig-width: 14
-#| fig-height: 10
 
 # Create data with different missing patterns
 set.seed(123)
@@ -616,26 +441,6 @@ tibble(
   )
 ) %>%
   knitr::kable()
-```
-
-Key insights about imputation:
-- **Complete case analysis** loses a lot of data
-- **Mean/median imputation** is simple but ignores relationships
-- **KNN imputation** uses similar observations
-- **Linear imputation** preserves linear relationships
-- Choice depends on missing mechanism and data structure
-
-## Feature Selection and Dimensionality Reduction
-
-Too many features can lead to overfitting and computational issues. Let's explore methods to reduce dimensionality:
-
-### Filter Methods
-
-Filter methods select features based on statistical tests:
-
-```{r}
-#| fig-width: 12
-#| fig-height: 8
 
 # Create data with relevant and irrelevant features
 set.seed(123)
@@ -689,15 +494,6 @@ filtered_recipe <- recipe(target ~ ., data = feature_data) %>%
 # Near-zero variance filter
 nzv_recipe <- recipe(target ~ ., data = feature_data) %>%
   step_nzv(all_predictors())  # Remove features with near-zero variance
-```
-
-### Principal Component Analysis (PCA)
-
-PCA creates new features that are linear combinations of original features:
-
-```{r}
-#| fig-width: 14
-#| fig-height: 10
 
 # Create correlated features for PCA demonstration
 pca_data <- tibble(
@@ -763,21 +559,6 @@ ggplot(variance_explained %>% head(5),
     x = "Principal Component",
     y = "Proportion of Variance Explained"
   )
-```
-
-PCA is powerful for:
-- Reducing dimensionality while preserving variance
-- Removing multicollinearity
-- Visualization (first 2-3 components)
-- Noise reduction
-
-## Time-Based Features
-
-Time series data requires special feature engineering:
-
-```{r}
-#| fig-width: 14
-#| fig-height: 10
 
 # Create time series data
 time_data <- tibble(
@@ -865,19 +646,7 @@ ggplot(cyclical_demo, aes(x = month_cos, y = month_sin)) +
     y = "Sine Component"
   ) +
   theme(legend.position = "none")
-```
 
-Time features are crucial for:
-- Capturing seasonality and trends
-- Accounting for day-of-week effects
-- Incorporating historical information (lags)
-- Smoothing noisy signals (moving averages)
-
-## Text Features (Brief Introduction)
-
-Text data requires specialized preprocessing:
-
-```{r}
 # Simple text feature engineering example
 text_data <- tibble(
   id = 1:5,
@@ -907,42 +676,7 @@ text_recipe <- recipe(rating ~ review, data = text_data) %>%
   step_tokenfilter(review, max_tokens = 20)
 
 # Note: This is just a demonstration - real text processing needs more data
-```
 
-Text features can include:
-- Word counts and frequencies
-- N-grams (sequences of words)
-- TF-IDF weights
-- Sentiment scores
-- Word embeddings
-
-## Best Practices and Common Pitfalls
-
-### Best Practices
-
-1. **Always split before feature engineering**
-   - Prevents data leakage
-   - Ensures fair evaluation
-
-2. **Order of operations matters**
-   - Impute missing values before normalization
-   - Create interactions after dummy encoding
-   - Normalize after all transformations
-
-3. **Keep it simple initially**
-   - Start with basic features
-   - Add complexity gradually
-   - Validate improvements
-
-4. **Document your choices**
-   - Why each transformation?
-   - What domain knowledge informed decisions?
-
-### Common Pitfalls to Avoid
-
-Let's demonstrate some common mistakes:
-
-```{r}
 # Create split if not already done
 if (!exists("ames_split")) {
   set.seed(123)
@@ -971,13 +705,7 @@ thoughtful_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
   step_log(Sale_Price) %>%
   step_poly(Gr_Liv_Area, degree = 2) %>%  # Only where needed
   step_interact(terms = ~ Gr_Liv_Area:Overall_Cond)  # Specific, meaningful interaction
-```
 
-## Complete Example: Putting It All Together
-
-Let's create a comprehensive feature engineering pipeline:
-
-```{r}
 # Use credit data for a complete example
 credit_split <- initial_split(credit_data, prop = 0.75, strata = Status)
 credit_train <- training(credit_split)
@@ -1048,15 +776,7 @@ workflow() %>%
   predict(credit_test) %>%
   bind_cols(credit_test) %>%
   accuracy(truth = Status, estimate = .pred_class)
-```
 
-## Exercises
-
-### Exercise 1: Engineer Features for House Prices
-
-Create a comprehensive feature engineering pipeline for the Ames housing data:
-
-```{r}
 # Your solution
 exercise_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
   # Transform outcome
@@ -1103,13 +823,7 @@ exercise_baked <- bake(exercise_prep, new_data = NULL)
 
 print(paste("Created", ncol(exercise_baked) - 1, "features from", 
             ncol(ames_train) - 1, "original features"))
-```
 
-### Exercise 2: Handle High-Cardinality Categorical
-
-Work with a high-cardinality categorical variable:
-
-```{r}
 # Your solution
 # Create synthetic high-cardinality data
 high_card_ex <- tibble(
@@ -1160,13 +874,7 @@ comparison <- map_df(names(strategies), function(name) {
 })
 
 print(comparison)
-```
 
-### Exercise 3: Time Series Feature Engineering
-
-Create features for time series prediction:
-
-```{r}
 # Your solution
 # Generate time series data
 ts_exercise <- tibble(
@@ -1240,35 +948,3 @@ ggplot(feature_cors, aes(x = reorder(feature, abs(correlation)),
     x = "Feature",
     y = "|Correlation|"
   )
-```
-
-## Summary
-
-Feature engineering is both an art and a science. You've learned:
-
-✅ **Core concepts**: Why feature engineering matters and how it works  
-✅ **Numeric transformations**: Scaling, normalization, handling skewness  
-✅ **Categorical encoding**: Dummies, target encoding, handling high cardinality  
-✅ **Interaction terms**: Capturing non-additive relationships  
-✅ **Missing data strategies**: Various imputation methods and when to use them  
-✅ **Dimensionality reduction**: PCA and feature selection  
-✅ **Time features**: Extracting temporal patterns  
-✅ **Best practices**: Avoiding leakage, proper ordering, validation  
-
-Remember:
-- Feature engineering often has more impact than model selection
-- Domain knowledge is invaluable for creating meaningful features
-- Always validate that engineered features improve performance
-- Keep transformations in recipes for reproducibility
-- Start simple and add complexity gradually
-
-## What's Next?
-
-In [Chapter 11](11-model-specification.Rmd), we'll explore parsnip for unified model specification across different engines.
-
-## Additional Resources
-
-- [Feature Engineering and Selection](http://www.feat.engineering/)
-- [Recipes Documentation](https://recipes.tidymodels.org/)
-- [Feature Engineering for Machine Learning](https://www.oreilly.com/library/view/feature-engineering-for/9781491953235/)
-- [Tidy Modeling with R - Recipes Chapter](https://www.tmwr.org/recipes.html)

@@ -1,49 +1,3 @@
----
-title: "Chapter 15: Regression Models - Theory, Implementation, and Best Practices"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will understand:
-
-- Linear regression theory and assumptions
-- Polynomial and non-linear regression
-- Regularization techniques (Ridge, Lasso, Elastic Net)
-- Regression trees and ensemble methods
-- Model diagnostics and validation
-- Advanced regression techniques
-- Practical implementation with tidymodels
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 15-regression.R](R_scripts/15-regression.R){.btn .btn-primary download="15-regression.R"}
-:::
-
-## What is Regression?
-
-Regression analysis is a fundamental statistical technique for modeling the relationship between a dependent variable (target) and one or more independent variables (features). Unlike classification, which predicts discrete categories, regression predicts continuous numerical values.
-
-### The Fundamental Question
-
-In regression, we're essentially asking: "Given these input features, what numerical value should we predict?" This could be:
-- Predicting house prices based on size, location, and amenities
-- Estimating customer lifetime value from behavior patterns
-- Forecasting sales based on historical data and market conditions
-- Determining optimal drug dosage based on patient characteristics
-
-## Setup and Data Preparation
-
-Let's begin by loading the necessary libraries and preparing our datasets. We'll use multiple datasets throughout this chapter to illustrate different concepts and techniques.
-
-```{r}
-#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)
@@ -65,40 +19,6 @@ data(Chicago)     # Chicago ridership data
 
 # Quick overview of our main dataset
 glimpse(ames)
-```
-
-The Ames housing dataset contains information about residential homes sold in Ames, Iowa. It's perfect for demonstrating regression techniques because:
-- It has a clear continuous target (Sale_Price)
-- It contains both numeric and categorical predictors
-- It has enough complexity to showcase advanced techniques
-- It's real-world data with typical challenges (missing values, outliers, etc.)
-
-## Linear Regression: The Foundation
-
-### Mathematical Framework
-
-Linear regression assumes a linear relationship between predictors and the response. The model can be expressed as:
-
-$$Y = \beta_0 + \beta_1X_1 + \beta_2X_2 + ... + \beta_pX_p + \epsilon$$
-
-Where:
-- $Y$ is the response variable
-- $X_1, ..., X_p$ are the predictor variables
-- $\beta_0$ is the intercept (the expected value of Y when all X = 0)
-- $\beta_1, ..., \beta_p$ are the coefficients (slopes)
-- $\epsilon$ is the error term (assumed to be normally distributed with mean 0)
-
-### The Ordinary Least Squares (OLS) Method
-
-The most common method for estimating the coefficients is Ordinary Least Squares, which minimizes the sum of squared residuals:
-
-$$\text{RSS} = \sum_{i=1}^{n} (y_i - \hat{y}_i)^2 = \sum_{i=1}^{n} (y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij})^2$$
-
-Let's visualize this concept:
-
-```{r}
-#| fig-width: 12
-#| fig-height: 6
 
 # Create simple example data
 set.seed(123)
@@ -148,23 +68,6 @@ p2 <- ggplot(simple_data, aes(x = residual)) +
   )
 
 p1 + p2
-```
-
-### Key Assumptions of Linear Regression
-
-Understanding the assumptions is crucial for proper model interpretation and validation:
-
-1. **Linearity**: The relationship between X and Y is linear
-2. **Independence**: Observations are independent of each other
-3. **Homoscedasticity**: Constant variance of residuals
-4. **Normality**: Residuals are normally distributed
-5. **No multicollinearity**: Predictors are not highly correlated
-
-Let's check these assumptions with real data:
-
-```{r}
-#| fig-width: 12
-#| fig-height: 10
 
 # Prepare Ames data for simple example
 ames_simple <- ames %>%
@@ -178,23 +81,7 @@ ames_lm <- lm(Sale_Price ~ Gr_Liv_Area + Year_Built + Overall_Cond,
 # Create diagnostic plots
 par(mfrow = c(2, 2))
 plot(ames_lm)
-```
 
-Each diagnostic plot tells us something important:
-- **Residuals vs Fitted**: Checks linearity and homoscedasticity. We want no clear pattern.
-- **Q-Q Plot**: Checks normality of residuals. Points should follow the diagonal line.
-- **Scale-Location**: Another check for homoscedasticity. We want a horizontal line.
-- **Residuals vs Leverage**: Identifies influential points that might unduly affect the model.
-
-## Implementing Linear Regression with Tidymodels
-
-Now let's implement a proper regression workflow using tidymodels. We'll predict house prices using multiple features.
-
-### Data Splitting and Preprocessing
-
-First, we need to properly split our data and create a preprocessing recipe. This is crucial to avoid data leakage and ensure fair model evaluation.
-
-```{r}
 # Clean and prepare the Ames data
 ames_clean <- ames %>%
   mutate(Sale_Price = log10(Sale_Price)) %>%  # Log transform for better distribution
@@ -221,16 +108,7 @@ ames_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
 prep(ames_recipe) %>%
   bake(new_data = NULL) %>%
   glimpse()
-```
 
-Notice how we're taking several important steps:
-1. **Log transformation**: Sale prices often have a right-skewed distribution. Log transformation makes the distribution more normal.
-2. **Stratified splitting**: Ensures both training and test sets have similar distributions of the target variable.
-3. **Systematic preprocessing**: Handles missing values, creates dummy variables, and normalizes features in a reproducible way.
-
-### Model Specification and Training
-
-```{r}
 # Specify linear regression model
 lm_spec <- linear_reg() %>%
   set_engine("lm") %>%
@@ -263,25 +141,6 @@ ggplot(lm_coefs, aes(x = reorder(term, estimate), y = estimate)) +
     x = "Feature",
     y = "Coefficient"
   )
-```
-
-The coefficients tell us the relationship between each feature and the sale price. Since we normalized the predictors, we can compare coefficient magnitudes directly. Positive coefficients increase price, negative ones decrease it.
-
-## Polynomial and Non-linear Regression
-
-Sometimes relationships aren't linear. Polynomial regression can capture curved relationships by including polynomial terms.
-
-### Understanding Polynomial Regression
-
-Polynomial regression extends linear regression by adding polynomial terms:
-
-$$Y = \beta_0 + \beta_1X + \beta_2X^2 + ... + \beta_dX^d + \epsilon$$
-
-Let's visualize different polynomial degrees:
-
-```{r}
-#| fig-width: 12
-#| fig-height: 8
 
 # Generate non-linear data
 set.seed(123)
@@ -321,16 +180,7 @@ ggplot(poly_predictions, aes(x = x)) +
     y = "Y"
   ) +
   theme(legend.position = "none")
-```
 
-Notice how:
-- **Degree 1** (linear) underfits - it can't capture the curve
-- **Degree 2-3** capture the main pattern well
-- **Degree 10** overfits - it follows noise in the data
-
-### Implementing Polynomial Features
-
-```{r}
 # Create recipe with polynomial features
 poly_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Lot_Area, 
                       data = ames_train) %>%
@@ -397,36 +247,6 @@ ggplot(comparison_metrics,
     subtitle = "Watch for overfitting: train performance much better than test",
     y = "Metric Value"
   )
-```
-
-## Regularization: Ridge, Lasso, and Elastic Net
-
-Regularization adds a penalty term to the loss function to prevent overfitting and handle multicollinearity.
-
-### Understanding Regularization Mathematics
-
-The three main types of regularization are:
-
-**Ridge Regression (L2 penalty):**
-$$\text{Loss} = \text{RSS} + \lambda \sum_{j=1}^{p} \beta_j^2$$
-
-Ridge regression shrinks coefficients toward zero but never exactly to zero. It's good when you have many predictors with small effects.
-
-**Lasso Regression (L1 penalty):**
-$$\text{Loss} = \text{RSS} + \lambda \sum_{j=1}^{p} |\beta_j|$$
-
-Lasso can shrink coefficients exactly to zero, performing automatic feature selection. It's good when you believe only a subset of predictors are important.
-
-**Elastic Net (Combination):**
-$$\text{Loss} = \text{RSS} + \lambda \left[ \alpha \sum_{j=1}^{p} |\beta_j| + (1-\alpha) \sum_{j=1}^{p} \beta_j^2 \right]$$
-
-Elastic Net combines Ridge and Lasso, controlled by the mixing parameter α.
-
-Let's visualize how regularization affects coefficients:
-
-```{r}
-#| fig-width: 14
-#| fig-height: 8
 
 # Prepare data for regularization
 ames_reg <- ames_train %>%
@@ -452,18 +272,7 @@ par(mfrow = c(1, 3))
 plot(ridge_fit, xvar = "lambda", main = "Ridge Regression Path")
 plot(lasso_fit, xvar = "lambda", main = "Lasso Regression Path")
 plot(elastic_fit, xvar = "lambda", main = "Elastic Net Path")
-```
 
-These plots show how coefficients change as the penalty parameter λ increases:
-- **Ridge**: All coefficients shrink smoothly toward zero but never reach it
-- **Lasso**: Coefficients can hit zero abruptly (feature selection)
-- **Elastic Net**: Combination of both behaviors
-
-### Implementing Regularized Regression
-
-Now let's implement these methods properly with tidymodels:
-
-```{r}
 # Create a more complete recipe
 reg_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
   step_nzv(all_predictors()) %>%
@@ -521,25 +330,6 @@ n_features <- tibble(
 )
 
 knitr::kable(n_features)
-```
-
-Notice how Lasso has fewer non-zero coefficients - it's performing feature selection automatically!
-
-## Regression Trees and Random Forests
-
-Tree-based methods can capture non-linear relationships and interactions without explicitly specifying them.
-
-### How Regression Trees Work
-
-Regression trees recursively partition the feature space into rectangles, predicting the mean value in each region. The splitting criterion for regression is typically the reduction in RSS:
-
-$$\text{RSS} = \sum_{i \in R_1} (y_i - \hat{y}_{R_1})^2 + \sum_{i \in R_2} (y_i - \hat{y}_{R_2})^2$$
-
-Where $R_1$ and $R_2$ are the two regions created by the split.
-
-```{r}
-#| fig-width: 12
-#| fig-height: 8
 
 # Fit a simple regression tree
 tree_spec <- decision_tree(
@@ -588,20 +378,7 @@ ggplot(grid_pred, aes(x = Gr_Liv_Area, y = Year_Built, fill = .pred)) +
     fill = "Predicted\nlog(Price)",
     color = "Actual\nlog(Price)"
   )
-```
 
-The rectangular regions are a key characteristic of tree-based methods. Each rectangle represents a leaf node in the tree, with all observations in that region receiving the same prediction.
-
-### Random Forests for Regression
-
-Random Forests improve upon single trees by:
-1. Building many trees on bootstrap samples (bagging)
-2. Randomly selecting features at each split
-3. Averaging predictions across all trees
-
-This reduces overfitting and improves generalization:
-
-```{r}
 # Random Forest specification
 rf_spec <- rand_forest(
   trees = 500,
@@ -643,21 +420,6 @@ rf_importance <- rf_final %>%
 rf_importance +
   labs(title = "Top 20 Most Important Features in Random Forest",
        subtitle = "Based on impurity reduction")
-```
-
-Random Forests often provide excellent predictive performance with minimal tuning, making them a go-to method for many regression problems.
-
-## Model Diagnostics and Validation
-
-Proper model validation is crucial for ensuring your model will generalize well to new data.
-
-### Residual Analysis
-
-Residual analysis helps identify problems with model assumptions:
-
-```{r}
-#| fig-width: 14
-#| fig-height: 10
 
 # Get predictions from our linear model
 lm_pred <- lm_fit %>%
@@ -711,19 +473,7 @@ p4 <- ggplot(lm_pred, aes(x = residual)) +
   )
 
 (p1 + p2) / (p3 + p4)
-```
 
-Each plot reveals different aspects:
-- **Pattern in residuals vs fitted**: Indicates non-linearity
-- **Deviation from Q-Q line**: Indicates non-normality
-- **Funnel shape in scale-location**: Indicates heteroscedasticity
-- **Skewed residual distribution**: May need transformation
-
-### Cross-Validation for Model Selection
-
-Cross-validation provides unbiased estimates of model performance:
-
-```{r}
 # Compare multiple models using cross-validation
 models_list <- list(
   "Linear" = lm_spec,
@@ -762,17 +512,6 @@ ggplot(cv_results, aes(x = model, y = mean, fill = model)) +
   ) +
   theme(axis.text.x = element_text(angle = 45, hjust = 1),
         legend.position = "none")
-```
-
-## Advanced Topics
-
-### Dealing with Multicollinearity
-
-Multicollinearity occurs when predictors are highly correlated, making coefficient interpretation difficult:
-
-```{r}
-#| fig-width: 10
-#| fig-height: 8
 
 # Check correlation among numeric predictors
 numeric_features <- ames_train %>%
@@ -799,25 +538,6 @@ head(high_cor_pairs, 10) %>% knitr::kable(digits = 3)
 corrplot(cor_matrix, method = "color", type = "upper", 
          order = "hclust", tl.cex = 0.6, tl.col = "black",
          diag = FALSE, addCoef.col = "black", number.cex = 0.4)
-```
-
-High correlations between predictors can cause:
-- Unstable coefficient estimates
-- Large standard errors
-- Difficulty interpreting individual effects
-
-Solutions include:
-- Remove one of the correlated variables
-- Use PCA to create uncorrelated components
-- Apply regularization (Ridge regression handles multicollinearity well)
-
-### Handling Non-constant Variance (Heteroscedasticity)
-
-When variance changes with the fitted values, we can apply transformations:
-
-```{r}
-#| fig-width: 12
-#| fig-height: 6
 
 # Example with original scale prices (not log-transformed)
 ames_original <- ames %>%
@@ -856,15 +576,7 @@ ggplot(combined_pred, aes(x = fitted, y = residual)) +
     x = "Fitted Values",
     y = "Residuals"
   )
-```
 
-The log transformation has stabilized the variance - notice how the spread of residuals is more constant in the log scale model.
-
-## Practical Example: Complete Regression Pipeline
-
-Let's put everything together in a comprehensive example:
-
-```{r}
 # Create a complete modeling pipeline
 # 1. Data preparation
 concrete_clean <- concrete %>%
@@ -970,15 +682,7 @@ ggplot(test_results, aes(x = model, y = .estimate, fill = model)) +
     y = "Metric Value"
   ) +
   theme(legend.position = "none")
-```
 
-## Exercises
-
-### Exercise 1: Implement Regularization with Tuning
-
-Build a regularized regression model with proper hyperparameter tuning:
-
-```{r}
 # Your solution
 # Use the Ames dataset to predict Sale_Price
 # Create an elastic net model with tuned penalty and mixture
@@ -1044,13 +748,7 @@ print("Best hyperparameters:")
 print(best_elastic)
 print("Test set performance:")
 print(elastic_metrics)
-```
 
-### Exercise 2: Diagnose and Fix Model Problems
-
-Identify and address issues in a regression model:
-
-```{r}
 # Your solution
 # Create a problematic model and fix it
 
@@ -1099,13 +797,7 @@ ridge_fix <- linear_reg(penalty = 0.1, mixture = 0) %>%
 # Compare solutions
 cat("Original model R-squared:", summary(problem_fit)$r.squared, "\n")
 cat("Fixed model R-squared:", summary(fixed_fit1)$r.squared, "\n")
-```
 
-### Exercise 3: Non-linear Relationships
-
-Explore and model non-linear relationships:
-
-```{r}
 # Your solution
 # Create synthetic data with non-linear relationship
 set.seed(456)
@@ -1169,35 +861,3 @@ performance_ex <- predictions_ex %>%
   )
 
 performance_ex %>% knitr::kable(digits = 3)
-```
-
-## Summary
-
-In this comprehensive chapter, you've learned:
-
-✅ **Linear regression theory**: OLS, assumptions, diagnostics  
-✅ **Polynomial and non-linear regression**: Capturing curved relationships  
-✅ **Regularization techniques**: Ridge, Lasso, and Elastic Net  
-✅ **Tree-based methods**: Decision trees and Random Forests  
-✅ **Model validation**: Cross-validation, residual analysis  
-✅ **Advanced topics**: Multicollinearity, heteroscedasticity  
-✅ **Complete workflows**: From data preparation to final evaluation  
-
-Key takeaways:
-- Always check model assumptions before interpreting results
-- Use regularization when you have many predictors or multicollinearity
-- Tree-based methods are powerful for capturing non-linear patterns
-- Cross-validation is essential for honest model evaluation
-- Different problems require different approaches - no single best method
-
-## What's Next?
-
-In [Chapter 16](16-ensemble-methods.Rmd), we'll explore ensemble methods in depth, learning how to combine multiple models for superior performance.
-
-## Additional Resources
-
-- [An Introduction to Statistical Learning](https://www.statlearning.com/) - Chapters 3, 6, 8
-- [The Elements of Statistical Learning](https://hastie.su.domains/ElemStatLearn/) - Chapters 3, 4, 15
-- [Applied Predictive Modeling](http://appliedpredictivemodeling.com/) - Chapters 6-8
-- [Regression and Other Stories](https://avehtari.github.io/ROS-Examples/) - Comprehensive regression guide
-- [Tidy Modeling with R](https://www.tmwr.org/) - Chapters 7-11

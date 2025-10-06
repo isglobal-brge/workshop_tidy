@@ -1,77 +1,9 @@
----
-title: "Chapter 1: Introduction to R and the Tidyverse Ecosystem"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will:
-
-- Understand the philosophy and principles of the tidyverse
-- Know the core tidyverse packages and their purposes
-- Be able to install and load tidyverse packages
-- Understand the pipe operator (`%>%` and `|>`)
-- Work with tibbles, the tidyverse's modern data frames
-- Understand tidy data principles
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 01-introduction.R](R_scripts/01-introduction.R){.btn .btn-primary download="01-introduction.R"}
-:::
-
-## What is the Tidyverse?
-
-The tidyverse is a collection of R packages designed for data science. All packages share an underlying design philosophy, grammar, and data structures. The tidyverse makes data manipulation, exploration, and visualization faster and more intuitive.
-
-### Core Tidyverse Packages
-
-```{r}
-#| message: false
 # Install tidyverse if you haven't already
 # install.packages("tidyverse")
 
 # Load the tidyverse
 library(tidyverse)
-```
 
-The tidyverse includes these core packages:
-
-1. **ggplot2**: Data visualization
-2. **dplyr**: Data manipulation
-3. **tidyr**: Data tidying
-4. **readr**: Data import
-5. **purrr**: Functional programming
-6. **tibble**: Modern data frames
-7. **stringr**: String manipulation
-8. **forcats**: Factor handling
-
-## The Pipe Operator
-
-The pipe operator is fundamental to tidyverse workflows. It allows you to chain operations together in a readable way.
-
-### Understanding the Problem with Nested Functions
-
-In traditional R programming, when you need to apply multiple functions to data, you end up with deeply nested function calls that are read from the inside out. This creates several problems:
-
-1. **Readability**: The order of operations is reversed from how we naturally think about them
-2. **Debugging**: It's hard to inspect intermediate results
-3. **Modification**: Adding or removing steps requires careful parenthesis management
-
-### Traditional R vs Piped Approach
-
-Let's look at a simple example where we want to:
-1. Take a vector of numbers
-2. Calculate the square root of each
-3. Find the mean
-4. Round to 2 decimal places
-
-```{r}
 # Traditional nested approach (hard to read)
 # We read this from inside-out: first sqrt, then mean, then round
 # But we write it outside-in!
@@ -91,17 +23,7 @@ c(1, 4, 9, 16, 25) |>
   sqrt() |>
   mean() |>
   round(2)
-```
 
-Notice how the piped version reads like a recipe: "Take these numbers, THEN calculate square root, THEN find the mean, THEN round." This matches our mental model of the data transformation process.
-
-### How the Pipe Actually Works
-
-The pipe operator takes the output of the expression on its left and passes it as the first argument to the function on its right. So `x %>% f()` is equivalent to `f(x)`, and `x %>% f() %>% g()` is equivalent to `g(f(x))`.
-
-You can also use the `.` placeholder to specify where the piped value should go if it's not the first argument:
-
-```{r}
 # Using the dot placeholder for custom positioning
 10 %>% 
   `/`(2) %>%      # 10 / 2 = 5
@@ -115,11 +37,7 @@ You can also use the `.` placeholder to specify where the piped value should go 
 # More practical example with data
 mtcars %>%
   lm(mpg ~ cyl + wt, data = .)  # data = . puts the piped data in the right place
-```
 
-### Practical Example with Data
-
-```{r}
 # Load a built-in dataset
 data(mtcars)
 
@@ -131,15 +49,7 @@ mtcars %>%
   filter(cyl == 6) %>%
   arrange(desc(mpg)) %>%
   head(5)
-```
 
-## Tibbles: Modern Data Frames
-
-Tibbles are the tidyverse's enhanced version of data frames.
-
-### Creating Tibbles
-
-```{r}
 # Create a tibble from scratch
 my_tibble <- tibble(
   name = c("Alice", "Bob", "Charlie", "Diana"),
@@ -149,11 +59,7 @@ my_tibble <- tibble(
 )
 
 my_tibble
-```
 
-### Tibble vs Data Frame
-
-```{r}
 # Convert data frame to tibble
 mtcars_tibble <- as_tibble(mtcars)
 
@@ -163,11 +69,7 @@ head(mtcars)
 
 print("Tibble (shows what fits on screen):")
 mtcars_tibble
-```
 
-### Key Advantages of Tibbles
-
-```{r}
 # Tibbles preserve data types
 df <- data.frame(x = 1:3, y = c("a", "b", "c"))
 tb <- tibble(x = 1:3, y = c("a", "b", "c"))
@@ -183,21 +85,7 @@ weird_tb <- tibble(
   `:)` = c("happy", "sad")
 )
 weird_tb
-```
 
-## Tidy Data Principles
-
-Tidy data is a standard way of organizing data values within a dataset.
-
-### The Three Rules of Tidy Data
-
-1. Each variable must have its own column
-2. Each observation must have its own row
-3. Each value must have its own cell
-
-### Example: Messy vs Tidy Data
-
-```{r}
 # Messy data
 messy_data <- tibble(
   student = c("Alice", "Bob", "Charlie"),
@@ -218,13 +106,7 @@ tidy_data <- messy_data %>%
 
 print("Tidy data (long format):")
 tidy_data
-```
 
-## Working with Real Data
-
-Let's practice with a real dataset:
-
-```{r}
 # Load the palmerpenguins package for example data
 # install.packages("palmerpenguins")
 library(palmerpenguins)
@@ -235,11 +117,7 @@ glimpse(penguins)
 # Basic exploration
 penguins %>%
   summary()
-```
 
-### Data Exploration Pipeline
-
-```{r}
 # Complete analysis pipeline
 penguins %>%
   drop_na() %>%  # Remove missing values
@@ -251,15 +129,7 @@ penguins %>%
     .groups = "drop"
   ) %>%
   arrange(desc(avg_body_mass))
-```
 
-## Visualization Preview
-
-A quick taste of ggplot2 (covered in detail in Chapter 5):
-
-```{r}
-#| fig-width: 8
-#| fig-height: 6
 penguins %>%
   drop_na() %>%
   ggplot(aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
@@ -273,13 +143,7 @@ penguins %>%
   ) +
   theme_minimal() +
   scale_color_brewer(palette = "Set2")
-```
 
-## Common Tidyverse Patterns
-
-### Pattern 1: Read, Clean, Transform, Visualize
-
-```{r}
 # Typical workflow
 penguins %>%
   # Clean
@@ -302,11 +166,7 @@ penguins %>%
   geom_col(position = "dodge") +
   theme_minimal() +
   labs(title = "Penguin Size Distribution by Species (2008)")
-```
 
-### Pattern 2: Multiple Operations with Groups
-
-```{r}
 # Complex grouped operations
 penguins %>%
   drop_na() %>%
@@ -321,36 +181,14 @@ penguins %>%
     correlation = cor(bill_length_mm, bill_depth_mm),
     .groups = "drop"
   )
-```
 
-## Exercises
-
-### Exercise 1: Basic Pipe Operations
-
-Create a pipeline that:
-1. Takes the numbers 1 to 100
-2. Keeps only even numbers
-3. Squares each number
-4. Calculates the mean
-5. Takes the square root of the result
-
-```{r}
 # Your code here
 1:100 %>%
   keep(~ . %% 2 == 0) %>%  # Keep even numbers
   map_dbl(~ .^2) %>%        # Square each
   mean() %>%                # Calculate mean
   sqrt()                    # Take square root
-```
 
-### Exercise 2: Tibble Creation and Manipulation
-
-Create a tibble with information about 5 books (title, author, year, pages, rating). Then:
-1. Filter books published after 2000
-2. Add a column for reading_time (assuming 1 page per minute)
-3. Arrange by rating (descending)
-
-```{r}
 # Your code here
 books <- tibble(
   title = c("The Great Gatsby", "1984", "The Hunger Games", "Dune", "Project Hail Mary"),
@@ -364,16 +202,7 @@ books %>%
   filter(year > 2000) %>%
   mutate(reading_time_hours = pages / 60) %>%
   arrange(desc(rating))
-```
 
-### Exercise 3: Working with Penguins Data
-
-Using the penguins dataset:
-1. Calculate the average bill length for each species on each island
-2. Find which species-island combination has the longest average bill
-3. Create a summary showing min, max, and mean body mass for each species
-
-```{r}
 # Your code here
 # Part 1 & 2
 penguins %>%
@@ -395,13 +224,7 @@ penguins %>%
     max_mass = max(body_mass_g),
     .groups = "drop"
   )
-```
 
-### Exercise 4: Tidy Data Challenge
-
-Convert this wide dataset to tidy format and calculate the average score for each subject:
-
-```{r}
 # Given data
 student_scores <- tibble(
   student_id = 1:5,
@@ -424,25 +247,3 @@ student_scores %>%
     .groups = "drop"
   ) %>%
   arrange(desc(avg_score))
-```
-
-## Summary
-
-In this chapter, you learned:
-
-✅ The tidyverse philosophy and ecosystem  
-✅ How to use the pipe operator for readable code  
-✅ Working with tibbles instead of data frames  
-✅ Tidy data principles  
-✅ Basic data manipulation patterns  
-
-## What's Next?
-
-In [Chapter 2](02-data-import.Rmd), we'll dive deep into importing data from various sources using readr and other packages. You'll learn to read CSV, Excel, JSON, and database files efficiently.
-
-## Additional Resources
-
-- [R for Data Science (2e)](https://r4ds.hadley.nz/)
-- [Tidyverse Style Guide](https://style.tidyverse.org/)
-- [Tidyverse Cheat Sheets](https://www.rstudio.com/resources/cheatsheets/)
-- [Advanced R](https://adv-r.hadley.nz/)

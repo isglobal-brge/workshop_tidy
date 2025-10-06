@@ -1,40 +1,3 @@
----
-title: "Chapter 17: Unsupervised Learning - Discovering Hidden Patterns"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- The fundamentals of unsupervised learning
-- Clustering algorithms (K-means, hierarchical, DBSCAN)
-- Dimensionality reduction (PCA, t-SNE, UMAP)
-- Anomaly detection techniques
-- Market basket analysis and association rules
-- Practical implementation with tidymodels
-- Evaluating unsupervised models
-- Real-world applications
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 17-unsupervised-learning.R](R_scripts/17-unsupervised-learning.R){.btn .btn-primary download="17-unsupervised-learning.R"}
-:::
-
-## The Art of Finding Structure Without Labels
-
-Imagine you're an explorer discovering a new continent. You have no map, no guide, just raw observations. Your task is to identify natural groupings - mountain ranges, river systems, ecosystems. This is the essence of unsupervised learning: finding structure in data without predefined categories.
-
-Unlike supervised learning where we have labels to guide us, unsupervised learning must discover patterns purely from the data itself. This makes it both challenging and powerful - we can uncover insights we didn't even know to look for.
-
-```{r}
-#| message: false
 library(tidymodels)
 library(tidyverse)
 library(tidyclust)  # For clustering with tidymodels
@@ -59,15 +22,7 @@ ames_numeric <- ames %>%
   select(-Sale_Price) %>%  # Remove target for unsupervised learning
   na.omit() %>%
   slice_sample(n = 500)  # Sample for computational efficiency
-```
 
-## Clustering: Finding Natural Groups
-
-### K-Means Clustering
-
-K-means is the workhorse of clustering algorithms. It partitions data into K clusters by minimizing within-cluster variance:
-
-```{r}
 # Prepare data for clustering
 clustering_data <- ames_numeric %>%
   select(Gr_Liv_Area, Lot_Area, Year_Built, Total_Bsmt_SF, Garage_Area)
@@ -146,18 +101,7 @@ cluster_profiles <- clustered_data %>%
   pivot_wider(names_from = stat, values_from = value)
 
 knitr::kable(cluster_profiles, digits = 2)
-```
 
-The mathematics of K-means:
-- **Objective**: Minimize $\sum_{i=1}^{k} \sum_{x \in C_i} ||x - \mu_i||^2$
-- **Algorithm**: Iteratively assign points and update centroids
-- **Assumptions**: Spherical clusters, similar sizes, similar densities
-
-### Hierarchical Clustering
-
-Hierarchical clustering builds a tree of clusters, allowing exploration at different granularities:
-
-```{r}
 # Calculate distance matrix
 dist_matrix <- dist(scaled_data, method = "euclidean")
 
@@ -210,13 +154,7 @@ p2 <- ggplot(comparison_data, aes(x = Gr_Liv_Area, y = Lot_Area,
   labs(title = "Hierarchical Clustering")
 
 p1 + p2
-```
 
-### DBSCAN: Density-Based Clustering
-
-DBSCAN finds clusters of arbitrary shape and identifies outliers:
-
-```{r}
 # Create data with non-spherical clusters
 set.seed(456)
 moon_data <- rbind(
@@ -293,15 +231,7 @@ dbscan_summary <- tibble(
   )
 
 knitr::kable(dbscan_summary)
-```
 
-## Dimensionality Reduction
-
-### Principal Component Analysis (PCA)
-
-PCA finds the directions of maximum variance in high-dimensional data:
-
-```{r}
 # Perform PCA
 pca_result <- prcomp(scaled_data, center = FALSE, scale. = FALSE)
 
@@ -369,19 +299,7 @@ plot_ly(pca_data, x = ~PC1, y = ~PC2, z = ~PC3, color = ~cluster,
         type = "scatter3d", mode = "markers",
         marker = list(size = 5)) %>%
   layout(title = "3D PCA Visualization")
-```
 
-The mathematics of PCA:
-- **Objective**: Find orthogonal axes maximizing variance
-- **Method**: Eigendecomposition of covariance matrix
-- **Result**: Linear combinations of original variables
-- **Key insight**: Most variance often captured in few components
-
-### t-SNE and UMAP: Non-linear Dimensionality Reduction
-
-For complex, non-linear structures:
-
-```{r}
 # t-SNE (computationally intensive, using sample)
 library(Rtsne)
 
@@ -417,13 +335,7 @@ ggplot(comparison, aes(x = Dim1, y = Dim2, color = cluster)) +
     title = "PCA vs t-SNE",
     subtitle = "t-SNE often reveals clearer cluster separation"
   )
-```
 
-## Anomaly Detection
-
-Identifying outliers and anomalies is crucial for many applications:
-
-```{r}
 # Method 1: Statistical approach (Z-score)
 z_scores <- abs(scale(scaled_data))
 threshold <- 3
@@ -483,177 +395,159 @@ normal_analysis <- clustering_data[-outlier_indices, ] %>%
 cat("Outlier characteristics vs normal points:\n")
 print(outlier_analysis)
 print(normal_analysis)
-```
 
-## Market Basket Analysis
+# # Create synthetic transaction data
+# set.seed(789)
+# n_transactions <- 1000
+# 
+# # Housing features that might be purchased together
+# features <- c("Granite_Counters", "Hardwood_Floors", "Central_AC",
+#              "Updated_Kitchen", "Finished_Basement", "Deck",
+#              "Pool", "Security_System", "Smart_Home", "Solar_Panels")
+# 
+# # Generate transactions with realistic patterns
+# transactions <- map(1:n_transactions, function(i) {
+#   # Base probability for each item
+#   probs <- c(0.3, 0.4, 0.6, 0.35, 0.25, 0.3, 0.1, 0.2, 0.15, 0.05)
+# 
+#   # Adjust probabilities based on correlations
+#   selected <- c()
+# 
+#   for (j in 1:length(features)) {
+#     # Increase probability if related items selected
+#     adj_prob <- probs[j]
+# 
+#     if ("Granite_Counters" %in% selected && features[j] == "Updated_Kitchen") {
+#       adj_prob <- min(1, adj_prob * 3)
+#     }
+#     if ("Smart_Home" %in% selected && features[j] == "Security_System") {
+#       adj_prob <- min(1, adj_prob * 2.5)
+#     }
+#     if ("Pool" %in% selected && features[j] == "Deck") {
+#       adj_prob <- min(1, adj_prob * 2)
+#     }
+# 
+#     if (runif(1) < adj_prob) {
+#       selected <- c(selected, features[j])
+#     }
+#   }
+# 
+#   selected
+# })
+# 
+# # Convert to transaction matrix
+# library(arules)
+# 
+# trans_matrix <- as(transactions, "transactions")
+# 
+# # Find association rules
+# rules <- apriori(trans_matrix,
+#                 parameter = list(supp = 0.05, conf = 0.5, target = "rules"))
+# 
+# # Inspect top rules
+# top_rules <- head(sort(rules, by = "lift"), 10)
+# inspect(top_rules)
+# 
+# # Visualize rules
+# library(arulesViz)
+# 
+# plot(rules, method = "graph",
+#      control = list(type = "items", alpha = 0.7),
+#      main = "Association Rules Network")
+# 
+# # Create rule quality metrics
+# rule_metrics <- as(rules, "data.frame") %>%
+#   as_tibble() %>%
+#   separate(rules, into = c("lhs", "rhs"), sep = " => ") %>%
+#   arrange(desc(lift))
+# 
+# ggplot(rule_metrics %>% head(20),
+#        aes(x = support, y = confidence, size = lift, color = lift)) +
+#   geom_point(alpha = 0.7) +
+#   scale_size_continuous(range = c(2, 10)) +
+#   scale_color_viridis_c() +
+#   labs(
+#     title = "Association Rules Quality",
+#     subtitle = "Size and color represent lift",
+#     x = "Support",
+#     y = "Confidence"
+#   )
 
-Discover associations in transactional data:
+# # Internal validation metrics for clustering
+# evaluate_clustering <- function(data, clusters) {
+#   # Silhouette coefficient
+#   sil <- silhouette(clusters, dist(data))
+#   avg_silhouette <- mean(sil[, 3])
+# 
+#   # Calinski-Harabasz Index
+#   ch_index <- cluster.stats(dist(data), clusters)$ch
+# 
+#   # Davies-Bouldin Index (lower is better)
+#   db_index <- cluster.stats(dist(data), clusters)$dunn
+# 
+#   # Within-cluster sum of squares
+#   wcss <- sum(cluster.stats(dist(data), clusters)$within.cluster.ss)
+# 
+#   tibble(
+#     avg_silhouette = avg_silhouette,
+#     calinski_harabasz = ch_index,
+#     davies_bouldin = db_index,
+#     wcss = wcss
+#   )
+# }
+# 
+# # Compare different clustering solutions
+# clustering_methods <- list(
+#   kmeans_3 = kmeans(scaled_data, 3, nstart = 25)$cluster,
+#   kmeans_4 = kmeans(scaled_data, 4, nstart = 25)$cluster,
+#   kmeans_5 = kmeans(scaled_data, 5, nstart = 25)$cluster,
+#   hierarchical = cutree(hc_ward, k = 4)
+# )
+# 
+# evaluation_results <- map_df(clustering_methods,
+#                             ~ evaluate_clustering(scaled_data, .),
+#                             .id = "method")
+# 
+# knitr::kable(evaluation_results, digits = 3)
+# 
+# # Stability analysis: How consistent are clusters?
+# stability_analysis <- function(data, k, n_bootstrap = 10) {
+#   bootstrap_results <- map(1:n_bootstrap, function(i) {
+#     # Bootstrap sample
+#     sample_idx <- sample(1:nrow(data), replace = TRUE)
+#     boot_data <- data[sample_idx, ]
+# 
+#     # Cluster
+#     kmeans(boot_data, centers = k, nstart = 10)$cluster
+#   })
+# 
+#   # Calculate pairwise agreement
+#   agreements <- combn(n_bootstrap, 2, function(pair) {
+#     cl1 <- bootstrap_results[[pair[1]]]
+#     cl2 <- bootstrap_results[[pair[2]]]
+# 
+#     # Adjusted Rand Index
+#     mclust::adjustedRandIndex(cl1, cl2)
+#   })
+# 
+#   mean(agreements)
+# }
+# 
+# stability_scores <- tibble(
+#   k = 2:6,
+#   stability = map_dbl(2:6, ~ stability_analysis(scaled_data, ., n_bootstrap = 5))
+# )
+# 
+# ggplot(stability_scores, aes(x = k, y = stability)) +
+#   geom_line(linewidth = 1) +
+#   geom_point(size = 3) +
+#   labs(
+#     title = "Clustering Stability Analysis",
+#     subtitle = "Higher scores indicate more stable clusters",
+#     x = "Number of Clusters",
+#     y = "Average Adjusted Rand Index"
+#   )
 
-```{r, eval=FALSE}
-# Create synthetic transaction data
-set.seed(789)
-n_transactions <- 1000
-
-# Housing features that might be purchased together
-features <- c("Granite_Counters", "Hardwood_Floors", "Central_AC", 
-             "Updated_Kitchen", "Finished_Basement", "Deck", 
-             "Pool", "Security_System", "Smart_Home", "Solar_Panels")
-
-# Generate transactions with realistic patterns
-transactions <- map(1:n_transactions, function(i) {
-  # Base probability for each item
-  probs <- c(0.3, 0.4, 0.6, 0.35, 0.25, 0.3, 0.1, 0.2, 0.15, 0.05)
-  
-  # Adjust probabilities based on correlations
-  selected <- c()
-  
-  for (j in 1:length(features)) {
-    # Increase probability if related items selected
-    adj_prob <- probs[j]
-    
-    if ("Granite_Counters" %in% selected && features[j] == "Updated_Kitchen") {
-      adj_prob <- min(1, adj_prob * 3)
-    }
-    if ("Smart_Home" %in% selected && features[j] == "Security_System") {
-      adj_prob <- min(1, adj_prob * 2.5)
-    }
-    if ("Pool" %in% selected && features[j] == "Deck") {
-      adj_prob <- min(1, adj_prob * 2)
-    }
-    
-    if (runif(1) < adj_prob) {
-      selected <- c(selected, features[j])
-    }
-  }
-  
-  selected
-})
-
-# Convert to transaction matrix
-library(arules)
-
-trans_matrix <- as(transactions, "transactions")
-
-# Find association rules
-rules <- apriori(trans_matrix, 
-                parameter = list(supp = 0.05, conf = 0.5, target = "rules"))
-
-# Inspect top rules
-top_rules <- head(sort(rules, by = "lift"), 10)
-inspect(top_rules)
-
-# Visualize rules
-library(arulesViz)
-
-plot(rules, method = "graph", 
-     control = list(type = "items", alpha = 0.7),
-     main = "Association Rules Network")
-
-# Create rule quality metrics
-rule_metrics <- as(rules, "data.frame") %>%
-  as_tibble() %>%
-  separate(rules, into = c("lhs", "rhs"), sep = " => ") %>%
-  arrange(desc(lift))
-
-ggplot(rule_metrics %>% head(20), 
-       aes(x = support, y = confidence, size = lift, color = lift)) +
-  geom_point(alpha = 0.7) +
-  scale_size_continuous(range = c(2, 10)) +
-  scale_color_viridis_c() +
-  labs(
-    title = "Association Rules Quality",
-    subtitle = "Size and color represent lift",
-    x = "Support",
-    y = "Confidence"
-  )
-```
-
-## Evaluating Unsupervised Models
-
-Without labels, evaluation is challenging but crucial:
-
-```{r, eval=FALSE}
-# Internal validation metrics for clustering
-evaluate_clustering <- function(data, clusters) {
-  # Silhouette coefficient
-  sil <- silhouette(clusters, dist(data))
-  avg_silhouette <- mean(sil[, 3])
-  
-  # Calinski-Harabasz Index
-  ch_index <- cluster.stats(dist(data), clusters)$ch
-  
-  # Davies-Bouldin Index (lower is better)
-  db_index <- cluster.stats(dist(data), clusters)$dunn
-  
-  # Within-cluster sum of squares
-  wcss <- sum(cluster.stats(dist(data), clusters)$within.cluster.ss)
-  
-  tibble(
-    avg_silhouette = avg_silhouette,
-    calinski_harabasz = ch_index,
-    davies_bouldin = db_index,
-    wcss = wcss
-  )
-}
-
-# Compare different clustering solutions
-clustering_methods <- list(
-  kmeans_3 = kmeans(scaled_data, 3, nstart = 25)$cluster,
-  kmeans_4 = kmeans(scaled_data, 4, nstart = 25)$cluster,
-  kmeans_5 = kmeans(scaled_data, 5, nstart = 25)$cluster,
-  hierarchical = cutree(hc_ward, k = 4)
-)
-
-evaluation_results <- map_df(clustering_methods, 
-                            ~ evaluate_clustering(scaled_data, .),
-                            .id = "method")
-
-knitr::kable(evaluation_results, digits = 3)
-
-# Stability analysis: How consistent are clusters?
-stability_analysis <- function(data, k, n_bootstrap = 10) {
-  bootstrap_results <- map(1:n_bootstrap, function(i) {
-    # Bootstrap sample
-    sample_idx <- sample(1:nrow(data), replace = TRUE)
-    boot_data <- data[sample_idx, ]
-    
-    # Cluster
-    kmeans(boot_data, centers = k, nstart = 10)$cluster
-  })
-  
-  # Calculate pairwise agreement
-  agreements <- combn(n_bootstrap, 2, function(pair) {
-    cl1 <- bootstrap_results[[pair[1]]]
-    cl2 <- bootstrap_results[[pair[2]]]
-    
-    # Adjusted Rand Index
-    mclust::adjustedRandIndex(cl1, cl2)
-  })
-  
-  mean(agreements)
-}
-
-stability_scores <- tibble(
-  k = 2:6,
-  stability = map_dbl(2:6, ~ stability_analysis(scaled_data, ., n_bootstrap = 5))
-)
-
-ggplot(stability_scores, aes(x = k, y = stability)) +
-  geom_line(linewidth = 1) +
-  geom_point(size = 3) +
-  labs(
-    title = "Clustering Stability Analysis",
-    subtitle = "Higher scores indicate more stable clusters",
-    x = "Number of Clusters",
-    y = "Average Adjusted Rand Index"
-  )
-```
-
-## Real-World Applications
-
-### Customer Segmentation
-
-```{r}
 # Simulate customer data
 set.seed(123)
 n_customers <- 1000
@@ -722,13 +616,7 @@ customer_profiles %>%
   mutate(segment_name = segment_names[as.character(segment)]) %>%
   select(segment_name, everything(), -segment) %>%
   knitr::kable(digits = 0)
-```
 
-## Best Practices
-
-### 1. Data Preprocessing is Critical
-
-```{r}
 # Demonstrate importance of scaling
 unscaled_clusters <- kmeans(clustering_data, centers = 3, nstart = 25)
 scaled_clusters <- kmeans(scaled_data, centers = 3, nstart = 25)
@@ -751,11 +639,7 @@ p2 <- ggplot(comparison_data, aes(x = Gr_Liv_Area, y = Year_Built,
   labs(title = "Scaled Data Clustering")
 
 p1 + p2
-```
 
-### 2. Choose the Right Algorithm
-
-```{r}
 algorithm_guide <- tibble(
   Scenario = c(
     "Spherical, similar-sized clusters",
@@ -778,13 +662,7 @@ algorithm_guide <- tibble(
 )
 
 knitr::kable(algorithm_guide)
-```
 
-## Exercises
-
-### Exercise 1: Implement Custom Distance Metric
-
-```{r}
 # Your solution
 # Custom distance for mixed data types
 gower_distance <- function(data) {
@@ -815,11 +693,7 @@ gower_distance <- function(data) {
 }
 
 gower_distance()
-```
 
-### Exercise 2: Ensemble Clustering
-
-```{r}
 # Your solution
 # Combine multiple clustering results
 ensemble_clustering <- function(data, k = 4) {
@@ -865,11 +739,7 @@ pca_subset <- as.data.frame(pca_result$x[1:100, 1:2]) %>%
 ggplot(pca_subset, aes(x = PC1, y = PC2, color = ensemble)) +
   geom_point(size = 3) +
   labs(title = "Ensemble Clustering Result")
-```
 
-### Exercise 3: Clustering Interpretation
-
-```{r}
 # Your solution
 # Automated cluster interpretation
 interpret_clusters <- function(data, clusters) {
@@ -912,56 +782,3 @@ print(interpretation$importance)
 
 cat("\nCluster Characteristics:\n")
 print(interpretation$characteristics)
-```
-
-## Summary
-
-In this comprehensive chapter, you've mastered:
-
-✅ **Clustering algorithms**
-  - K-means for spherical clusters
-  - Hierarchical for nested structure
-  - DBSCAN for arbitrary shapes
-  - Evaluation metrics
-
-✅ **Dimensionality reduction**
-  - PCA for linear reduction
-  - t-SNE/UMAP for non-linear
-  - Interpretation of components
-  - Visualization techniques
-
-✅ **Anomaly detection**
-  - Statistical methods
-  - Isolation forests
-  - Local outlier factor
-  - Ensemble approaches
-
-✅ **Association analysis**
-  - Market basket analysis
-  - Rule mining
-  - Lift and confidence metrics
-
-✅ **Practical applications**
-  - Customer segmentation
-  - Data preprocessing importance
-  - Algorithm selection
-  - Evaluation strategies
-
-Key takeaways:
-- Unsupervised learning finds structure without labels
-- Preprocessing (especially scaling) is crucial
-- No single best algorithm - depends on data structure
-- Validation is challenging but essential
-- Combine multiple methods for robustness
-- Visualization aids interpretation
-
-## What's Next?
-
-In [Chapter 18](18-model-deployment.Rmd), we'll learn how to deploy models to production.
-
-## Additional Resources
-
-- [Introduction to Statistical Learning - Chapter 12](https://www.statlearning.com/)
-- [Elements of Statistical Learning - Chapter 14](https://hastie.su.domains/ElemStatLearn/)
-- [Cluster Analysis Book](https://www.wiley.com/en-us/Cluster+Analysis%2C+5th+Edition-p-9780470749913)
-- [Survey of Clustering Algorithms](https://link.springer.com/article/10.1007/s40745-015-0040-1)

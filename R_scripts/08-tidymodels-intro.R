@@ -1,56 +1,3 @@
----
-title: "Chapter 8: Introduction to Tidymodels - Theory and Practice"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will understand:
-
-- The philosophy and structure of tidymodels
-- Core machine learning concepts and theory
-- The bias-variance tradeoff
-- Overfitting and underfitting
-- Cross-validation theory
-- The tidymodels workflow
-- Key packages in the tidymodels ecosystem
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 08-tidymodels-intro.R](R_scripts/08-tidymodels-intro.R){.btn .btn-primary download="08-tidymodels-intro.R"}
-:::
-
-## Machine Learning Foundations
-
-### What is Machine Learning?
-
-Machine learning is the science of getting computers to learn patterns from data without being explicitly programmed. Instead of writing rules, we let algorithms discover patterns.
-
-**Key Concepts:**
-
-- **Supervised Learning**: Learning from labeled examples (y is known)
-  - Classification: Predicting categories
-  - Regression: Predicting continuous values
-  
-- **Unsupervised Learning**: Finding patterns without labels
-  - Clustering: Grouping similar observations
-  - Dimensionality reduction: Simplifying complex data
-
-- **Features (X)**: Input variables/predictors
-- **Target (y)**: Output variable we want to predict
-- **Training**: Process of learning patterns from data
-- **Inference**: Making predictions on new data
-
-### The Learning Process
-
-```{r}
-#| message: false
 library(tidymodels)
 library(tidyverse)
 library(palmerpenguins)
@@ -63,29 +10,7 @@ theme_set(theme_minimal())
 
 # For reproducibility
 set.seed(123)
-```
 
-### Mathematical Foundation
-
-In supervised learning, we seek to find a function f that maps inputs X to outputs y:
-
-$$y = f(X) + \epsilon$$
-
-Where:
-- $f$ is the true underlying function
-- $\epsilon$ is irreducible error (noise)
-
-Our goal is to estimate $\hat{f}$ that minimizes prediction error:
-
-$$\text{Error} = \text{Bias}^2 + \text{Variance} + \text{Irreducible Error}$$
-
-## The Bias-Variance Tradeoff
-
-### Understanding Bias and Variance
-
-```{r}
-#| fig-width: 12
-#| fig-height: 8
 # Demonstrate bias-variance tradeoff
 n <- 100
 x <- seq(0, 10, length.out = n)
@@ -131,27 +56,7 @@ ggplot() +
     y = "Y"
   ) +
   theme(legend.position = "none")
-```
 
-**Key Insights:**
-
-- **Bias**: Error from overly simplistic assumptions
-  - High bias = Underfitting
-  - Model misses relevant patterns
-  
-- **Variance**: Error from sensitivity to small fluctuations
-  - High variance = Overfitting  
-  - Model learns noise as patterns
-
-- **Goal**: Find the sweet spot balancing bias and variance
-
-## Overfitting and Underfitting
-
-### Detecting Overfitting
-
-```{r}
-#| fig-width: 10
-#| fig-height: 6
 # Create training and test sets
 set.seed(123)
 train_indices <- sample(1:n, size = 0.7 * n)
@@ -194,15 +99,7 @@ ggplot(error_data, aes(x = complexity, y = error, color = type)) +
   geom_vline(xintercept = 3, linetype = "dashed", alpha = 0.5) +
   annotate("text", x = 3, y = max(test_errors) * 0.9, 
            label = "Optimal\nComplexity", hjust = -0.1)
-```
 
-## Introduction to Tidymodels
-
-### The Tidymodels Ecosystem
-
-Tidymodels is a collection of packages for modeling and machine learning using tidyverse principles:
-
-```{r}
 # Core tidymodels packages
 tidymodels_packages <- c(
   "rsample",     # Data splitting and resampling
@@ -230,24 +127,7 @@ tibble(
   )
 ) %>%
   knitr::kable()
-```
 
-### Tidymodels Philosophy
-
-1. **Consistency**: Same interface across different models
-2. **Composability**: Modular components that work together
-3. **Reproducibility**: Clear, documented workflows
-4. **Best Practices**: Built-in safeguards against common mistakes
-
-## A Complete Tidymodels Workflow
-
-Let's build a complete machine learning workflow to predict penguin species:
-
-### 1. Data Exploration
-
-```{r}
-#| fig-width: 12
-#| fig-height: 8
 # Load and explore data
 penguins_clean <- penguins %>%
   drop_na()
@@ -278,11 +158,7 @@ penguins_clean %>%
   facet_wrap(~measurement, scales = "free") +
   scale_fill_viridis_d() +
   labs(title = "Feature Distributions by Species")
-```
 
-### 2. Data Splitting
-
-```{r}
 # Initial split (training vs testing)
 set.seed(123)
 penguin_split <- initial_split(penguins_clean, prop = 0.75, strata = species)
@@ -301,11 +177,7 @@ tibble(
 # Create cross-validation folds
 penguin_folds <- vfold_cv(penguin_train, v = 5, strata = species)
 penguin_folds
-```
 
-### 3. Feature Engineering with Recipes
-
-```{r}
 # Create a recipe
 penguin_recipe <- recipe(species ~ ., data = penguin_train) %>%
   # Remove unnecessary variables
@@ -323,11 +195,7 @@ penguin_recipe
 # Prepare and bake to see transformed data
 penguin_prep <- prep(penguin_recipe)
 bake(penguin_prep, new_data = penguin_train %>% head())
-```
 
-### 4. Model Specification
-
-```{r}
 # Specify different models
 
 # Multinomial regression (for multiclass classification)
@@ -352,11 +220,7 @@ svm_spec <- svm_rbf(
   set_mode("classification")
 
 print("Model specifications created")
-```
 
-### 5. Creating Workflows
-
-```{r}
 # Combine recipe and model into workflows
 multinom_workflow <- workflow() %>%
   add_recipe(penguin_recipe) %>%
@@ -371,11 +235,7 @@ svm_workflow <- workflow() %>%
   add_model(svm_spec)
 
 multinom_workflow
-```
 
-### 6. Model Training and Evaluation
-
-```{r}
 # Fit models using cross-validation
 # For multiclass problems, we'll use accuracy and multiclass AUC
 multinom_cv <- fit_resamples(
@@ -410,11 +270,7 @@ ggplot(model_comparison, aes(x = model, y = mean, fill = model)) +
     y = "Score"
   ) +
   theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1))
-```
 
-### 7. Final Model Training
-
-```{r}
 # Train final model on full training set
 final_model <- rf_workflow %>%
   fit(penguin_train)
@@ -434,13 +290,7 @@ conf_mat
 autoplot(conf_mat, type = "heatmap") +
   scale_fill_gradient(low = "white", high = "darkblue") +
   labs(title = "Confusion Matrix - Random Forest")
-```
 
-### 8. Model Interpretation
-
-```{r}
-#| fig-width: 10
-#| fig-height: 6
 # Feature importance
 final_rf <- final_model %>%
   extract_fit_parsnip()
@@ -467,23 +317,7 @@ if (require(yardstick, quietly = TRUE)) {
       subtitle = "One-vs-All approach"
     )
 }
-```
 
-## Cross-Validation Theory
-
-### Why Cross-Validation?
-
-Cross-validation helps us:
-1. Estimate model performance on unseen data
-2. Detect overfitting
-3. Compare different models fairly
-4. Make better use of limited data
-
-### Types of Cross-Validation
-
-```{r}
-#| fig-width: 12
-#| fig-height: 10
 # Demonstrate different CV strategies
 set.seed(123)
 sample_data <- tibble(
@@ -520,21 +354,7 @@ ggplot(fold_viz, aes(x = obs_id, y = 1, fill = Fold)) +
     y = ""
   ) +
   theme(axis.text.y = element_blank(), axis.ticks.y = element_blank())
-```
 
-### Mathematical Foundation of CV
-
-For k-fold cross-validation, the CV estimate of prediction error is:
-
-$$CV_{(k)} = \frac{1}{k} \sum_{i=1}^{k} MSE_i$$
-
-Where $MSE_i$ is the mean squared error on fold $i$.
-
-## Model Selection Theory
-
-### Information Criteria
-
-```{r}
 # Demonstrate AIC/BIC for model selection
 models_to_compare <- list(
   "Simple" = lm(body_mass_g ~ bill_length_mm, data = penguin_train),
@@ -558,21 +378,7 @@ model_selection <- map_df(names(models_to_compare), function(name) {
 model_selection %>%
   arrange(AIC) %>%
   knitr::kable(digits = 2)
-```
 
-### Regularization Theory
-
-Regularization adds a penalty term to prevent overfitting:
-
-**Ridge Regression (L2):**
-$$\min_{\beta} \sum_{i=1}^{n} (y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij})^2 + \lambda \sum_{j=1}^{p} \beta_j^2$$
-
-**Lasso Regression (L1):**
-$$\min_{\beta} \sum_{i=1}^{n} (y_i - \beta_0 - \sum_{j=1}^{p} \beta_j x_{ij})^2 + \lambda \sum_{j=1}^{p} |\beta_j|$$
-
-```{r}
-#| fig-width: 10
-#| fig-height: 6
 # Demonstrate regularization
 library(glmnet)
 
@@ -588,13 +394,7 @@ lasso_fit <- glmnet(X, y, alpha = 1)  # Lasso
 par(mfrow = c(1, 2))
 plot(ridge_fit, xvar = "lambda", main = "Ridge Regression")
 plot(lasso_fit, xvar = "lambda", main = "Lasso Regression")
-```
 
-## Best Practices in Machine Learning
-
-### 1. Data Leakage Prevention
-
-```{r}
 # WRONG: Preprocessing before splitting
 # This leaks information from test set into training
 wrong_way <- penguins_clean %>%
@@ -603,29 +403,7 @@ wrong_way <- penguins_clean %>%
 # RIGHT: Preprocessing within training set only
 right_way <- recipe(species ~ ., data = penguin_train) %>%
   step_normalize(all_numeric_predictors())  # Only uses training data
-```
 
-### 2. Proper Evaluation
-
-Always use:
-- Separate test set (never touched during development)
-- Cross-validation for model selection
-- Appropriate metrics for your problem
-
-### 3. Feature Engineering Guidelines
-
-- Domain knowledge is crucial
-- Start simple, add complexity gradually
-- Validate feature importance
-- Watch for multicollinearity
-
-## Exercises
-
-### Exercise 1: Implement Cross-Validation
-
-Compare different CV strategies on the penguins dataset:
-
-```{r}
 # Your solution
 cv_comparison <- tibble(
   strategy = c("5-Fold", "10-Fold", "Bootstrap", "Monte Carlo"),
@@ -665,13 +443,7 @@ cv_results %>%
   geom_errorbar(aes(ymin = mean - std_err, ymax = mean + std_err), width = 0.2) +
   labs(title = "Cross-Validation Strategy Comparison",
        y = "Accuracy")
-```
 
-### Exercise 2: Bias-Variance Analysis
-
-Create models with different complexity levels and analyze their bias-variance tradeoff:
-
-```{r}
 # Your solution
 # Create polynomial features of different degrees
 complexity_levels <- 1:5
@@ -713,13 +485,7 @@ evaluation %>%
        x = "Polynomial Degree",
        y = "RMSE") +
   scale_color_manual(values = c("train_rmse" = "blue", "test_rmse" = "red"))
-```
 
-### Exercise 3: Build a Complete Pipeline
-
-Create a complete tidymodels pipeline for a regression problem:
-
-```{r}
 # Your solution
 # Predict penguin body mass
 mass_split <- initial_split(penguins_clean, prop = 0.8)
@@ -770,29 +536,3 @@ ggplot(mass_predictions, aes(x = body_mass_g, y = .pred)) +
   labs(title = "Predicted vs Actual Body Mass",
        x = "Actual Mass (g)",
        y = "Predicted Mass (g)")
-```
-
-## Summary
-
-You've learned the theoretical foundations and practical implementation of:
-
-✅ Machine learning fundamentals and theory  
-✅ Bias-variance tradeoff  
-✅ Overfitting and underfitting concepts  
-✅ Cross-validation theory and practice  
-✅ The tidymodels ecosystem structure  
-✅ Complete ML workflow implementation  
-✅ Model selection and evaluation  
-✅ Best practices in machine learning  
-
-## What's Next?
-
-In [Chapter 9](09-data-splitting.Rmd), we'll dive deep into data splitting strategies and resampling techniques with rsample.
-
-## Additional Resources
-
-- [Tidymodels Documentation](https://www.tidymodels.org/)
-- [An Introduction to Statistical Learning](https://www.statlearning.com/)
-- [The Elements of Statistical Learning](https://hastie.su.domains/ElemStatLearn/)
-- [Tidy Modeling with R](https://www.tmwr.org/)
-- [Feature Engineering and Selection](http://www.feat.engineering/)

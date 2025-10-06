@@ -1,45 +1,3 @@
----
-title: "Chapter 18: Model Deployment and Production - From Prototype to Product"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- The journey from development to production
-- Model serialization and versioning
-- Creating APIs with plumber
-- Building Shiny applications for model deployment
-- Docker containerization for R models
-- Model monitoring and maintenance
-- A/B testing and gradual rollouts
-- Best practices for production ML systems
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 18-model-deployment.R](R_scripts/18-model-deployment.R){.btn .btn-primary download="18-model-deployment.R"}
-:::
-
-## The Production Challenge
-
-Building a great model is only the beginning. The real challenge lies in deploying it to production where it can deliver value. Studies show that 87% of data science projects never make it to production. This chapter will ensure your models are in the successful 13%.
-
-The journey from Jupyter notebook to production system involves many considerations:
-- **Reliability**: Will it work 24/7?
-- **Scalability**: Can it handle production load?
-- **Maintainability**: Can others understand and update it?
-- **Monitoring**: How do we know if it's working correctly?
-- **Versioning**: How do we update without breaking things?
-
-```{r}
-#| message: false
 library(tidymodels)
 library(tidyverse)
 library(plumber)
@@ -98,13 +56,7 @@ test_metrics <- test_predictions %>%
 
 cat("Model Performance:\n")
 print(test_metrics)
-```
 
-## Model Serialization and Storage
-
-### Saving Models Locally
-
-```{r}
 # Method 1: Base R serialization
 # Create directory if it doesn't exist
 dir.create("models", showWarnings = FALSE)
@@ -127,11 +79,7 @@ saveRDS(model_bundle, "models/ames_model_bundle_v1.rds")
 # Unbundle when loading
 loaded_bundle <- readRDS("models/ames_model_bundle_v1.rds")
 unbundled_model <- unbundle(loaded_bundle)
-```
 
-### Version Control with pins
-
-```{r}
 # Create a board for model storage
 library(pins)
 
@@ -163,11 +111,7 @@ model_board %>%
 # Load specific version
 retrieved_model <- model_board %>%
   pin_read("ames_price_model")
-```
 
-### Using vetiver for Model Deployment
-
-```{r}
 library(vetiver)
 
 # Create a vetiver model
@@ -220,13 +164,7 @@ Predicts sale prices for residential properties in Ames, Iowa.
 "
 
 cat(model_card)
-```
 
-## Creating REST APIs with Plumber
-
-### Basic API Setup
-
-```{r}
 # Create plumber API file
 api_code <- '
 #* @apiTitle Ames House Price Prediction API
@@ -327,11 +265,7 @@ writeLines(api_code, "api/model_api.R")
 # library(plumber)
 # pr("api/model_api.R") %>%
 #   pr_run(port = 8000)
-```
 
-### Advanced API with Authentication and Logging
-
-```{r}
 advanced_api <- '
 #* @apiTitle Production House Price API
 #* @apiDescription Enterprise-grade prediction service
@@ -454,13 +388,7 @@ function(req, Gr_Liv_Area, Overall_Cond, Year_Built, Neighborhood, Total_Bsmt_SF
 '
 
 writeLines(advanced_api, "api/advanced_api.R")
-```
 
-## Building Shiny Applications
-
-### Basic Prediction App
-
-```{r}
 # Create Shiny app for model deployment
 shiny_app <- '
 library(shiny)
@@ -740,13 +668,7 @@ shinyApp(ui = ui, server = server)
 # Save Shiny app
 dir.create("apps", showWarnings = FALSE)
 writeLines(shiny_app, "apps/prediction_app.R")
-```
 
-## Docker Containerization
-
-### Creating a Dockerfile
-
-```{r}
 dockerfile_content <- '
 # Base R image
 FROM rocker/r-ver:4.3.0
@@ -816,13 +738,7 @@ services:
 '
 
 writeLines(docker_compose, "docker/docker-compose.yml")
-```
 
-## Model Monitoring and Maintenance
-
-### Performance Tracking
-
-```{r}
 # Create monitoring system
 create_monitoring_system <- function(model, production_data) {
   
@@ -898,11 +814,7 @@ p2 <- ggplot(performance_timeline, aes(x = date, y = requests)) +
 
 library(patchwork)
 p1 / p2
-```
 
-### Data Drift Detection
-
-```{r}
 # Detect feature drift
 detect_drift <- function(training_data, production_data, threshold = 0.1) {
   
@@ -972,11 +884,7 @@ ggplot(drift_viz, aes(x = Gr_Liv_Area, fill = dataset)) +
   geom_density(alpha = 0.5) +
   labs(title = "Feature Drift: Living Area",
        subtitle = "Distribution shift between training and production")
-```
 
-## A/B Testing and Gradual Rollouts
-
-```{r}
 # Implement A/B testing framework
 ab_test_framework <- function(model_a, model_b, test_data, split_ratio = 0.5) {
   
@@ -1067,11 +975,7 @@ ggplot(rollout, aes(x = day)) +
   ) +
   labs(title = "Gradual Model Rollout",
        subtitle = "Blue area shows traffic %, red points show errors")
-```
 
-## Best Practices Checklist
-
-```{r}
 # Production readiness checklist
 production_checklist <- tibble(
   Category = c(
@@ -1142,13 +1046,7 @@ action_items <- production_checklist %>%
 
 cat("\nAction Items:\n")
 print(action_items)
-```
 
-## Exercises
-
-### Exercise 1: Create a Model Registry
-
-```{r}
 # Your solution
 # Implement a model registry system
 create_model_registry <- function() {
@@ -1254,11 +1152,7 @@ registry$register(
 # Compare versions
 comparison <- registry$compare("ames_predictor")
 print(comparison)
-```
 
-### Exercise 2: Implement Model Retraining Pipeline
-
-```{r}
 # Your solution
 # Automated retraining pipeline
 create_retraining_pipeline <- function(current_model, retraining_threshold = 0.1) {
@@ -1348,11 +1242,7 @@ degraded_data <- ames_test_log %>%
   mutate(Sale_Price = Sale_Price * runif(n(), 0.7, 1.3))  # Add noise
 
 result <- pipeline(degraded_data)
-```
 
-### Exercise 3: Create Performance Dashboard
-
-```{r}
 # Your solution
 # Create monitoring dashboard data
 create_dashboard_data <- function(n_days = 30) {
@@ -1426,84 +1316,3 @@ cat("Avg Response Time:", round(summary_stats$avg_response_time, 1), "ms\n")
 cat("Total Revenue Impact: $", format(round(summary_stats$total_revenue), big.mark = ","), "\n")
 cat("Average CPU Usage:", round(summary_stats$avg_cpu * 100, 1), "%\n")
 cat("Total Data Errors:", summary_stats$total_errors, "\n")
-```
-
-## Summary
-
-In this comprehensive final chapter, you've mastered:
-
-✅ **Model deployment fundamentals**
-
-  - Serialization and versioning
-  - Model registries
-  - Production readiness
-
-✅ **API development**
-
-  - REST APIs with plumber
-  - Authentication and rate limiting
-  - Error handling and logging
-
-✅ **Application development**
-
-  - Shiny dashboards
-  - User interfaces
-  - Batch processing
-
-✅ **Containerization**
-
-  - Docker for R models
-  - Multi-container orchestration
-  - Environment consistency
-
-✅ **Monitoring and maintenance**
-
-  - Performance tracking
-  - Data drift detection
-  - Automated retraining
-
-✅ **Production best practices**
-
-  - A/B testing
-  - Gradual rollouts
-  - Production checklists
-
-Key takeaways:
-
-- Deployment is as important as model development
-- Monitor everything in production
-- Version control is crucial for models
-- Automate retraining pipelines
-- Plan for failure and rollback
-- Documentation is essential
-
-## Final Assessment
-
-Congratulations on completing Block 3! Before we conclude this comprehensive workshop, we recommend taking our **[Block 3 Assessment](quiz-block-3.qmd)** to test your mastery of advanced machine learning concepts including classification, regression, ensemble methods, unsupervised learning, and model deployment.
-
-This final assessment will help consolidate your understanding of the sophisticated techniques you've learned and prepare you for real-world machine learning applications.
-
-## Course Conclusion
-
-Congratulations! You've completed a comprehensive journey through:
-
-- **Tidyverse** fundamentals and advanced techniques
-- **Tidymodels** framework for machine learning
-- **Production deployment** of ML systems
-
-You now have the skills to:
-
-- Wrangle and visualize data efficiently
-- Build and evaluate machine learning models
-- Deploy models to production systems
-- Monitor and maintain ML applications
-
-Remember: The journey doesn't end here. Continue practicing, stay curious, and keep learning!
-
-## Additional Resources
-
-- [Engineering Production Machine Learning Systems](https://www.oreilly.com/library/view/building-machine-learning/9781492053187/)
-- [plumber Documentation](https://www.rplumber.io/)
-- [Shiny Documentation](https://shiny.rstudio.com/)
-- [Docker for Data Science](https://www.docker.com/blog/docker-for-data-science/)
-- [MLOps: Continuous Delivery for ML](https://cloud.google.com/architecture/mlops-continuous-delivery-and-automation-pipelines-in-machine-learning)

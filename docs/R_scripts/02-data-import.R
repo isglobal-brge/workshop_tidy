@@ -1,35 +1,3 @@
----
-title: "Chapter 2: Data Import and Export with readr and Beyond"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will:
-
-- Import CSV, TSV, and delimited files with readr
-- Handle Excel files with readxl
-- Work with JSON and XML data
-- Connect to databases
-- Export data in various formats
-- Handle common import problems (encoding, data types, missing values)
-- Work with large files efficiently
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 02-data-import.R](R_scripts/02-data-import.R){.btn .btn-primary download="02-data-import.R"}
-:::
-
-## Setup
-
-```{r}
-#| message: false
 library(tidyverse)  # Includes readr
 library(readxl)     # For Excel files
 library(jsonlite)   # For JSON files
@@ -43,13 +11,7 @@ temp_dir <- tempdir()
 
 # Load the penguins dataset
 data(penguins)
-```
 
-## Reading CSV Files with readr
-
-### Basic CSV Import
-
-```{r}
 # Create a sample CSV file
 sample_data <- tibble(
   id = 1:5,
@@ -71,11 +33,7 @@ employees
 employees_base <- read.csv(csv_file)
 str(employees)      # readr version - note the data types
 str(employees_base) # base R version - different types!
-```
 
-### Specifying Column Types
-
-```{r}
 # Explicit column types
 employees_typed <- read_csv(
   csv_file,
@@ -89,11 +47,7 @@ employees_typed <- read_csv(
 )
 
 employees_typed
-```
 
-### Handling Messy Data
-
-```{r}
 # Create a messy CSV
 messy_csv <- "
 Name,Age,Income,Start Date
@@ -131,13 +85,7 @@ clean_data <- clean_data %>%
   )
 
 clean_data
-```
 
-## Reading Other Delimited Files
-
-### TSV and Custom Delimiters
-
-```{r}
 # Tab-separated values
 tsv_data <- "name\tage\tcity
 Alice\t25\tNew York
@@ -159,11 +107,7 @@ pipe_file <- file.path(temp_dir, "data.txt")
 writeLines(pipe_data, pipe_file)
 
 read_delim(pipe_file, delim = "|")
-```
 
-### Fixed Width Files
-
-```{r}
 # Fixed width format
 fwf_data <- "Alice    25   50000
 Bob      30   65000
@@ -180,11 +124,7 @@ read_fwf(
     col_names = c("name", "age", "salary")
   )
 )
-```
 
-## Excel Files with readxl
-
-```{r}
 # Create an Excel file with multiple sheets
 excel_file <- file.path(temp_dir, "company_data.xlsx")
 
@@ -234,11 +174,7 @@ if (require(writexl, quietly = TRUE)) {
   
   all_sheets
 }
-```
 
-## JSON Data
-
-```{r}
 # Create JSON data
 json_data <- list(
   employees = list(
@@ -284,11 +220,7 @@ employees_flat <- json_imported$employees %>%
   select(-projects)  # Remove nested column for simplicity
 
 employees_flat
-```
 
-## Database Connections
-
-```{r}
 # Create a SQLite database
 db_file <- file.path(temp_dir, "company.db")
 con <- dbConnect(RSQLite::SQLite(), db_file)
@@ -326,11 +258,7 @@ high_earners
 
 # Close connection
 dbDisconnect(con)
-```
 
-## Working with APIs and Web Data
-
-```{r}
 # Example: Reading data from a URL
 # Using a public dataset
 url <- "https://raw.githubusercontent.com/tidyverse/ggplot2/main/data-raw/diamonds.csv"
@@ -343,11 +271,7 @@ glimpse(diamonds_web)
 local_file <- file.path(temp_dir, "diamonds.csv")
 download.file(url, local_file, quiet = TRUE)
 diamonds_local <- read_csv(local_file, n_max = 1000)
-```
 
-## Statistical Software Files (SPSS, Stata, SAS)
-
-```{r}
 # Create example data
 survey_data <- tibble(
   respondent_id = 1:10,
@@ -369,11 +293,7 @@ spss_data <- read_sav(sav_file)
 stata_data <- read_dta(dta_file)
 
 glimpse(spss_data)
-```
 
-## Handling Large Files
-
-```{r}
 # Create a large CSV file
 large_data <- tibble(
   id = 1:100000,
@@ -414,13 +334,7 @@ chunked_results <- read_csv_chunked(
 )
 
 chunked_results
-```
 
-## Data Export
-
-### Writing CSV and TSV
-
-```{r}
 # Prepare data for export
 export_data <- penguins %>%
   drop_na() %>%
@@ -444,11 +358,7 @@ write_csv2(export_data, file.path(temp_dir, "penguin_summary_eu.csv"))  # Europe
 if (require(writexl, quietly = TRUE)) {
   write_xlsx(export_data, file.path(temp_dir, "penguin_summary.xlsx"))
 }
-```
 
-### Advanced Export Options
-
-```{r}
 # Create a complex dataset
 complex_data <- tibble(
   id = 1:5,
@@ -479,13 +389,7 @@ saveRDS(complex_data, file.path(temp_dir, "complex_data.rds"))
 # Read it back
 restored_data <- readRDS(file.path(temp_dir, "complex_data.rds"))
 identical(complex_data, restored_data)  # TRUE - perfect preservation
-```
 
-## Common Import Problems and Solutions
-
-### Problem 1: Encoding Issues
-
-```{r}
 # Create file with special characters
 special_text <- "Café,Zürich,São Paulo,北京\n25,30,35,40"
 special_file <- file.path(temp_dir, "special_chars.csv")
@@ -495,11 +399,7 @@ writeLines(special_text, special_file, useBytes = TRUE)
 
 # Read with encoding specification
 read_csv(special_file, locale = locale(encoding = "UTF-8"))
-```
 
-### Problem 2: Inconsistent Data Types
-
-```{r}
 # Mixed types in a column
 mixed_csv <- "id,value
 1,100
@@ -520,11 +420,7 @@ read_csv(
     value = col_double()
   )
 )
-```
 
-### Problem 3: Date/Time Formats
-
-```{r}
 # Various date formats
 dates_csv <- "event,date
 Meeting,2023-01-15
@@ -551,15 +447,7 @@ dates_parsed <- dates_data %>%
   )
 
 dates_parsed
-```
 
-## Exercises
-
-### Exercise 1: Multi-format Import
-
-Create a function that can read data from CSV, Excel, or JSON based on file extension:
-
-```{r}
 read_any <- function(file_path) {
   ext <- tools::file_ext(file_path)
   
@@ -589,13 +477,7 @@ for (file in test_files) {
     cat("\n")
   }
 }
-```
 
-### Exercise 2: Data Cleaning Pipeline
-
-Clean and import this messy dataset:
-
-```{r}
 messy_sales <- "
 Date,Product,,,Price,Quantity
 2023-01-15,Widget A,,,29.99,10
@@ -629,13 +511,7 @@ cleaned_sales <- read_csv(
   )
 
 cleaned_sales
-```
 
-### Exercise 3: Database Operations
-
-Create a mini database with related tables and perform joins:
-
-```{r}
 # Create database
 db <- dbConnect(RSQLite::SQLite(), ":memory:")
 
@@ -686,13 +562,7 @@ summary_tbl <- customers_tbl %>%
 summary_tbl
 
 dbDisconnect(db)
-```
 
-### Exercise 4: Batch Processing
-
-Process multiple files in a directory:
-
-```{r}
 # Create multiple CSV files
 for (i in 1:3) {
   data <- tibble(
@@ -717,26 +587,3 @@ combined_data <- batch_files %>%
   )
 
 combined_data
-```
-
-## Summary
-
-In this chapter, you learned:
-
-✅ Reading various file formats (CSV, Excel, JSON, databases)  
-✅ Handling messy and inconsistent data  
-✅ Working with large files efficiently  
-✅ Exporting data in multiple formats  
-✅ Solving common import problems  
-✅ Connecting to and querying databases  
-
-## What's Next?
-
-In [Chapter 3](03-data-wrangling.Rmd), we'll dive deep into data manipulation with dplyr, learning to filter, select, mutate, and summarize data efficiently.
-
-## Additional Resources
-
-- [readr Documentation](https://readr.tidyverse.org/)
-- [readxl Documentation](https://readxl.tidyverse.org/)
-- [DBI Documentation](https://dbi.r-dbi.org/)
-- [Data Import Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/main/data-import.pdf)

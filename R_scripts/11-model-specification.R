@@ -1,38 +1,3 @@
----
-title: "Chapter 11: Model Specification with parsnip - A Unified Interface for Models"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- The parsnip philosophy and design principles
-- Specifying models across different engines
-- Setting modes and engines appropriately
-- Model arguments and hyperparameters
-- Translating between different modeling packages
-- Creating custom model specifications
-- Understanding computational engines
-- Best practices for model specification
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 11-model-specification.R](R_scripts/11-model-specification.R){.btn .btn-primary download="11-model-specification.R"}
-:::
-
-## The Problem parsnip Solves
-
-One of the most frustrating aspects of machine learning in R is the inconsistency across modeling packages. Each package has its own syntax, arguments, and output format. Let's see this problem in action:
-
-```{r}
-#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)
@@ -73,31 +38,7 @@ glmnet_pred <- predict(glmnet_fit, x_matrix, s = 0.01)  # Requires matrix and la
 str(lm_pred)
 str(rf_pred)
 str(glmnet_pred)
-```
 
-Notice the problems:
-- Different function names and arguments
-- Different data format requirements (data frame vs matrix)
-- Different prediction interfaces
-- Different output structures
-
-This inconsistency makes it hard to:
-- Switch between models
-- Compare different approaches
-- Build reproducible workflows
-- Write general-purpose code
-
-## Enter parsnip: One Interface to Rule Them All
-
-Parsnip provides a unified interface for model specification. The philosophy is simple but powerful:
-1. **Separate model specification from model fitting**
-2. **Use consistent naming across all models**
-3. **Provide a common interface for predictions**
-4. **Allow engine flexibility while maintaining consistency**
-
-### The parsnip Workflow
-
-```{r}
 # Step 1: Specify the model type
 linear_spec <- linear_reg()
 print(linear_spec)
@@ -117,21 +58,7 @@ linear_fit <- linear_spec %>%
 # Consistent prediction interface
 linear_pred <- predict(linear_fit, ames_small)
 str(linear_pred)  # Always returns a tibble with .pred column
-```
 
-The beauty of this approach:
-- **Model specification** is separate from fitting
-- **Consistent interface** across all models
-- **Predictable output** format
-- **Easy to swap** different implementations
-
-## Model Types in parsnip
-
-Parsnip supports a wide variety of model types. Let's explore the main categories:
-
-### Regression Models
-
-```{r}
 # Linear regression
 linear_reg_spec <- linear_reg() %>%
   set_engine("lm")
@@ -158,11 +85,7 @@ nn_reg_spec <- mlp() %>%
 
 # Show info for linear regression
 parsnip::show_model_info("linear_reg")
-```
 
-### Classification Models
-
-```{r}
 # Create classification data
 ames_class <- ames %>%
   mutate(expensive = factor(if_else(Sale_Price > median(Sale_Price), 
@@ -193,19 +116,7 @@ knn_spec <- nearest_neighbor() %>%
 nb_spec <- naive_Bayes() %>%
   set_engine("naivebayes") %>%
   set_mode("classification")
-```
 
-## Understanding Engines
-
-Each model type can have multiple engines (implementations). The choice of engine affects:
-- Available hyperparameters
-- Computational efficiency
-- Additional features
-- Required packages
-
-### Exploring Available Engines
-
-```{r}
 # See all engines for a model type
 show_engines("rand_forest")
 
@@ -239,13 +150,7 @@ linear_comparisons <- map(engines_to_compare, function(eng) {
 
 bind_rows(linear_comparisons) %>%
   knitr::kable(digits = 2)
-```
 
-### Engine-Specific Arguments
-
-Different engines support different arguments:
-
-```{r}
 # Random forest with ranger engine
 rf_ranger <- rand_forest(trees = 500) %>%
   set_engine("ranger",
@@ -261,17 +166,7 @@ rf_randomForest <- rand_forest(trees = 500) %>%
 # The model specification is the same, but engine arguments differ
 print(rf_ranger)
 print(rf_randomForest)
-```
 
-## Model Arguments and Hyperparameters
-
-Parsnip distinguishes between:
-- **Main arguments**: Common across engines (e.g., `trees` for random forests)
-- **Engine arguments**: Specific to an implementation
-
-### Main Arguments
-
-```{r}
 # Main arguments are specified in the model function
 rf_with_args <- rand_forest(
   trees = 1000,      # Number of trees
@@ -285,13 +180,7 @@ print(rf_with_args)
 
 # These translate to engine-specific names
 translate(rf_with_args)  # See the actual ranger call
-```
 
-### Updating Model Specifications
-
-Model specifications can be updated dynamically:
-
-```{r}
 # Start with a basic specification
 base_rf <- rand_forest() %>%
   set_engine("ranger") %>%
@@ -313,13 +202,7 @@ tunable_rf <- rand_forest(
   set_mode("regression")
 
 print(tunable_rf)
-```
 
-## Consistent Prediction Interface
-
-One of parsnip's greatest strengths is consistent predictions:
-
-```{r}
 # Fit different models
 models <- list(
   linear = linear_reg() %>% 
@@ -355,15 +238,7 @@ head(class_preds)
 # Probability predictions
 prob_preds <- predict(class_model, ames_class, type = "prob")
 head(prob_preds)
-```
 
-## Advanced Model Specifications
-
-### Regularized Regression
-
-Regularized models require special handling for the penalty parameter:
-
-```{r}
 # Ridge regression
 ridge_spec <- linear_reg(penalty = 0.1, mixture = 0) %>%
   set_engine("glmnet")
@@ -402,13 +277,7 @@ ggplot(coef_comparison, aes(x = term, y = estimate, fill = model)) +
     x = "Variable", y = "Coefficient"
   ) +
   theme(axis.text.y = element_text(size = 8))
-```
 
-### Boosted Trees
-
-Gradient boosting has many hyperparameters:
-
-```{r}
 # XGBoost specification
 xgb_spec <- boost_tree(
   trees = 1000,           # Number of trees
@@ -442,13 +311,7 @@ ggplot(xgb_importance %>% head(10),
     subtitle = "Top 10 most important features",
     x = "Feature", y = "Importance (Gain)"
   )
-```
 
-## Model Comparison Framework
-
-Parsnip makes it easy to compare different models systematically:
-
-```{r}
 # Define multiple model specifications
 model_specs <- list(
   linear = linear_reg() %>% 
@@ -502,13 +365,7 @@ model_evaluation %>%
     x = "Model", y = "Value"
   ) +
   theme(legend.position = "none", axis.text.x = element_text(angle = 45, hjust = 1))
-```
 
-## Creating Model Specifications Programmatically
-
-Sometimes we need to create model specifications dynamically:
-
-```{r}
 # Function to create model specs with different hyperparameters
 create_rf_spec <- function(n_trees, mtry_prop, min_node) {
   rand_forest(
@@ -547,13 +404,7 @@ subset_evaluation <- map_df(1:3, function(i) {
 })
 
 knitr::kable(subset_evaluation, digits = 2)
-```
 
-## Understanding Model Translations
-
-Parsnip translates your specifications to the underlying engine calls:
-
-```{r}
 # See how parsnip translates to different engines
 rf_spec <- rand_forest(trees = 500, mtry = 5, min_n = 10) %>%
   set_mode("regression")
@@ -572,13 +423,7 @@ rf_spec %>%
 # trees -> num.trees (ranger) or ntree (randomForest)
 # mtry -> mtry (both)
 # min_n -> min.node.size (ranger) or nodesize (randomForest)
-```
 
-## Model Specification Best Practices
-
-### 1. Start Simple, Add Complexity
-
-```{r}
 # Start with default values
 simple_rf <- rand_forest() %>%
   set_engine("ranger") %>%
@@ -594,11 +439,7 @@ complex_rf <- rand_forest(
              importance = "impurity",
              num.threads = parallel::detectCores() - 1) %>%
   set_mode("regression")
-```
 
-### 2. Use Consistent Naming
-
-```{r}
 # Create a naming convention for your specifications
 models <- list(
   # Baseline models
@@ -629,11 +470,7 @@ models <- list(
     set_engine("xgboost") %>%
     set_mode("regression")
 )
-```
 
-### 3. Document Your Choices
-
-```{r}
 # Document why you chose specific values
 production_rf <- rand_forest(
   trees = 500,        # Balanced accuracy vs training time
@@ -645,13 +482,7 @@ production_rf <- rand_forest(
              seed = 123,               # Reproducibility
              num.threads = 4) %>%      # Server has 8 cores, use half
   set_mode("regression")
-```
 
-## Troubleshooting Common Issues
-
-### Issue 1: Missing Required Packages
-
-```{r}
 # Check if required package is installed
 check_model_package <- function(model_spec) {
   required_pkg <- model_spec$engine
@@ -669,11 +500,7 @@ check_model_package <- function(model_spec) {
 # Test
 svm_spec <- svm_rbf() %>% set_engine("kernlab")
 check_model_package(svm_spec)
-```
 
-### Issue 2: Incompatible Mode/Engine Combinations
-
-```{r}
 # Not all combinations work
 tryCatch({
   bad_spec <- linear_reg() %>%
@@ -684,11 +511,7 @@ tryCatch({
 
 # Check valid combinations
 show_engines("linear_reg")
-```
 
-### Issue 3: Missing Arguments
-
-```{r}
 # Some engines require specific arguments
 tryCatch({
   bad_glmnet <- linear_reg() %>%
@@ -702,15 +525,7 @@ tryCatch({
 # Correct specification
 good_glmnet <- linear_reg(penalty = 0.1) %>%
   set_engine("glmnet")
-```
 
-## Exercises
-
-### Exercise 1: Multi-Engine Comparison
-
-Compare the same model type across different engines:
-
-```{r}
 # Your solution
 # Compare random forest implementations
 engines <- c("ranger", "randomForest")
@@ -744,13 +559,7 @@ rf_comparison <- map_df(engines, function(eng) {
 })
 
 knitr::kable(rf_comparison, digits = 2)
-```
 
-### Exercise 2: Custom Model Grid
-
-Create a grid of model specifications for comparison:
-
-```{r}
 # Your solution
 # Create diverse model specifications
 model_grid <- tribble(
@@ -799,13 +608,7 @@ map_dbl(sample_fits, function(fit) {
   preds <- predict(fit, ames_small)$.pred
   sqrt(mean((ames_small$Sale_Price - preds)^2))
 })
-```
 
-### Exercise 3: Engine-Specific Features
-
-Explore engine-specific features for the same model:
-
-```{r}
 # Your solution
 # Random forest with different engine features
 
@@ -840,46 +643,3 @@ if (requireNamespace("randomForest", quietly = TRUE)) {
   # This is useful for clustering and outlier detection
   cat("\nrandomForest can provide proximity matrix for clustering\n")
 }
-```
-
-## Summary
-
-In this comprehensive chapter, you've mastered:
-
-✅ **Core parsnip concepts**
-  - Unified model interface philosophy
-  - Separation of specification and fitting
-  - Consistent prediction interface
-
-✅ **Model specifications**
-  - Different model types
-  - Setting engines and modes
-  - Main vs engine arguments
-
-✅ **Advanced techniques**
-  - Multi-engine comparisons
-  - Programmatic model creation
-  - Model translations
-
-✅ **Best practices**
-  - Starting simple and adding complexity
-  - Consistent naming conventions
-  - Proper documentation
-
-Key takeaways:
-- Parsnip provides consistency across diverse models
-- Same interface whether using lm or xgboost
-- Easy to swap and compare different approaches
-- Engine flexibility with common interface
-- Predictable, tidy outputs
-
-## What's Next?
-
-In [Chapter 12](12-workflows-evaluation.Rmd), we'll learn about workflows that combine models with preprocessing and evaluation metrics.
-
-## Additional Resources
-
-- [parsnip Documentation](https://parsnip.tidymodels.org/)
-- [List of Available Models](https://www.tidymodels.org/find/parsnip/)
-- [Adding New Models to parsnip](https://www.tidymodels.org/learn/develop/models/)
-- [Tidy Modeling with R - Models Chapter](https://www.tmwr.org/models.html)

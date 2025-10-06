@@ -1,49 +1,3 @@
----
-title: "Chapter 12: Workflows and Model Evaluation - Building Reproducible ML Pipelines"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- The workflow concept and its importance
-- Combining preprocessing and modeling
-- Workflow sets for comparing multiple approaches
-- Comprehensive model evaluation with yardstick
-- Custom metrics and metric sets
-- Visualizing model performance
-- Workflow extraction and modification
-- Best practices for reproducible ML pipelines
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 12-workflows-evaluation.R](R_scripts/12-workflows-evaluation.R){.btn .btn-primary download="12-workflows-evaluation.R"}
-:::
-
-## Why Workflows Matter
-
-Imagine you're baking a complex cake. You wouldn't just throw ingredients together randomly - you'd follow a recipe that specifies the exact order of operations: mix dry ingredients, cream butter and sugar, combine wet and dry, bake at specific temperature. Machine learning is similar: the order and combination of steps matters immensely.
-
-A workflow in tidymodels bundles together:
-1. **Preprocessing** (recipes)
-2. **Model specification** (parsnip)
-3. **Post-processing** (if needed)
-
-This bundling ensures:
-- **Reproducibility**: The exact same steps are applied to new data
-- **Prevention of data leakage**: Preprocessing parameters are learned only from training data
-- **Simplicity**: One object contains your entire modeling pipeline
-- **Flexibility**: Easy to swap components and compare approaches
-
-```{r}
-#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)
@@ -61,13 +15,7 @@ data(ames)
 ames_split <- initial_split(ames, prop = 0.75, strata = Sale_Price)
 ames_train <- training(ames_split)
 ames_test <- testing(ames_split)
-```
 
-## Building Your First Workflow
-
-Let's start by understanding the problem with not using workflows:
-
-```{r}
 # The WRONG way - manual preprocessing
 # This approach is error-prone and can lead to data leakage
 
@@ -101,17 +49,7 @@ lm_workflow <- workflow() %>%
   add_model(lm_spec)
 
 print(lm_workflow)
-```
 
-The workflow object now contains everything needed to go from raw data to predictions. This is incredibly powerful for maintaining consistency across training, validation, and deployment.
-
-## Workflow Components
-
-### Adding and Modifying Components
-
-Workflows are modular - you can add, remove, or update components:
-
-```{r}
 # Start with an empty workflow
 base_workflow <- workflow()
 
@@ -144,18 +82,7 @@ recipe_only <- lm_workflow %>%
 
 print("After removing model:")
 print(recipe_only)
-```
 
-This modularity is essential for:
-- **Experimentation**: Quickly try different models with same preprocessing
-- **Model comparison**: Keep preprocessing constant while varying models
-- **Debugging**: Test components independently
-
-### Formula vs Recipe Interface
-
-Workflows support two interfaces for specifying predictors:
-
-```{r}
 # Method 1: Formula interface (simple, no preprocessing)
 formula_workflow <- workflow() %>%
   add_formula(Sale_Price ~ Gr_Liv_Area + Overall_Cond) %>%
@@ -183,18 +110,7 @@ recipe_workflow
 
 print("\nVariables approach:")
 vars_workflow
-```
 
-Choose based on your needs:
-- **Formula**: Quick prototyping, simple models
-- **Recipe**: Complex preprocessing, feature engineering
-- **Variables**: Programmatic variable selection
-
-## Fitting and Predicting with Workflows
-
-The workflow handles all the complexity of applying transformations consistently:
-
-```{r}
 # Fit the workflow
 lm_fit <- lm_workflow %>%
   fit(data = ames_train)
@@ -224,13 +140,7 @@ head(all_predictions)
 # 1. Log transform of Sale_Price (inverse transformed for predictions)
 # 2. Normalization of numeric predictors
 # 3. Dummy encoding of Neighborhood
-```
 
-## Workflow Sets: Comparing Multiple Approaches
-
-One of the most powerful features is comparing multiple workflows systematically:
-
-```{r}
 # Create multiple preprocessing recipes
 recipe_simple <- recipe(Sale_Price ~ Gr_Liv_Area + Year_Built, 
                        data = ames_train)
@@ -268,13 +178,7 @@ workflow_set <- workflow_set(
 print(workflow_set)
 
 # This creates 8 workflows (2 recipes × 4 models)!
-```
 
-### Evaluating Workflow Sets
-
-Now we can evaluate all workflows systematically:
-
-```{r}
 # Create resamples for evaluation
 ames_folds <- vfold_cv(ames_train, v = 5, strata = Sale_Price)
 
@@ -302,20 +206,7 @@ simple_lm_results %>%
   facet_wrap(~.metric, scales = "free") +
   labs(title = "Model Performance with Cross-Validation",
        subtitle = "Simple linear model with 5-fold CV")
-```
 
-This systematic comparison helps identify:
-- Which preprocessing steps add value
-- Which models work best with your data
-- Interaction effects between preprocessing and models
-
-## Model Evaluation with yardstick
-
-The yardstick package provides comprehensive metrics for model evaluation:
-
-### Regression Metrics
-
-```{r}
 # Fit our simple workflow
 best_fit <- simple_lm %>%
   fit(ames_train)
@@ -351,13 +242,7 @@ ggplot(test_predictions, aes(x = Sale_Price, y = .pred)) +
     y = "Predicted Sale Price"
   ) +
   coord_equal()
-```
 
-### Classification Metrics
-
-Let's also explore classification metrics:
-
-```{r}
 # Create a classification problem
 ames_class <- ames_train %>%
   mutate(expensive = factor(if_else(Sale_Price > median(Sale_Price), 
@@ -420,13 +305,7 @@ autoplot(roc_curve_data) +
   labs(title = "ROC Curve") +
   annotate("text", x = 0.5, y = 0.5, 
            label = paste("AUC:", round(class_performance$.estimate[5], 3)))
-```
 
-## Custom Metrics and Evaluation
-
-Sometimes you need custom metrics for your specific problem:
-
-```{r}
 # Create a custom metric - Mean Absolute Percentage Error with threshold
 mape_vec_threshold <- function(truth, estimate, threshold = 0.2, na_rm = TRUE) {
   errors <- abs((truth - estimate) / truth)
@@ -462,13 +341,7 @@ test_predictions %>%
     regular_rmse = rmse_vec(Sale_Price, .pred),
     asymmetric_rmse = mean(asymmetric_rmse)
   )
-```
 
-## Advanced Workflow Techniques
-
-### Extracting and Modifying Fitted Workflows
-
-```{r}
 # Extract components from fitted workflow
 extracted_recipe <- lm_fit %>%
   extract_recipe()
@@ -504,13 +377,7 @@ rf_importance <- rf_fit %>%
   vip()
 
 print(rf_importance)
-```
 
-### Workflow Finalization
-
-After tuning (covered in next chapter), you finalize workflows:
-
-```{r}
 # Example: Finalize a workflow with best parameters
 # This would typically come from tuning
 best_params <- tibble(
@@ -552,13 +419,7 @@ print(final_metrics)
 # Extract final model
 final_model <- last_fit_results %>%
   extract_workflow()
-```
 
-## Evaluating Model Assumptions
-
-Workflows make it easy to check model assumptions:
-
-```{r}
 # Residual analysis for regression
 residual_analysis <- test_predictions %>%
   mutate(
@@ -592,13 +453,7 @@ p4 <- ggplot(residual_analysis, aes(x = residual)) +
 # Combine plots
 (p1 + p2) / (p3 + p4) +
   plot_annotation(title = "Regression Diagnostics")
-```
 
-## Probability Calibration
-
-For classification, we often need well-calibrated probabilities:
-
-```{r}
 # Calibration analysis
 calibration_data <- class_predictions %>%
   mutate(
@@ -652,13 +507,7 @@ ggplot(calibration_data, aes(x = mean_predicted, y = fraction_positive)) +
   coord_equal() +
   xlim(0, 1) + ylim(0, 1) +
   theme_minimal()
-```
 
-## Performance Visualization
-
-Create comprehensive performance visualizations:
-
-```{r}
 # For regression: actual vs predicted with confidence bands
 prediction_plot <- test_predictions %>%
   ggplot(aes(x = Sale_Price, y = .pred)) +
@@ -690,13 +539,7 @@ error_plot <- test_predictions %>%
   )
 
 prediction_plot + error_plot
-```
 
-## Best Practices for Workflows
-
-### 1. Always Use Workflows for Production
-
-```{r}
 # Good practice: Complete workflow
 production_workflow <- workflow() %>%
   add_recipe(
@@ -711,22 +554,14 @@ production_workflow <- workflow() %>%
   )
 
 # This ensures all preprocessing is contained and reproducible
-```
 
-### 2. Version Control Your Workflows
-
-```{r}
 # Save workflow for reproducibility
 saveRDS(final_fit, "models/final_workflow_v1.rds")
 
 # Load and use later
 # loaded_workflow <- readRDS("models/final_workflow_v1.rds")
 # new_predictions <- predict(loaded_workflow, new_data)
-```
 
-### 3. Document Your Choices
-
-```{r}
 # Create workflow with documentation
 documented_workflow <- workflow() %>%
   add_recipe(
@@ -743,15 +578,7 @@ documented_workflow <- workflow() %>%
     linear_reg(penalty = 0.01, mixture = 0) %>%
       set_engine("glmnet")
   )
-```
 
-## Exercises
-
-### Exercise 1: Build a Complete Evaluation Pipeline
-
-Create a workflow and comprehensive evaluation:
-
-```{r}
 # Your solution
 # Create a complete evaluation pipeline
 eval_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Year_Built + Overall_Cond + 
@@ -790,13 +617,7 @@ ggplot(eval_predictions, aes(x = Sale_Price, y = .pred)) +
   geom_abline(slope = 1, intercept = 0, color = "red") +
   facet_wrap(~id, ncol = 5) +
   labs(title = "Predictions Across CV Folds")
-```
 
-### Exercise 2: Compare Preprocessing Strategies
-
-Evaluate different preprocessing approaches:
-
-```{r}
 # Your solution
 # Define different preprocessing strategies
 preproc_minimal <- recipe(Sale_Price ~ Gr_Liv_Area + Year_Built, 
@@ -845,13 +666,7 @@ ggplot(strategy_results, aes(x = strategy, y = mean, fill = strategy)) +
   facet_wrap(~.metric, scales = "free_y") +
   labs(title = "Preprocessing Strategy Comparison") +
   theme(legend.position = "none")
-```
 
-### Exercise 3: Custom Metrics for Business Goals
-
-Create business-specific metrics:
-
-```{r}
 # Your solution
 # Business scenario: Real estate company
 # - Overestimating is bad (disappointed customers)
@@ -904,51 +719,3 @@ test_predictions %>%
     y = "Count",
     fill = "Error Category"
   )
-```
-
-## Summary
-
-In this comprehensive chapter, you've mastered:
-
-✅ **Workflow fundamentals**
-  - Combining preprocessing and models
-  - Preventing data leakage
-  - Ensuring reproducibility
-
-✅ **Workflow components**
-  - Adding and updating recipes/models
-  - Formula vs recipe interfaces
-  - Modular design
-
-✅ **Workflow sets**
-  - Comparing multiple approaches
-  - Systematic evaluation
-  - Ranking and selection
-
-✅ **Model evaluation**
-  - Comprehensive metrics with yardstick
-  - Custom metrics for business needs
-  - Visualization techniques
-
-✅ **Advanced techniques**
-  - Extracting workflow components
-  - Probability calibration
-  - Model diagnostics
-
-Key takeaways:
-- Always use workflows for production models
-- Workflows prevent data leakage automatically
-- Workflow sets enable systematic comparison
-- Custom metrics align models with business goals
-- Proper evaluation is crucial for model trust
-
-## What's Next?
-
-In [Chapter 13](13-hyperparameter-tuning.Rmd), we'll explore hyperparameter tuning to optimize model performance.
-
-## Additional Resources
-
-- [workflows Documentation](https://workflows.tidymodels.org/)
-- [workflowsets Documentation](https://workflowsets.tidymodels.org/)
-- [yardstick Documentation](https://yardstick.tidymodels.org/)
-- [Tidy Modeling with R - Workflows Chapter](https://www.tmwr.org/workflows.html)

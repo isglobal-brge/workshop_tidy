@@ -1,40 +1,3 @@
----
-title: "Chapter 16: Ensemble Methods - The Power of Many"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- The theory behind ensemble methods
-- Bagging and random forests
-- Boosting algorithms (AdaBoost, GBM, XGBoost)
-- Stacking and blending models
-- Voting classifiers
-- Model diversity and ensemble selection
-- Practical implementation with tidymodels
-- When and why ensembles work
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 16-ensemble-methods.R](R_scripts/16-ensemble-methods.R){.btn .btn-primary download="16-ensemble-methods.R"}
-:::
-
-## The Wisdom of Crowds in Machine Learning
-
-Imagine you're trying to guess the number of jellybeans in a jar. One person might overestimate, another might underestimate, but the average of many guesses often comes remarkably close to the truth. This is the fundamental principle behind ensemble methods: combining multiple models can produce predictions that are more accurate than any individual model.
-
-The mathematics behind this are elegant. If we have multiple independent models with uncorrelated errors, combining them reduces the overall error. This is why ensemble methods consistently win machine learning competitions.
-
-```{r}
-#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)
@@ -63,13 +26,7 @@ ames_folds <- vfold_cv(ames_train, v = 5, strata = Sale_Price)
 ames_simple <- ames_train %>%
   select(Sale_Price, Gr_Liv_Area, Overall_Cond, Year_Built, Neighborhood) %>%
   slice_sample(n = 500)
-```
 
-## Why Ensembles Work: The Mathematical Foundation
-
-Let's understand why combining models reduces error:
-
-```{r}
 # Simulate the power of ensembles
 set.seed(456)
 n_models <- 50
@@ -142,15 +99,7 @@ p1 + p2
 cat("Average individual model MSE:", mean(individual_errors), "\n")
 cat("Ensemble MSE:", ensemble_error, "\n")
 cat("Error reduction:", round((1 - ensemble_error/mean(individual_errors)) * 100, 1), "%\n")
-```
 
-The key insight: errors cancel out when models make different mistakes!
-
-## Bagging: Bootstrap Aggregating
-
-Bagging creates diverse models by training on different bootstrap samples:
-
-```{r}
 # Implement bagging for decision trees
 bagging_spec <- bag_tree(
   cost_complexity = 0,
@@ -224,19 +173,7 @@ test_predictions %>%
     y = "Predicted Sale Price"
   ) +
   coord_equal()
-```
 
-Bagging characteristics:
-- **Reduces variance** without increasing bias
-- **Works best** with high-variance, low-bias models (like deep trees)
-- **Parallel training** possible (each bootstrap independent)
-- **Out-of-bag (OOB)** error provides free validation
-
-## Random Forests: Bagging with a Twist
-
-Random forests add feature randomness to bagging:
-
-```{r}
 # Compare different mtry values
 rf_comparison <- tibble(
   mtry_prop = c(0.1, 0.33, 0.5, 0.75, 1.0),
@@ -316,21 +253,7 @@ best_rf_fit %>%
   extract_fit_parsnip() %>%
   vip(num_features = 15) +
   labs(title = "Random Forest Feature Importance")
-```
 
-Random forest advantages:
-- **Further reduces overfitting** compared to bagging
-- **Decorrelates trees** through feature sampling
-- **Provides feature importance** naturally
-- **Robust to hyperparameters** (often works well out-of-box)
-
-## Boosting: Learning from Mistakes
-
-Boosting sequentially builds models, each learning from previous errors:
-
-### AdaBoost: The Original Boosting Algorithm
-
-```{r}
 # Demonstrate boosting concept with simple example
 # Create a difficult classification dataset
 set.seed(789)
@@ -355,11 +278,7 @@ ggplot(spiral_data, aes(x = x, y = y, color = class)) +
 
 # Boosting builds sequential models
 # Each focuses on misclassified points from previous models
-```
 
-### Gradient Boosting Machines (GBM)
-
-```{r}
 # XGBoost - state-of-the-art gradient boosting
 xgb_spec <- boost_tree(
   trees = 100,
@@ -422,19 +341,7 @@ lr_comparison %>%
     x = "Learning Rate",
     y = "RMSE"
   )
-```
 
-Boosting characteristics:
-- **Sequential training** (can't parallelize easily)
-- **Focuses on difficult cases** progressively
-- **Can overfit** if not regularized properly
-- **Often achieves** best single-model performance
-
-## Model Stacking: The Meta-Learning Approach
-
-Stacking uses a meta-model to combine predictions from base models:
-
-```{r}
 # Simple stacking example with manual blending
 # Create base models
 lm_spec <- linear_reg() %>%
@@ -500,13 +407,7 @@ ggplot(rmse_results, aes(x = reorder(Model, RMSE), y = RMSE, fill = Model)) +
     x = NULL
   ) +
   theme(legend.position = "none")
-```
 
-## Voting Ensembles
-
-For classification, voting combines predictions through majority vote or averaging:
-
-```{r}
 # Create classification problem
 ames_class <- ames_train %>%
   mutate(expensive = factor(if_else(Sale_Price > median(Sale_Price), 
@@ -605,13 +506,7 @@ ggplot(all_results, aes(x = reorder(method, accuracy), y = accuracy)) +
     y = "Accuracy"
   ) +
   ylim(0, 1)
-```
 
-## Diversity in Ensembles
-
-Ensemble success depends on model diversity:
-
-```{r}
 # Measure diversity through correlation
 # Get predictions from base models
 base_predictions <- map_dfc(models, ~ predict(., class_test, type = "prob")$.pred_yes) %>%
@@ -682,15 +577,7 @@ ensemble_comparison <- tibble(
 )
 
 knitr::kable(ensemble_comparison, digits = 3)
-```
 
-## Advanced Ensemble Techniques
-
-### Dynamic Ensemble Selection
-
-Choose different models for different regions of the feature space:
-
-```{r}
 # Demonstrate region-based ensemble
 # Create a 2D problem for visualization
 set.seed(123)
@@ -724,13 +611,7 @@ ggplot(region_data, aes(x = x1, y = x2, color = y)) +
     subtitle = "Dynamic selection can use best model for each region"
   ) +
   coord_equal()
-```
 
-### Cascade Ensembles
-
-Use simple models for easy cases, complex models for hard cases:
-
-```{r}
 # Demonstrate cascade concept
 # First tier: Simple, fast model
 simple_model <- linear_reg() %>%
@@ -770,13 +651,7 @@ complex_fit <- workflow() %>%
 cat("Cascade ensemble:\n")
 cat("- Simple model handles", sum(!train_with_residuals$is_difficult), "cases\n")
 cat("- Complex model handles", sum(train_with_residuals$is_difficult), "difficult cases\n")
-```
 
-## Best Practices for Ensembles
-
-### 1. Ensure Model Diversity
-
-```{r}
 # Strategies for diversity
 diversity_strategies <- tibble(
   Strategy = c(
@@ -803,11 +678,7 @@ diversity_strategies <- tibble(
 )
 
 knitr::kable(diversity_strategies)
-```
 
-### 2. Choose Appropriate Ensemble Method
-
-```{r}
 # Decision guide
 ensemble_guide <- tibble(
   Scenario = c(
@@ -829,15 +700,7 @@ ensemble_guide <- tibble(
 )
 
 knitr::kable(ensemble_guide)
-```
 
-## Exercises
-
-### Exercise 1: Build a Custom Ensemble
-
-Create your own ensemble combining different approaches:
-
-```{r}
 # Your solution
 # Create a custom ensemble for Ames housing
 custom_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
@@ -926,13 +789,7 @@ results <- sort(results)
 
 barplot(results, main = "Custom Ensemble Performance",
         ylab = "RMSE", col = c(rep("steelblue", length(results)-1), "coral"))
-```
 
-### Exercise 2: Optimize Ensemble Weights
-
-Find optimal weights for combining models:
-
-```{r}
 # Your solution
 # Get predictions from each model
 test_preds <- map_dfc(base_fits, ~ predict(., ames_test)$.pred) %>%
@@ -986,13 +843,7 @@ knitr::kable(weight_comparison, digits = 3)
 # Show optimal weights
 barplot(optimal_weights, main = "Optimal Ensemble Weights",
         ylab = "Weight", col = "steelblue")
-```
 
-### Exercise 3: Implement Boosting from Scratch
-
-Understand boosting by implementing a simple version:
-
-```{r}
 # Your solution
 # Simple boosting implementation
 simple_boosting <- function(x, y, n_iterations = 10, learning_rate = 0.1) {
@@ -1040,53 +891,3 @@ plot(test_x, test_y, main = "Simple Boosting Results",
 points(test_x, boost_result$final_predictions, col = "red", pch = 16)
 legend("topleft", legend = c("Actual", "Predicted"), 
        col = c("black", "red"), pch = c(1, 16))
-```
-
-## Summary
-
-In this comprehensive chapter, you've mastered:
-
-✅ **Ensemble fundamentals**
-  - Why ensembles work mathematically
-  - Bias-variance decomposition
-  - The importance of diversity
-
-✅ **Bagging methods**
-  - Bootstrap aggregating
-  - Random forests
-  - Out-of-bag error
-
-✅ **Boosting algorithms**
-  - Sequential learning
-  - AdaBoost and gradient boosting
-  - XGBoost implementation
-
-✅ **Stacking and blending**
-  - Meta-learning approaches
-  - Cross-validation for stacking
-  - Optimal weight finding
-
-✅ **Advanced techniques**
-  - Dynamic selection
-  - Cascade ensembles
-  - Custom ensemble design
-
-Key takeaways:
-- Ensembles almost always outperform single models
-- Diversity is crucial for ensemble success
-- Different methods suit different problems
-- Boosting for accuracy, bagging for stability
-- Stacking combines strengths of different approaches
-- Computational cost vs performance trade-off
-
-## What's Next?
-
-In [Chapter 17](17-unsupervised-learning.Rmd), we'll explore unsupervised learning techniques for discovering patterns without labels.
-
-## Additional Resources
-
-- [Introduction to Statistical Learning - Chapter 8](https://www.statlearning.com/)
-- [Elements of Statistical Learning - Chapters 10, 15, 16](https://hastie.su.domains/ElemStatLearn/)
-- [XGBoost Documentation](https://xgboost.readthedocs.io/)
-- [Random Forests Original Paper](https://www.stat.berkeley.edu/~breiman/randomforest2001.pdf)
-- [Ensemble Methods: Foundations and Algorithms](https://www.amazon.com/Ensemble-Methods-Foundations-Algorithms-Learning/dp/1439830037)

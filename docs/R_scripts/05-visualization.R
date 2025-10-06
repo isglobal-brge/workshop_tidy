@@ -1,35 +1,3 @@
----
-title: "Chapter 5: Data Visualization with ggplot2"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- The grammar of graphics philosophy
-- Creating basic plots: scatter, line, bar, histogram
-- Customizing aesthetics, scales, and themes
-- Creating complex multi-panel visualizations
-- Statistical layers and transformations
-- Interactive visualizations
-- Publication-ready graphics
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 05-visualization.R](R_scripts/05-visualization.R){.btn .btn-primary download="05-visualization.R"}
-:::
-
-## Setup
-
-```{r}
-#| message: false
 library(tidyverse)
 library(palmerpenguins)
 library(gapminder)
@@ -41,27 +9,7 @@ library(GGally)    # For pair plots
 
 # Set a default theme
 theme_set(theme_minimal())
-```
 
-## The Grammar of Graphics
-
-ggplot2 builds plots layer by layer:
-
-1. **Data**: The dataset
-2. **Aesthetics (aes)**: How variables map to visual properties
-3. **Geometries (geom)**: The type of plot
-4. **Facets**: Subplots
-5. **Statistics**: Statistical transformations
-6. **Coordinates**: Coordinate systems
-7. **Themes**: Overall visual appearance
-
-## Basic Plots
-
-### Scatter Plots
-
-```{r}
-#| fig-width: 8
-#| fig-height: 6
 # Basic scatter plot
 ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g)) +
   geom_point()
@@ -92,13 +40,7 @@ ggplot(penguins, aes(x = flipper_length_mm, y = body_mass_g, color = species)) +
     x = "Flipper Length (mm)",
     y = "Body Mass (g)"
   )
-```
 
-### Bar Plots
-
-```{r}
-#| fig-width: 10
-#| fig-height: 6
 # Count bar plot
 ggplot(penguins, aes(x = species)) +
   geom_bar(fill = "steelblue") +
@@ -136,13 +78,7 @@ penguins %>%
   geom_text(aes(label = round(percentage, 1)), 
             position = position_stack(vjust = 0.5),
             color = "white", fontface = "bold")
-```
 
-### Histograms and Density Plots
-
-```{r}
-#| fig-width: 10
-#| fig-height: 8
 # Basic histogram
 ggplot(penguins, aes(x = body_mass_g)) +
   geom_histogram(bins = 30, fill = "darkblue", alpha = 0.7) +
@@ -183,13 +119,7 @@ if (require(ggridges, quietly = TRUE)) {
     theme_minimal() +
     theme(legend.position = "none")
 }
-```
 
-### Box Plots and Violin Plots
-
-```{r}
-#| fig-width: 10
-#| fig-height: 6
 # Basic box plot
 ggplot(penguins, aes(x = species, y = bill_length_mm)) +
   geom_boxplot(fill = "lightgreen", alpha = 0.7) +
@@ -218,13 +148,7 @@ ggplot(penguins, aes(x = species, y = body_mass_g, fill = species)) +
     y = "Body Mass (g)"
   ) +
   theme(legend.position = "none")
-```
 
-## Line Plots and Time Series
-
-```{r}
-#| fig-width: 12
-#| fig-height: 8
 # Time series with gapminder
 gapminder %>%
   filter(country %in% c("United States", "China", "India", "Brazil", "Germany")) %>%
@@ -279,13 +203,7 @@ penguins %>%
     x = "Year",
     y = "Mean Body Mass (g)"
   )
-```
 
-## Advanced Aesthetics and Scales
-
-```{r}
-#| fig-width: 12
-#| fig-height: 10
 # Custom color scales
 p1 <- ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = body_mass_g)) +
   geom_point(size = 3) +
@@ -310,13 +228,7 @@ p4 <- ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, size = body_ma
 # Combine plots with patchwork
 (p1 + p2) / (p3 + p4) +
   plot_annotation(title = "Different Scale Examples")
-```
 
-## Statistical Layers
-
-```{r}
-#| fig-width: 12
-#| fig-height: 10
 # Smoothing methods
 p1 <- ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
   geom_point(alpha = 0.5) +
@@ -341,13 +253,7 @@ p4 <- ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm)) +
   labs(title = "Hexagonal Binning")
 
 (p1 + p2) / (p3 + p4)
-```
 
-## Faceting
-
-```{r}
-#| fig-width: 12
-#| fig-height: 10
 # Facet wrap
 ggplot(penguins, aes(x = bill_length_mm, y = bill_depth_mm, color = species)) +
   geom_point() +
@@ -375,13 +281,7 @@ penguins %>%
     x = "Value (mm)",
     y = "Count"
   )
-```
 
-## Annotations and Labels
-
-```{r}
-#| fig-width: 10
-#| fig-height: 8
 # Text annotations
 avg_by_species <- penguins %>%
   group_by(species) %>%
@@ -430,13 +330,7 @@ if (require(ggrepel, quietly = TRUE)) {
       size = "Population"
     )
 }
-```
 
-## Custom Themes
-
-```{r}
-#| fig-width: 12
-#| fig-height: 10
 # Create a custom theme
 theme_workshop <- function() {
   theme_minimal() +
@@ -481,13 +375,7 @@ p4 <- ggplot(penguins, aes(x = species, fill = species)) +
   theme_workshop()
 
 (p1 + p2) / (p3 + p4)
-```
 
-## Complex Visualizations
-
-```{r}
-#| fig-width: 14
-#| fig-height: 10
 # Correlation heatmap
 if (require(corrplot, quietly = TRUE)) {
   penguins %>%
@@ -556,13 +444,7 @@ y_density <- ggplot(plot_data, aes(y = lifeExp, fill = continent)) +
 # Combine with patchwork
 x_density / main_plot / plot_spacer() + 
   plot_layout(heights = c(1, 4, 0.1))
-```
 
-## Interactive Visualizations
-
-```{r}
-#| fig-width: 10
-#| fig-height: 8
 # Using plotly for interactivity
 if (require(plotly, quietly = TRUE)) {
   # Create a simple interactive plot
@@ -589,11 +471,7 @@ if (require(plotly, quietly = TRUE)) {
     print(p)
   })
 }
-```
 
-## Saving Plots
-
-```{r}
 # Create a publication-ready plot
 final_plot <- penguins %>%
   drop_na() %>%
@@ -625,15 +503,7 @@ ggsave("penguin_plot.pdf", final_plot, width = 10, height = 8)
 ggsave("penguin_plot.svg", final_plot, width = 10, height = 8)
 
 print(final_plot)
-```
 
-## Exercises
-
-### Exercise 1: Create a Complex Bar Chart
-
-Create a bar chart showing average life expectancy by continent over time using gapminder data:
-
-```{r}
 # Your solution
 gapminder %>%
   group_by(continent, year) %>%
@@ -650,13 +520,7 @@ gapminder %>%
   ) +
   theme_minimal() +
   theme(legend.position = "top")
-```
 
-### Exercise 2: Multi-panel Visualization
-
-Create a visualization showing the relationship between GDP and life expectancy for each continent, with trend lines:
-
-```{r}
 # Your solution
 gapminder %>%
   filter(year == 2007) %>%
@@ -675,13 +539,7 @@ gapminder %>%
   ) +
   theme_minimal() +
   theme(legend.position = "none")
-```
 
-### Exercise 3: Custom Theme
-
-Create your own custom theme and apply it to a visualization:
-
-```{r}
 # Your solution
 theme_exercise <- function() {
   theme_gray() +
@@ -714,15 +572,7 @@ penguins %>%
     fill = "Sex"
   ) +
   theme_exercise()
-```
 
-### Exercise 4: Advanced Composite Plot
-
-Create a dashboard-style visualization with multiple related plots:
-
-```{r}
-#| fig-width: 14
-#| fig-height: 10
 # Your solution
 # Main scatter plot
 p_main <- penguins %>%
@@ -777,27 +627,3 @@ p_island <- penguins %>%
 # Combine all plots
 (p_main | (p_bar / p_bill)) / p_island +
   plot_layout(heights = c(2, 1))
-```
-
-## Summary
-
-You've mastered ggplot2 essentials:
-
-✅ Grammar of graphics concepts  
-✅ Creating various plot types  
-✅ Customizing aesthetics and scales  
-✅ Using statistical layers  
-✅ Faceting for multi-panel plots  
-✅ Creating custom themes  
-✅ Building complex composite visualizations  
-
-## What's Next?
-
-In [Chapter 6](06-functional-programming.Rmd), we'll explore functional programming with purrr, learning to apply functions efficiently across data structures.
-
-## Additional Resources
-
-- [ggplot2 Documentation](https://ggplot2.tidyverse.org/)
-- [R Graphics Cookbook](https://r-graphics.org/)
-- [ggplot2 Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/main/data-visualization.pdf)
-- [Data Visualization: A Practical Introduction](https://socviz.co/)

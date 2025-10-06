@@ -1,35 +1,3 @@
----
-title: "Chapter 3: Data Wrangling with dplyr"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- The five key dplyr verbs: `filter()`, `select()`, `mutate()`, `arrange()`, `summarise()`
-- Grouped operations with `group_by()`
-- Joining tables with `*_join()` functions
-- Window functions and ranking
-- Advanced selection helpers
-- Row-wise operations
-- Working with databases using dplyr
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 03-data-wrangling.R](R_scripts/03-data-wrangling.R){.btn .btn-primary download="03-data-wrangling.R"}
-:::
-
-## Setup
-
-```{r}
-#| message: false
 library(tidyverse)
 library(palmerpenguins)
 library(nycflights13)
@@ -39,13 +7,7 @@ library(gapminder)
 glimpse(penguins)
 glimpse(flights)
 glimpse(gapminder)
-```
 
-## The Core dplyr Verbs
-
-### 1. filter() - Keep Rows That Match Conditions
-
-```{r}
 # Simple filtering
 penguins %>%
   filter(species == "Adelie")
@@ -75,11 +37,7 @@ flights %>%
   filter(between(dep_delay, 10, 30)) %>%
   select(dep_delay, carrier, flight) %>%
   head(10)
-```
 
-### 2. select() - Choose Columns
-
-```{r}
 # Select specific columns
 penguins %>%
   select(species, island, bill_length_mm)
@@ -120,11 +78,7 @@ penguins %>%
 penguins %>%
   select(island, species, everything()) %>%
   head(3)
-```
 
-### 3. mutate() - Create or Transform Columns
-
-```{r}
 # Create new columns
 penguins %>%
   mutate(
@@ -162,11 +116,7 @@ flights %>%
   select(carrier, flight, speed, on_time, delay_category) %>%
   drop_na() %>%
   head(10)
-```
 
-### 4. arrange() - Sort Rows
-
-```{r}
 # Simple sorting
 penguins %>%
   arrange(bill_length_mm) %>%
@@ -190,11 +140,7 @@ penguins %>%
   arrange(desc(is.na(sex)), sex, body_mass_g) %>%
   select(sex, body_mass_g) %>%
   head(10)
-```
 
-### 5. summarise() - Aggregate Data
-
-```{r}
 # Basic summary
 penguins %>%
   summarise(
@@ -214,13 +160,7 @@ flights %>%
     median_delay = median(dep_delay, na.rm = TRUE),
     pct_delayed = mean(dep_delay > 0, na.rm = TRUE) * 100
   )
-```
 
-## Grouped Operations
-
-### group_by() - The Power of Groups
-
-```{r}
 # Group by single variable
 penguins %>%
   group_by(species) %>%
@@ -264,11 +204,7 @@ flights %>%
   filter(flights >= 100) %>%  # Only carriers with 100+ flights per month
   arrange(desc(pct_on_time)) %>%
   head(10)
-```
 
-### Advanced Grouping Techniques
-
-```{r}
 # Group by computed values
 penguins %>%
   group_by(
@@ -295,13 +231,7 @@ gapminder %>%
     .groups = "drop"
   ) %>%
   arrange(continent, year)
-```
 
-## Joining Tables
-
-### Creating Sample Data for Joins
-
-```{r}
 # Create sample datasets
 customers <- tibble(
   customer_id = 1:5,
@@ -328,11 +258,7 @@ print("Orders:")
 orders
 print("Categories:")
 customer_categories
-```
 
-### Types of Joins
-
-```{r}
 # Inner join - only matching records
 inner_join(customers, orders, by = "customer_id")
 
@@ -350,11 +276,7 @@ semi_join(customers, orders, by = "customer_id")
 
 # Anti join - filter left table to non-matching records
 anti_join(customers, orders, by = "customer_id")
-```
 
-### Complex Joins
-
-```{r}
 # Multiple join keys
 flights_weather <- flights %>%
   select(year, month, day, hour, origin, dep_delay) %>%
@@ -389,11 +311,7 @@ customer_summary <- customers %>%
   )
 
 customer_summary
-```
 
-## Window Functions
-
-```{r}
 # Ranking functions
 penguins %>%
   drop_na() %>%
@@ -433,11 +351,7 @@ flights %>%
   ) %>%
   select(dep_time, distance, dep_delay, starts_with("cumulative")) %>%
   head(10)
-```
 
-## Advanced Selection Techniques
-
-```{r}
 # Using where() for type-based selection
 penguins %>%
   select(where(is.numeric)) %>%
@@ -472,11 +386,7 @@ penguins %>%
 penguins %>%
   select(any_of(optional_cols)) %>%  # Won't error for missing columns
   head(3)
-```
 
-## Row-wise Operations
-
-```{r}
 # Create sample data with list columns
 student_scores <- tibble(
   student = c("Alice", "Bob", "Charlie"),
@@ -514,11 +424,7 @@ nested_data %>%
     n_values = length(values)
   ) %>%
   ungroup()
-```
 
-## Combining Multiple Operations
-
-```{r}
 # Complex data pipeline
 penguins %>%
   # Remove missing values
@@ -546,11 +452,7 @@ penguins %>%
   ) %>%
   # Sort results
   arrange(bill_ratio_rank)
-```
 
-## Working with Databases
-
-```{r}
 # Create in-memory SQLite database
 library(DBI)
 library(RSQLite)
@@ -585,11 +487,7 @@ result
 
 # Disconnect
 dbDisconnect(con)
-```
 
-## Performance Tips
-
-```{r}
 # Use data.table for very large datasets
 # install.packages("dtplyr")
 library(dtplyr)
@@ -625,19 +523,7 @@ if (require(microbenchmark, quietly = TRUE)) {
     times = 10
   )
 }
-```
 
-## Exercises
-
-### Exercise 1: Complex Filtering
-
-Using the flights dataset, find all flights that:
-- Departed from JFK
-- Were delayed by more than 30 minutes
-- Flew more than 1000 miles
-- Occurred in summer months (June, July, August)
-
-```{r}
 # Your solution
 flights %>%
   filter(
@@ -649,17 +535,7 @@ flights %>%
   select(carrier, flight, dest, dep_delay, distance, month) %>%
   arrange(desc(dep_delay)) %>%
   head(10)
-```
 
-### Exercise 2: Advanced Grouping
-
-Using gapminder data, calculate for each continent and decade:
-- Number of countries
-- Total population
-- Average life expectancy (weighted by population)
-- GDP per capita range (max - min)
-
-```{r}
 # Your solution
 gapminder %>%
   mutate(decade = floor(year / 10) * 10) %>%
@@ -672,13 +548,7 @@ gapminder %>%
     .groups = "drop"
   ) %>%
   arrange(continent, decade)
-```
 
-### Exercise 3: Window Functions
-
-For each penguin species, identify the top 3 heaviest penguins and show their rank within their species:
-
-```{r}
 # Your solution
 penguins %>%
   drop_na(body_mass_g) %>%
@@ -689,18 +559,7 @@ penguins %>%
   filter(mass_rank <= 3) %>%
   select(species, island, body_mass_g, mass_rank) %>%
   arrange(species, mass_rank)
-```
 
-### Exercise 4: Complex Joins
-
-Create a summary showing:
-- Each airline carrier
-- Total number of flights
-- Average delay
-- Most common destination
-- Weather conditions for their most delayed flight
-
-```{r}
 # Your solution
 carrier_summary <- flights %>%
   group_by(carrier) %>%
@@ -735,26 +594,3 @@ final_summary <- carrier_summary %>%
   arrange(desc(avg_delay))
 
 head(final_summary, 10)
-```
-
-## Summary
-
-You've mastered the essential dplyr functions:
-
-✅ Core verbs: filter, select, mutate, arrange, summarise  
-✅ Grouped operations with group_by  
-✅ All types of joins  
-✅ Window functions for advanced calculations  
-✅ Row-wise operations  
-✅ Database connections with dplyr  
-
-## What's Next?
-
-In [Chapter 4](04-data-tidying.Rmd), we'll learn how to reshape and tidy messy data using tidyr, including pivoting, nesting, and handling missing values.
-
-## Additional Resources
-
-- [dplyr Documentation](https://dplyr.tidyverse.org/)
-- [dplyr Cheat Sheet](https://github.com/rstudio/cheatsheets/blob/main/data-transformation.pdf)
-- [R for Data Science - Data Transformation](https://r4ds.had.co.nz/transform.html)
-- [Window Functions Vignette](https://dplyr.tidyverse.org/articles/window-functions.html)

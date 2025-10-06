@@ -1,42 +1,3 @@
----
-title: "Chapter 9: Data Splitting and Resampling - The Foundation of Model Validation"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- The critical importance of proper data splitting
-- Train/test/validation splits and when to use them
-- Stratified sampling for balanced splits
-- Cross-validation techniques and theory
-- Bootstrap methods for uncertainty estimation
-- Time series splitting strategies
-- Nested resampling for unbiased evaluation
-- Best practices and common pitfalls
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 09-data-splitting.R](R_scripts/09-data-splitting.R){.btn .btn-primary download="09-data-splitting.R"}
-:::
-
-## Why Data Splitting Matters
-
-Imagine you're studying for an exam. If you only practice with questions you've already seen and memorized the answers to, you might think you understand the material perfectly. But when you face new questions on the actual exam, you realize you've only memorized specific answers rather than understanding the concepts. This is exactly what happens in machine learning when we don't properly split our data.
-
-### The Fundamental Problem: Overfitting
-
-When we train a model on data and evaluate it on the same data, we get an overly optimistic estimate of performance. The model has essentially "memorized" the training data, including its noise and peculiarities.
-
-```{r}
-#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)
@@ -108,19 +69,7 @@ ggplot(plot_data, aes(x = x)) +
     subtitle = "Complex models fit training data better but may generalize worse",
     x = "X", y = "Y", color = "Model"
   )
-```
 
-Notice how the complex polynomial model (degree 15) has lower training error but higher test error - classic overfitting! This is why we need proper data splitting strategies.
-
-## The Train/Test Split
-
-The simplest approach is to split data into training and testing sets. The training set is used to fit the model, and the test set provides an unbiased estimate of performance on new data.
-
-### Basic Splitting with rsample
-
-The `rsample` package provides powerful tools for data splitting:
-
-```{r}
 # Load the Ames housing data
 data(ames)
 
@@ -144,19 +93,7 @@ knitr::kable(split_summary, digits = 1)
 
 # The split object contains indices
 ames_split
-```
 
-The `initial_split()` function doesn't just randomly split the data - it's designed with several important features:
-- Reproducible with set.seed()
-- Maintains data structure
-- Can do stratified sampling
-- Preserves data types
-
-### Stratified Sampling
-
-When you have imbalanced classes or want to ensure representative splits, use stratified sampling:
-
-```{r}
 # Create a classification example with imbalanced classes
 set.seed(123)
 imbalanced_data <- tibble(
@@ -191,21 +128,7 @@ ggplot(distribution_comparison, aes(x = Dataset, y = Percentage, fill = class)) 
     y = "Percentage (%)"
   ) +
   geom_hline(yintercept = c(10, 90), linetype = "dashed", alpha = 0.5)
-```
 
-Stratified sampling is crucial for:
-- Classification with imbalanced classes
-- Regression with skewed target distributions
-- Ensuring all groups are represented in both sets
-
-### Multi-level Splits: Train/Validation/Test
-
-Sometimes we need three sets:
-- **Training**: For model fitting
-- **Validation**: For hyperparameter tuning
-- **Test**: For final, unbiased evaluation
-
-```{r}
 # Create initial split
 initial_split <- initial_split(ames, prop = 0.8)
 train_val <- training(initial_split)
@@ -234,22 +157,7 @@ knitr::kable(three_way_summary, digits = 1)
 # This creates all three splits at once
 # val_split <- initial_validation_split(ames, prop = c(0.6, 0.2))
 # This would give: 60% train, 20% validation, 20% test
-```
 
-## Cross-Validation: Making the Most of Your Data
-
-While train/test splits are simple, they have limitations:
-- Only use part of the data for training
-- Results can vary based on the specific split
-- May not be reliable for small datasets
-
-Cross-validation addresses these issues by using multiple splits.
-
-### K-Fold Cross-Validation
-
-K-fold CV divides data into k equal parts (folds), trains on k-1 folds, and tests on the remaining fold. This process repeats k times.
-
-```{r}
 # Create 5-fold cross-validation
 ames_cv <- vfold_cv(ames_train, v = 5)
 ames_cv
@@ -280,20 +188,7 @@ ggplot(fold_assignments, aes(x = row_id, y = factor(fold), fill = in_assessment)
     subtitle = "Each row is used for testing exactly once",
     x = "Observation ID", y = "Fold", fill = "Role"
   )
-```
 
-The mathematics of cross-validation:
-- Each observation is used for testing exactly once
-- Each observation is used for training k-1 times
-- We get k performance estimates
-- Final estimate is the average across folds
-- Standard error provides uncertainty estimate
-
-### Repeated Cross-Validation
-
-For more stable estimates, we can repeat the CV process with different random splits:
-
-```{r}
 # Repeated 5-fold CV (3 repeats = 15 total resamples)
 ames_repeated_cv <- vfold_cv(ames_train, v = 5, repeats = 3)
 ames_repeated_cv
@@ -332,13 +227,7 @@ ggplot(comparison, aes(x = Method, y = mean, fill = Method)) +
     y = "Metric Value"
   ) +
   theme(legend.position = "none")
-```
 
-### Leave-One-Out Cross-Validation (LOOCV)
-
-LOOCV is a special case where k = n (number of observations):
-
-```{r}
 # Create a small dataset for LOOCV demonstration
 small_data <- ames_train %>% 
   slice_sample(n = 50)  # LOOCV is computationally expensive
@@ -364,19 +253,7 @@ cv_comparison <- tibble(
 )
 
 knitr::kable(cv_comparison)
-```
 
-LOOCV characteristics:
-- **Pros**: Uses maximum data for training, deterministic (no randomness)
-- **Cons**: Computationally expensive, high variance, can overfit to the dataset
-
-## Bootstrap Methods
-
-Bootstrap resampling draws samples WITH replacement from the original data. This creates datasets of the same size but with some observations repeated and others omitted.
-
-### Understanding Bootstrap
-
-```{r}
 # Create bootstrap samples
 ames_boot <- bootstraps(ames_train, times = 25)
 ames_boot
@@ -421,19 +298,7 @@ ggplot(sample_viz, aes(x = bootstrap_sample, y = n)) +
     x = "Original Observation ID",
     y = "Times Selected"
   )
-```
 
-The mathematics of bootstrap:
-- Probability of being selected at least once: $1 - (1 - 1/n)^n \approx 0.632$ as $n \to \infty$
-- About 37% of observations are not selected (out-of-bag)
-- Provides estimates of sampling distribution
-- Useful for confidence intervals and bias estimation
-
-### Out-of-Bag (OOB) Error Estimation
-
-Bootstrap's unique property is that ~37% of data is not sampled, providing a natural test set:
-
-```{r}
 # Calculate OOB predictions for each bootstrap sample
 oob_analysis <- map_df(1:25, function(i) {
   boot_split <- ames_boot$splits[[i]]
@@ -474,18 +339,7 @@ ggplot(oob_analysis, aes(x = pct_oob)) +
     x = "OOB Percentage",
     y = "Count"
   )
-```
 
-## Time Series Splitting
-
-Time series data requires special handling because:
-- Observations are not independent
-- Future cannot be used to predict past
-- Temporal patterns must be preserved
-
-### Time Series Cross-Validation
-
-```{r}
 # Create time series data
 set.seed(789)
 n_days <- 365
@@ -526,16 +380,7 @@ ggplot(split_viz, aes(x = date, y = split_id, color = role)) +
     x = "Date", y = "Split", color = "Role"
   ) +
   theme(legend.position = "top")
-```
 
-Time series splitting strategies:
-- **Expanding window**: Training set grows over time
-- **Sliding window**: Fixed-size training window
-- **Skip periods**: Gap between training and testing
-
-### Rolling Origin Evaluation
-
-```{r}
 # Rolling origin (expanding window)
 rolling_splits <- rolling_origin(
   ts_data,
@@ -564,15 +409,7 @@ ggplot(rolling_summary, aes(x = split)) +
     x = "Split Number", y = "Number of Observations",
     color = "Dataset"
   )
-```
 
-## Nested Resampling
-
-When we need to tune hyperparameters AND get an unbiased performance estimate, we use nested resampling:
-- **Outer loop**: For performance estimation
-- **Inner loop**: For hyperparameter tuning
-
-```{r}
 # Create nested resampling
 # Outer: 5-fold CV for performance estimation
 # Inner: 5-fold CV for hyperparameter tuning
@@ -625,18 +462,7 @@ Full Training Data
   │   └── [Same structure]
   ...
 ")
-```
 
-Nested resampling is crucial for:
-- Unbiased performance estimation when tuning
-- Comparing different modeling strategies
-- Understanding generalization performance
-
-## Validation Sets in Practice
-
-Sometimes we want a single validation set for quick iterations:
-
-```{r}
 # Create a validation set
 val_split <- initial_validation_split(ames, prop = c(0.6, 0.2))
 
@@ -705,13 +531,7 @@ final_performance <- test_pred %>%
   metrics(truth = Sale_Price, estimate = .pred)
 
 knitr::kable(final_performance, digits = 3)
-```
 
-## Choosing the Right Resampling Strategy
-
-Different strategies for different situations:
-
-```{r}
 # Decision guide
 strategy_guide <- tibble(
   Scenario = c(
@@ -753,13 +573,7 @@ strategy_guide <- tibble(
 )
 
 knitr::kable(strategy_guide)
-```
 
-## Common Pitfalls and Best Practices
-
-### Pitfall 1: Data Leakage
-
-```{r}
 # WRONG: Preprocessing before splitting
 wrong_data <- ames %>%
   mutate(
@@ -782,11 +596,7 @@ right_recipe <- recipe(Sale_Price ~ ., data = right_train) %>%
   step_normalize(all_numeric_predictors())
 
 # The recipe learns parameters only from training data
-```
 
-### Pitfall 2: Multiple Testing on Test Set
-
-```{r}
 # WRONG: Using test set multiple times
 # This is pseudocode - don't actually do this!
 # for (model in models) {
@@ -799,11 +609,7 @@ right_recipe <- recipe(Sale_Price ~ ., data = right_train) %>%
 
 # RIGHT: Use validation set or CV for model selection
 # Test set only for final evaluation
-```
 
-### Pitfall 3: Improper Stratification
-
-```{r}
 # Create data with important subgroups
 grouped_data <- ames %>%
   mutate(
@@ -836,15 +642,7 @@ ggplot(comparison, aes(x = price_category, y = Percentage, fill = Set)) +
     subtitle = "Stratification preserves the original distribution",
     x = "Price Category", y = "Percentage"
   )
-```
 
-## Exercises
-
-### Exercise 1: Implement Custom Resampling
-
-Create a custom resampling strategy for grouped data:
-
-```{r}
 # Your solution
 # Data with natural groups (e.g., different stores)
 store_data <- tibble(
@@ -872,13 +670,7 @@ split_summary <- map_df(1:length(group_splits$splits), function(i) {
 })
 
 knitr::kable(split_summary)
-```
 
-### Exercise 2: Compare Resampling Strategies
-
-Evaluate different resampling methods on the same dataset:
-
-```{r}
 # Your solution
 # Use a subset of Ames data for speed
 ames_subset <- ames %>%
@@ -920,13 +712,7 @@ ggplot(results, aes(x = strategy, y = mean, fill = strategy)) +
     x = "Strategy", y = "Metric Value"
   ) +
   theme(legend.position = "none")
-```
 
-### Exercise 3: Time Series Validation
-
-Implement proper time series validation:
-
-```{r}
 # Your solution
 # Generate time series data with trend and seasonality
 set.seed(123)
@@ -983,53 +769,3 @@ ggplot(ts_metrics, aes(x = split_num, y = mean, color = .metric)) +
     x = "Split Number (Time →)", y = "Metric Value"
   ) +
   theme(legend.position = "none")
-```
-
-## Summary
-
-In this comprehensive chapter, you've mastered:
-
-✅ **Fundamental concepts**
-  - Why proper data splitting is critical
-  - The bias-variance tradeoff in evaluation
-  - Training, validation, and test sets
-
-✅ **Splitting strategies**
-  - Simple holdout splits
-  - Stratified sampling for balance
-  - Multi-level splits for complex workflows
-
-✅ **Cross-validation techniques**
-  - K-fold and repeated CV
-  - Leave-one-out CV
-  - Time series CV
-
-✅ **Advanced methods**
-  - Bootstrap resampling
-  - Nested resampling for tuning
-  - Group-based splitting
-
-✅ **Best practices**
-  - Avoiding data leakage
-  - Choosing appropriate strategies
-  - Proper use of test sets
-
-Key takeaways:
-- Never evaluate on training data
-- Choose resampling based on your data and goals
-- Stratify when you have imbalanced data
-- Respect temporal ordering in time series
-- Use nested CV for unbiased tuning
-- Touch the test set only once!
-
-## What's Next?
-
-In [Chapter 10](10-feature-engineering.Rmd), we'll explore feature engineering with recipes, learning how to transform raw data into model-ready features.
-
-## Additional Resources
-
-- [rsample Documentation](https://rsample.tidymodels.org/)
-- [Cross-Validation: The Right and Wrong Way](https://stats.stackexchange.com/questions/65128/)
-- [Nested Resampling Tutorial](https://www.tidymodels.org/learn/work/nested-resampling/)
-- [Time Series Cross-Validation](https://otexts.com/fpp3/tscv.html)
-- [Bootstrap Methods and Their Application](https://www.cambridge.org/core/books/bootstrap-methods-and-their-application/)

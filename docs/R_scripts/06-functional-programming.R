@@ -1,48 +1,3 @@
----
-title: "Chapter 6: Functional Programming with purrr - Iteration and Mapping Made Elegant"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- The philosophy of functional programming in R
-- The map family of functions
-- Working with lists and nested data
-- Safe function execution and error handling
-- Parallel iteration with map2 and pmap
-- Functional programming patterns
-- Integration with tidyverse workflows
-- Performance optimization techniques
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 06-functional-programming.R](R_scripts/06-functional-programming.R){.btn .btn-primary download="06-functional-programming.R"}
-:::
-
-## Why Functional Programming?
-
-Functional programming (FP) is a programming paradigm that treats computation as the evaluation of mathematical functions. In data science, FP principles help us write:
-- **Cleaner code**: Less repetition, more abstraction
-- **Safer code**: Fewer side effects, predictable behavior
-- **More maintainable code**: Modular, testable functions
-- **Scalable code**: Easy to parallelize and optimize
-
-The `purrr` package brings functional programming to the tidyverse, replacing loops with elegant, expressive functions.
-
-### The Problem with Loops
-
-Let's start by understanding why we need functional programming:
-
-```{r}
-#| message: false
 library(tidyverse)
 library(purrr)
 library(broom)
@@ -76,23 +31,7 @@ print(means_map)
 
 # Are they the same?
 identical(means_loop, means_map)
-```
 
-While both approaches give the same result, the functional approach is:
-- **More concise**: One line instead of four
-- **More readable**: Intent is clear
-- **Less error-prone**: No index management
-- **Vectorized**: Can be easily parallelized
-
-## The map() Family
-
-The `map()` functions are the workhorses of purrr. They apply a function to each element of a list or vector.
-
-### Basic map() Function
-
-The basic `map()` function always returns a list:
-
-```{r}
 # Apply a function to each element
 numbers <- list(
   small = 1:5,
@@ -106,13 +45,7 @@ print(summaries)
 
 # The beauty of map: it preserves names and structure
 str(summaries)
-```
 
-### Type-Specific map Variants
-
-Often we want a specific type of output. Purrr provides typed variants:
-
-```{r}
 # map_dbl returns a numeric vector
 means <- map_dbl(numbers, mean)
 print(means)
@@ -132,19 +65,7 @@ print(lengths)
 # Demonstrate type safety
 # This would error: map_dbl(numbers, class)
 # Because class returns a character, not a double
-```
 
-The typed variants are important because they:
-- Ensure type consistency
-- Catch errors early
-- Make code more predictable
-- Enable further vectorized operations
-
-### Anonymous Functions and Shortcuts
-
-Purrr provides multiple ways to specify functions, making code more concise:
-
-```{r}
 # Sample data
 values <- list(
   a = 1:10,
@@ -183,18 +104,7 @@ custom_summary <- map(values, ~ {
 
 # Combine into a single data frame
 bind_rows(custom_summary, .id = "group")
-```
 
-The `~` notation is particularly elegant:
-- `~` starts an anonymous function
-- `.` represents the current element
-- Can include complex expressions
-
-## Working with Data Frames
-
-One of purrr's strengths is working with data frames and nested data:
-
-```{r}
 # Create a nested data frame
 nested_data <- tibble(
   group = c("A", "B", "C"),
@@ -238,21 +148,7 @@ analysis_results %>%
   select(group, model_summary) %>%
   unnest(model_summary) %>%
   select(group, r.squared, p.value, AIC, BIC)
-```
 
-This pattern of nest-map-unnest is incredibly powerful for:
-- Group-wise analysis
-- Multiple model fitting
-- Simulation studies
-- Bootstrap procedures
-
-## map2() and pmap() for Multiple Inputs
-
-Sometimes we need to iterate over multiple inputs simultaneously:
-
-### map2() for Two Inputs
-
-```{r}
 # Two vectors to iterate over
 means <- c(10, 20, 30)
 sds <- c(1, 2, 3)
@@ -282,13 +178,7 @@ y_values <- list(2:6, 7:11, 12:16)
 # Calculate correlations between paired lists
 correlations <- map2_dbl(x_values, y_values, cor)
 print(paste("Correlations:", paste(correlations, collapse = ", ")))
-```
 
-### pmap() for Multiple Inputs
-
-When you have more than two inputs, use `pmap()`:
-
-```{r}
 # Multiple parameters for simulation
 params <- tibble(
   n = c(100, 200, 150),
@@ -331,21 +221,7 @@ params_with_data %>%
   facet_wrap(~distribution, scales = "free") +
   theme_minimal() +
   labs(title = "Different Distributions Generated with pmap()")
-```
 
-The power of `pmap()`:
-- Handles any number of inputs
-- Works with data frames naturally
-- Maintains alignment of inputs
-- Enables complex parameterized operations
-
-## Error Handling with safely() and possibly()
-
-Real-world data is messy. Functions fail. Purrr helps us handle errors gracefully:
-
-### safely() - Capture Errors
-
-```{r}
 # Create data with potential problems
 messy_list <- list(
   good = 1:10,
@@ -379,11 +255,7 @@ extracted_results <- tibble(
 
 extracted_results %>%
   select(name, has_error, error_message)
-```
 
-### possibly() - Provide Default Values
-
-```{r}
 # possibly() is simpler when you just want a default
 possible_mean <- possibly(mean, otherwise = NA_real_)
 
@@ -410,11 +282,7 @@ test_data <- list(
 
 cv_results <- map_dbl(test_data, safe_cv)
 print(cv_results)
-```
 
-### quietly() - Capture Warnings and Messages
-
-```{r}
 # Function that produces warnings
 noisy_function <- function(x) {
   if (any(x < 0)) warning("Negative values detected")
@@ -448,15 +316,7 @@ output_summary <- tibble(
 
 output_summary %>%
   select(name, result, has_warnings, has_messages)
-```
 
-## Advanced Functional Patterns
-
-### Function Factories
-
-Create functions that return other functions:
-
-```{r}
 # Create a function factory for power functions
 make_power <- function(n) {
   function(x) x^n
@@ -484,13 +344,7 @@ names(power_results) <- paste0("power_", powers)
 # Convert to data frame
 as_tibble(power_results) %>%
   mutate(original = values)
-```
 
-### Function Composition
-
-Combine multiple functions into pipelines:
-
-```{r}
 # Create a data processing pipeline
 process_data <- compose(
   ~ mutate(., z_score = (value - mean(value)) / sd(value)),
@@ -537,13 +391,7 @@ transformed_data <- data_to_transform %>%
   )))
 
 glimpse(transformed_data)
-```
 
-### Reduce and Accumulate
-
-Combine elements of a list iteratively:
-
-```{r}
 # reduce() combines all elements into one
 numbers_list <- list(
   c(1, 2, 3),
@@ -578,15 +426,7 @@ df_list <- list(
 
 merged_df <- reduce(df_list, full_join, by = "id")
 print(merged_df)
-```
 
-## Real-World Applications
-
-### Bootstrap Analysis
-
-Use purrr for bootstrap confidence intervals:
-
-```{r}
 # Original data
 original_data <- rnorm(100, mean = 50, sd = 10)
 
@@ -628,13 +468,7 @@ ggplot(tibble(x = boot_samples), aes(x = x)) +
     y = "Count"
   ) +
   theme_minimal()
-```
 
-### Multiple Model Fitting
-
-Fit and compare multiple models efficiently:
-
-```{r}
 # Generate sample data
 set.seed(123)
 model_data <- tibble(
@@ -684,13 +518,7 @@ model_comparison %>%
   theme(axis.text.x = element_text(angle = 45, hjust = 1)) +
   labs(title = "Model Comparison Metrics") +
   guides(fill = "none")
-```
 
-### Simulation Study
-
-Use purrr for Monte Carlo simulations:
-
-```{r}
 # Simulation parameters
 n_simulations <- 1000
 sample_sizes <- c(10, 30, 100, 300)
@@ -744,13 +572,7 @@ ggplot(power_analysis, aes(x = sample_size, y = power)) +
     y = "Statistical Power"
   ) +
   theme_minimal()
-```
 
-## Performance Considerations
-
-### Benchmarking map vs loops
-
-```{r}
 # Create test data
 test_list <- map(1:1000, ~ rnorm(100))
 
@@ -780,13 +602,7 @@ print(benchmark_results)
 autoplot(benchmark_results) +
   labs(title = "Performance Comparison: Iteration Methods") +
   theme_minimal()
-```
 
-### Parallel Processing with furrr
-
-For large-scale operations, use parallel processing:
-
-```{r}
 # Note: furrr requires the future package
 library(furrr)
 library(future)
@@ -821,15 +637,7 @@ plan(sequential)
 
 print("Results are identical:")
 print(identical(sequential_results, parallel_results))
-```
 
-## Exercises
-
-### Exercise 1: Nested Data Analysis
-
-Work with nested data frames to perform group-wise analysis:
-
-```{r}
 # Your solution
 # Create nested data
 sales_data <- tibble(
@@ -865,13 +673,7 @@ sales_analysis <- sales_data %>%
 sales_analysis %>%
   select(-data, -model) %>%
   arrange(desc(total_sales))
-```
 
-### Exercise 2: Safe Data Cleaning
-
-Create a robust data cleaning pipeline that handles errors:
-
-```{r}
 # Your solution
 # Messy data with various problems
 messy_data <- list(
@@ -898,13 +700,7 @@ cleaned_results <- map(messy_data, safe_clean)
 success_status <- map_lgl(cleaned_results, ~ !("error" %in% names(.)))
 names(success_status) <- names(messy_data)
 print(success_status)
-```
 
-### Exercise 3: Bootstrap Confidence Intervals
-
-Implement bootstrap for multiple statistics:
-
-```{r}
 # Your solution
 # Sample data
 sample_data <- rgamma(100, shape = 2, rate = 0.5)
@@ -960,13 +756,7 @@ boot_samples %>%
   facet_wrap(~statistic, scales = "free") +
   theme_minimal() +
   labs(title = "Bootstrap Distributions")
-```
 
-### Exercise 4: Simulation Power Analysis
-
-Simulate power for different effect sizes:
-
-```{r}
 # Your solution
 # Simulation parameters
 effect_sizes <- seq(0, 1, by = 0.1)
@@ -1004,48 +794,3 @@ ggplot(power_results, aes(x = effect_size, y = power)) +
     y = "Statistical Power"
   ) +
   theme_minimal()
-```
-
-## Summary
-
-In this comprehensive chapter, you've mastered:
-
-✅ **Functional programming concepts**
-  - Replacing loops with map functions
-  - Type-safe iterations
-  - Anonymous functions and shortcuts
-
-✅ **Advanced purrr techniques**
-  - map2() and pmap() for multiple inputs
-  - Nested data manipulation
-  - Error handling with safely() and possibly()
-
-✅ **Functional patterns**
-  - Function factories and composition
-  - Reduce and accumulate operations
-  - Parallel processing with furrr
-
-✅ **Real-world applications**
-  - Bootstrap analysis
-  - Multiple model fitting
-  - Simulation studies
-  - Performance optimization
-
-Key takeaways:
-- Functional programming makes code more readable and maintainable
-- purrr integrates seamlessly with tidyverse workflows
-- Error handling is crucial for robust data pipelines
-- Vectorization and parallelization improve performance
-- Think in terms of functions, not loops
-
-## What's Next?
-
-In [Chapter 7](07-strings-dates.Rmd), we'll explore string manipulation and date/time handling with stringr and lubridate.
-
-## Additional Resources
-
-- [purrr Documentation](https://purrr.tidyverse.org/)
-- [Advanced R - Functionals](https://adv-r.hadley.nz/functionals.html)
-- [R for Data Science - Iteration](https://r4ds.had.co.nz/iteration.html)
-- [Jenny Bryan's purrr Tutorial](https://jennybc.github.io/purrr-tutorial/)
-- [furrr Documentation](https://furrr.futureverse.org/)

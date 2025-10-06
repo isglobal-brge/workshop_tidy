@@ -1,41 +1,3 @@
----
-title: "Chapter 13: Hyperparameter Tuning - Finding the Sweet Spot"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- Understanding hyperparameters vs parameters
-- Grid search and its variations
-- Random search strategies
-- Bayesian optimization with Gaussian processes
-- Racing methods for efficiency
-- Simulated annealing
-- Nested resampling for unbiased evaluation
-- Parallel processing for faster tuning
-- Best practices and common pitfalls
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 13-hyperparameter-tuning.R](R_scripts/13-hyperparameter-tuning.R){.btn .btn-primary download="13-hyperparameter-tuning.R"}
-:::
-
-## The Art and Science of Hyperparameter Tuning
-
-Imagine you're a chef perfecting a recipe. The ingredients are your features, the cooking method is your algorithm, but what about the temperature, timing, and seasoning amounts? These are like hyperparameters - they control the learning process but aren't learned from the data directly.
-
-Getting hyperparameters right can mean the difference between a model that barely works and one that achieves state-of-the-art performance. Too conservative, and you underfit. Too aggressive, and you overfit. The sweet spot lies somewhere in between.
-
-```{r}
-#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)
@@ -57,16 +19,7 @@ ames_test <- testing(ames_split)
 
 # Create resamples for tuning
 ames_folds <- vfold_cv(ames_train, v = 5, strata = Sale_Price)
-```
 
-## Understanding Hyperparameters
-
-First, let's clarify the distinction:
-
-- **Parameters**: Learned from data (e.g., regression coefficients, neural network weights)
-- **Hyperparameters**: Set before training (e.g., learning rate, tree depth, penalty)
-
-```{r}
 # Example: Linear regression with regularization
 # Parameters: The coefficient values (beta_0, beta_1, ..., beta_p)
 # Hyperparameters: penalty (lambda) and mixture (alpha)
@@ -87,11 +40,7 @@ tunable_spec <- linear_reg(
 
 # The model will learn the coefficients (parameters) during fitting
 # But we need to find the best penalty and mixture (hyperparameters) through tuning
-```
 
-Different models have different hyperparameters:
-
-```{r}
 # Decision tree hyperparameters
 tree_spec <- decision_tree(
   cost_complexity = tune(),  # Pruning parameter
@@ -124,13 +73,7 @@ xgb_spec <- boost_tree(
   set_mode("regression")
 
 # Each model type has its own set of tunable parameters
-```
 
-## Grid Search: The Systematic Approach
-
-Grid search evaluates all combinations of hyperparameter values in a predefined grid:
-
-```{r}
 # Create a simple preprocessing recipe
 simple_recipe <- recipe(Sale_Price ~ Gr_Liv_Area + Overall_Cond + Year_Built + 
                        Neighborhood, data = ames_train) %>%
@@ -168,11 +111,7 @@ ggplot(elastic_grid, aes(x = penalty, y = mixture)) +
     x = "Penalty (log scale)",
     y = "Mixture (0=Ridge, 1=Lasso)"
   )
-```
 
-### Performing Grid Search
-
-```{r}
 # Tune with grid search
 grid_results <- elastic_workflow %>%
   tune_grid(
@@ -212,17 +151,7 @@ grid_results %>%
     x = "Penalty (log scale)",
     y = "RMSE"
   )
-```
 
-Grid search characteristics:
-- **Pros**: Systematic, reproducible, finds global optimum within grid
-- **Cons**: Computationally expensive, curse of dimensionality, may miss optimum between grid points
-
-## Random Search: The Efficient Explorer
-
-Random search samples hyperparameter combinations randomly, often finding good solutions faster than grid search:
-
-```{r}
 # Random grid - same parameter space, random sampling
 random_grid <- grid_random(
   penalty(range = c(-3, 0), trans = log10_trans()),
@@ -269,18 +198,7 @@ comparison <- bind_rows(
   select(method, penalty, mixture, mean, std_err)
 
 knitr::kable(comparison, digits = 4)
-```
 
-The mathematics behind why random search works:
-- For important hyperparameters, random search explores more unique values
-- Less affected by unimportant hyperparameters
-- Better coverage of continuous spaces
-
-## Latin Hypercube Sampling
-
-Latin Hypercube provides space-filling designs that are more uniform than random:
-
-```{r}
 # Latin hypercube grid
 lhs_grid <- grid_latin_hypercube(
   penalty(range = c(-3, 0), trans = log10_trans()),
@@ -305,13 +223,7 @@ ggplot(all_grids, aes(x = penalty, y = mixture)) +
     x = "Penalty (log scale)",
     y = "Mixture"
   )
-```
 
-## Bayesian Optimization: The Smart Search
-
-Bayesian optimization uses past results to intelligently choose the next points to evaluate:
-
-```{r}
 # More complex model for Bayesian optimization demonstration
 rf_recipe <- recipe(Sale_Price ~ ., data = ames_train) %>%
   step_impute_median(all_numeric_predictors()) %>%
@@ -376,19 +288,7 @@ autoplot(bayes_results, type = "parameters") +
     title = "Parameter Space Exploration",
     subtitle = "Bayesian optimization focuses on promising regions"
   )
-```
 
-How Bayesian optimization works:
-1. **Surrogate model**: Gaussian process models the objective function
-2. **Acquisition function**: Balances exploration vs exploitation
-3. **Sequential design**: Each point is chosen based on all previous results
-4. **Efficiency**: Often finds good solutions with fewer evaluations
-
-## Racing Methods: Survival of the Fittest
-
-Racing methods eliminate poor performers early, focusing resources on promising candidates:
-
-```{r}
 # Create a larger initial grid
 race_grid <- grid_latin_hypercube(
   penalty(range = c(-4, 0), trans = log10_trans()),
@@ -430,18 +330,7 @@ racing_summary <- tibble(
 )
 
 knitr::kable(racing_summary, digits = 4)
-```
 
-Racing advantages:
-- Dramatically reduces computation time
-- Focuses on promising candidates
-- Statistical rigor in elimination decisions
-
-## Simulated Annealing: The Flexible Explorer
-
-Simulated annealing allows "bad" moves early on to escape local optima:
-
-```{r}
 # Simulated annealing for hyperparameter optimization
 sa_results <- elastic_workflow %>%
   tune_sim_anneal(
@@ -477,13 +366,7 @@ sa_results %>%
     x = "Penalty (log scale)",
     y = "Mixture"
   )
-```
 
-## Nested Resampling for Unbiased Evaluation
-
-When tuning hyperparameters, we need nested resampling to get unbiased performance estimates:
-
-```{r}
 # Outer resampling for performance estimation
 outer_folds <- vfold_cv(ames_train, v = 3)  # Reduced for computation time
 
@@ -555,13 +438,7 @@ Outer Fold 3:
   
 Final estimate: Average of outer fold performances
 This gives unbiased estimate of generalization performance")
-```
 
-## Parallel Processing for Speed
-
-Tuning can be computationally intensive. Parallel processing helps:
-
-```{r}
 # Setup parallel backend
 cores <- parallel::detectCores() - 1  # Leave one core free
 cl <- makePSOCKcluster(cores)
@@ -596,20 +473,7 @@ registerDoSEQ()  # Return to sequential
 cat("Tuning completed in", round(parallel_time, 2), units(parallel_time), "\n")
 cat("With sequential processing, this would take approximately", 
     round(parallel_time * cores, 2), units(parallel_time), "\n")
-```
 
-Parallelization strategies:
-- **Over resamples**: Each fold processed on different core
-- **Over models**: Each hyperparameter combination on different core
-- **Hybrid**: Both, depending on problem size
-
-## Advanced Tuning Strategies
-
-### Multi-Metric Optimization
-
-Sometimes we need to optimize multiple metrics:
-
-```{r}
 # Tune for multiple metrics
 multi_metric_results <- elastic_workflow %>%
   tune_grid(
@@ -649,13 +513,7 @@ multi_metric_results %>%
     x = "RMSE (lower is better)",
     y = "R² (higher is better)"
   )
-```
 
-### Adaptive Tuning Ranges
-
-Adjust parameter ranges based on initial results:
-
-```{r}
 # Initial coarse search
 coarse_grid <- grid_regular(
   penalty(range = c(-4, 1)),
@@ -709,13 +567,7 @@ ggplot(search_comparison, aes(x = penalty, y = mean, color = search)) +
     x = "Penalty (log scale)",
     y = "RMSE"
   )
-```
 
-## Finalizing and Evaluating
-
-After tuning, finalize your workflow:
-
-```{r}
 # Select best overall parameters
 best_params <- select_best(fine_results, metric = "rmse")
 
@@ -750,13 +602,7 @@ ggplot(test_pred, aes(x = Sale_Price, y = .pred)) +
     y = "Predicted Sale Price"
   ) +
   coord_equal()
-```
 
-## Best Practices
-
-### 1. Start Simple, Add Complexity
-
-```{r}
 # Start with few hyperparameters
 simple_tuning <- linear_reg(penalty = tune()) %>%
   set_engine("glmnet")
@@ -767,11 +613,7 @@ complex_tuning <- linear_reg(
   mixture = tune()
 ) %>%
   set_engine("glmnet")
-```
 
-### 2. Use Appropriate Search Strategies
-
-```{r}
 tuning_guide <- tibble(
   Scenario = c(
     "Few hyperparameters (≤3)",
@@ -800,11 +642,7 @@ tuning_guide <- tibble(
 )
 
 knitr::kable(tuning_guide)
-```
 
-### 3. Monitor for Overfitting
-
-```{r}
 # Check for overfitting during tuning
 tuning_diagnostics <- fine_results %>%
   collect_metrics(summarize = FALSE) %>%
@@ -828,15 +666,7 @@ ggplot(tuning_diagnostics, aes(x = penalty, y = cv_variation, color = factor(mix
     y = "CV Coefficient of Variation",
     color = "Mixture"
   )
-```
 
-## Exercises
-
-### Exercise 1: Compare Search Strategies
-
-Compare different search strategies on the same problem:
-
-```{r}
 # Your solution
 # Define a tunable XGBoost model
 xgb_spec <- boost_tree(
@@ -905,13 +735,7 @@ strategy_comparison <- bind_rows(
   select(strategy, points, time, mean, tree_depth, learn_rate, min_n)
 
 knitr::kable(strategy_comparison, digits = 4)
-```
 
-### Exercise 2: Implement Custom Tuning
-
-Create a custom tuning strategy:
-
-```{r}
 # Your solution
 # Implement iterative refinement strategy
 iterative_tuning <- function(workflow, resamples, n_iterations = 3) {
@@ -972,13 +796,7 @@ simple_xgb_workflow <- workflow() %>%
   )
 
 # custom_results <- iterative_tuning(simple_xgb_workflow, ames_folds, n_iterations = 2)
-```
 
-### Exercise 3: Multi-Objective Optimization
-
-Balance multiple objectives:
-
-```{r}
 # Your solution
 # Tune for both performance and model complexity
 complexity_workflow <- workflow() %>%
@@ -1040,55 +858,3 @@ cat("Trees:", best_balanced$trees, "\n")
 cat("mtry:", best_balanced$mtry, "\n")
 cat("min_n:", best_balanced$min_n, "\n")
 cat("RMSE:", -best_balanced$performance, "\n")
-```
-
-## Summary
-
-In this comprehensive chapter, you've mastered:
-
-✅ **Hyperparameter fundamentals**
-  - Difference from parameters
-  - Impact on model performance
-  - Model-specific hyperparameters
-
-✅ **Search strategies**
-  - Grid search for exhaustive exploration
-  - Random search for efficiency
-  - Latin hypercube for space-filling
-
-✅ **Advanced methods**
-  - Bayesian optimization for intelligent search
-  - Racing for early stopping
-  - Simulated annealing for flexibility
-
-✅ **Practical considerations**
-  - Nested resampling for unbiased evaluation
-  - Parallel processing for speed
-  - Multi-metric optimization
-
-✅ **Best practices**
-  - Choosing appropriate strategies
-  - Monitoring for overfitting
-  - Iterative refinement
-
-Key takeaways:
-- No single best tuning method - choose based on context
-- Start coarse, refine gradually
-- Use parallel processing for speed
-- Always validate on held-out data
-- Consider computational budget
-- Balance exploration and exploitation
-
-## What's Next?
-
-You've completed Block 2 of the workshop, covering all the essential tidymodels concepts! Before diving into advanced machine learning topics, we recommend taking our **[Block 2 Assessment](quiz-block-2.qmd)** to test your understanding of the tidymodels framework and machine learning foundations.
-
-After mastering these concepts, continue to [Chapter 14](14-classification.Rmd) to explore classification models in depth.
-
-## Additional Resources
-
-- [tune Documentation](https://tune.tidymodels.org/)
-- [finetune Documentation](https://finetune.tidymodels.org/)
-- [dials Documentation](https://dials.tidymodels.org/)
-- [Hyperparameter Optimization Review](https://arxiv.org/abs/1502.02127)
-- [Practical Bayesian Optimization](https://arxiv.org/abs/1206.2944)

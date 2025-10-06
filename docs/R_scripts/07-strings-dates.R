@@ -1,50 +1,3 @@
----
-title: "Chapter 7: Working with Strings and Dates - Text and Time in the Tidyverse"
-author: "David Sarrat González, Juan R González"
-date: today
-format:
-  html:
-    code-fold: false
-    code-tools: true
----
-
-## Learning Objectives
-
-By the end of this chapter, you will master:
-
-- String manipulation with stringr
-- Pattern matching with regular expressions
-- Text cleaning and extraction
-- Date and time handling with lubridate
-- Time zone management
-- Date arithmetic and intervals
-- Combining text and temporal data in analyses
-- Real-world applications and best practices
-
-::: {.callout-tip}
-## Download R Script
-You can download the complete R code for this chapter:
-[📥 Download 07-strings-dates.R](R_scripts/07-strings-dates.R){.btn .btn-primary download="07-strings-dates.R"}
-:::
-
-## Why Strings and Dates Matter
-
-In real-world data analysis, you'll rarely work with perfectly clean numeric data. Most datasets contain:
-- **Text data**: Names, addresses, descriptions, categories, IDs
-- **Temporal data**: Timestamps, dates, durations, time zones
-
-These data types are notoriously tricky to work with because:
-- Text can be messy, inconsistent, and encoded differently
-- Dates come in countless formats
-- Time zones add complexity
-- Both require special handling for analysis
-
-The tidyverse provides powerful, consistent tools to tackle these challenges. Let's master them!
-
-## Setup
-
-```{r}
-#| message: false
 library(tidyverse)
 library(lubridate)  # For dates and times
 library(stringr)    # For string manipulation (loaded with tidyverse)
@@ -55,23 +8,7 @@ set.seed(123)
 
 # We'll create various example datasets throughout
 theme_set(theme_minimal())
-```
 
-## Part 1: String Manipulation with stringr
-
-### Understanding Strings in R
-
-Strings (text data) are fundamental to data analysis, but they're often the messiest part of our data. The `stringr` package provides a consistent, intuitive interface for string manipulation.
-
-All stringr functions:
-- Start with `str_` for easy autocomplete
-- Take the string as the first argument (pipe-friendly)
-- Use consistent naming conventions
-- Handle NA values gracefully
-
-Let's start with basic operations:
-
-```{r}
 # Create example strings
 messy_names <- c(
   "  John Smith  ",
@@ -94,15 +31,7 @@ data.frame(
   n_spaces = str_count(messy_names, " "),
   n_vowels = str_count(messy_names, "[aeiouAEIOU]")
 )
-```
 
-Notice how stringr handles NA values gracefully - operations on NA return NA rather than erroring out. This is crucial for real-world data processing.
-
-### String Transformation
-
-Let's clean up our messy names systematically:
-
-```{r}
 # Step-by-step cleaning
 cleaned_names <- messy_names %>%
   str_trim() %>%                    # Remove leading/trailing whitespace
@@ -126,19 +55,7 @@ tibble(
   title = str_to_title(case_examples),
   sentence = str_to_sentence(case_examples)
 )
-```
 
-Each transformation serves a specific purpose:
-- `str_trim()`: Removes accidental spaces from data entry
-- `str_squish()`: Fixes multiple spaces between words
-- `str_to_title()`: Standardizes capitalization for names
-- `str_replace_all()`: Fixes encoding issues with special characters
-
-### Pattern Matching and Regular Expressions
-
-Regular expressions (regex) are powerful pattern-matching tools. While they look cryptic at first, they're invaluable for text processing.
-
-```{r}
 # Sample text data
 emails <- c(
   "john.doe@company.com",
@@ -168,21 +85,7 @@ email_analysis <- tibble(
 )
 
 print(email_analysis)
-```
 
-Let's break down these regex patterns:
-- `@` - Literal @ symbol
-- `\\.` - Literal period (. alone means "any character")
-- `^` - Start of string
-- `$` - End of string
-- `[^@]+` - One or more characters that are NOT @
-- `[a-z]+` - One or more lowercase letters
-
-### Advanced Pattern Matching
-
-Let's work with more complex patterns:
-
-```{r}
 # Phone numbers in various formats
 phone_numbers <- c(
   "(555) 123-4567",
@@ -225,15 +128,7 @@ address_parts <- str_match(addresses,
 colnames(address_parts) <- c("full", "number", "street", "city", "state", "zip")
 as_tibble(address_parts) %>%
   select(-full)  # Remove the full match column
-```
 
-The power of regex groups (parentheses) is that they let us extract multiple pieces of information in one operation. Each group becomes a separate column in the output.
-
-### String Splitting and Combining
-
-Real data often requires splitting combined fields or joining separate ones:
-
-```{r}
 # Full names that need splitting
 full_names <- c(
   "Smith, John",
@@ -285,27 +180,7 @@ product_data %>%
     ),
     marketing_name = str_glue("{brand} {model} {version} ({year})")
   )
-```
 
-Notice the different joining functions:
-- `str_c()`: Basic concatenation with separator
-- `str_glue()`: Template-based joining (like Python f-strings)
-- `paste()` and `paste0()`: Base R alternatives (less consistent)
-
-## Part 2: Date and Time with lubridate
-
-### Understanding Temporal Data
-
-Dates and times are deceptively complex:
-- Different formats (MM/DD/YYYY vs DD/MM/YYYY)
-- Time zones
-- Daylight saving time
-- Leap years and leap seconds
-- Different calendar systems
-
-Lubridate makes working with dates intuitive and reliable.
-
-```{r}
 # Today's date and current time
 today()
 now()
@@ -330,19 +205,7 @@ parsed_dates <- tibble(
 )
 
 print(parsed_dates)
-```
 
-The genius of lubridate is the intuitive function names:
-- `ymd()`: Year-Month-Day
-- `mdy()`: Month-Day-Year
-- `dmy()`: Day-Month-Year
-- `ymd_hms()`: With time included
-
-### Date Components and Arithmetic
-
-Once we have dates, we can extract components and do arithmetic:
-
-```{r}
 # Create a date range
 dates <- seq(ymd("2023-01-01"), ymd("2023-12-31"), by = "month")
 
@@ -385,18 +248,7 @@ tibble(
     floor_date(reference_date, "year")
   )
 )
-```
 
-Key insights about date arithmetic:
-- Adding days is straightforward
-- Adding months/years handles edge cases (e.g., Jan 31 + 1 month = Feb 28/29)
-- `floor_date()` and `ceiling_date()` are perfect for grouping
-
-### Working with Time
-
-Time adds another layer of complexity:
-
-```{r}
 # Different time representations
 time_examples <- tibble(
   datetime_string = c(
@@ -439,13 +291,7 @@ tibble(
     as.numeric(time_diff, units = "days")
   )
 )
-```
 
-### Time Zones - The Hidden Complexity
-
-Time zones are often the source of subtle bugs in data analysis:
-
-```{r}
 # Working with time zones
 utc_time <- ymd_hms("2023-06-15 12:00:00", tz = "UTC")
 
@@ -480,17 +326,7 @@ tibble(
     as.character(force_tz(ambiguous_time, "America/New_York"))
   )
 )
-```
 
-The difference between `with_tz()` and `force_tz()`:
-- `with_tz()`: Changes the display timezone (same moment in time)
-- `force_tz()`: Changes the timezone interpretation (different moment)
-
-### Intervals, Durations, and Periods
-
-Lubridate distinguishes between three concepts:
-
-```{r}
 # Intervals: specific start and end times
 interval_1 <- interval(ymd("2023-01-01"), ymd("2023-12-31"))
 interval_2 <- interval(ymd("2023-06-01"), ymd("2023-08-31"))
@@ -522,18 +358,7 @@ tibble(
     dst_start + days(1)    # Next calendar day at same time
   )
 )
-```
 
-Use:
-- **Intervals**: When you need specific start/end times
-- **Durations**: For exact time calculations
-- **Periods**: For human-friendly calculations
-
-## Combining Strings and Dates in Real Analysis
-
-Let's work with a realistic example combining both:
-
-```{r}
 # Create a realistic dataset - customer support tickets
 set.seed(123)
 n_tickets <- 500
@@ -616,22 +441,6 @@ summary_stats <- ticket_analysis %>%
   arrange(issue_type, priority)
 
 print(summary_stats, n = 20)
-```
-
-This analysis demonstrates:
-- Extracting categories from free text
-- Finding patterns in strings
-- Working with timestamps
-- Calculating time differences
-- Combining string and date operations
-
-### Visualization of String and Date Patterns
-
-Let's visualize our findings:
-
-```{r}
-#| fig-width: 14
-#| fig-height: 10
 
 # Ticket volume over time
 p1 <- ticket_analysis %>%
@@ -701,15 +510,7 @@ library(patchwork)
     title = "Support Ticket Analysis",
     subtitle = "Combining string extraction and temporal patterns"
   )
-```
 
-## Advanced String Patterns
-
-### Working with Structured Text
-
-Many datasets contain semi-structured text that needs parsing:
-
-```{r}
 # Log file entries
 log_entries <- c(
   "[2023-06-15 10:30:45] INFO: User john_doe logged in from 192.168.1.100",
@@ -743,13 +544,7 @@ parsed_logs <- tibble(log = log_entries) %>%
 parsed_logs %>%
   select(-log) %>%  # Remove original for display
   print()
-```
 
-### Text Normalization and Cleaning
-
-Real text data needs extensive cleaning:
-
-```{r}
 # Messy product descriptions
 messy_products <- c(
   "Apple iPhone 14 Pro Max - 256GB - Space Black!!!",
@@ -789,13 +584,7 @@ clean_products <- tibble(original = messy_products) %>%
 
 clean_products %>%
   select(original, standardized)
-```
 
-## Working with Date Ranges and Business Logic
-
-Real-world applications often involve complex date logic:
-
-```{r}
 # Business calendar functions
 is_business_day <- function(date) {
   !wday(date) %in% c(1, 7)  # Not weekend
@@ -847,15 +636,7 @@ project_timeline <- project_tasks %>%
 
 project_timeline %>%
   select(task, duration_days, start_date, end_date_business, actual_calendar_days)
-```
 
-## Exercises
-
-### Exercise 1: Email Parsing and Validation
-
-Parse and validate a set of email addresses:
-
-```{r}
 # Your solution
 email_data <- c(
   "john.doe@company.com",
@@ -891,13 +672,7 @@ email_validation <- tibble(email = email_data) %>%
 
 email_validation %>%
   select(email, username, domain, is_valid)
-```
 
-### Exercise 2: Date Range Calculations
-
-Calculate various date ranges and intervals:
-
-```{r}
 # Your solution
 # Calculate age, next birthday, days until birthday
 people <- tibble(
@@ -930,13 +705,7 @@ people_ages <- people %>%
 
 people_ages %>%
   select(name, age_exact, next_birthday, days_to_birthday, birthday_weekday)
-```
 
-### Exercise 3: Log File Analysis
-
-Analyze server log patterns:
-
-```{r}
 # Your solution
 # Generate sample log data
 set.seed(456)
@@ -1018,13 +787,7 @@ hourly_pattern <- log_analysis %>%
   )
 
 print(hourly_pattern)
-```
 
-### Exercise 4: Text Mining Product Reviews
-
-Analyze product review text and dates:
-
-```{r}
 # Your solution
 # Generate sample review data
 set.seed(789)
@@ -1102,48 +865,3 @@ sentiment_accuracy <- review_analysis %>%
 
 print("Sentiment analysis accuracy:")
 print(sentiment_accuracy)
-```
-
-## Summary
-
-In this comprehensive chapter, you've mastered:
-
-✅ **String manipulation with stringr**
-  - Pattern matching and regular expressions
-  - Text cleaning and standardization
-  - String splitting and combining
-  - Advanced text extraction
-
-✅ **Date and time handling with lubridate**
-  - Parsing various date formats
-  - Date arithmetic and components
-  - Time zones and daylight saving
-  - Intervals, durations, and periods
-
-✅ **Combined analysis**
-  - Real-world text and temporal data
-  - Log file parsing
-  - Business date calculations
-  - Pattern extraction and validation
-
-Key takeaways:
-- Always validate and clean text data before analysis
-- Be explicit about time zones to avoid bugs
-- Regular expressions are powerful but need practice
-- Combine string and date operations for rich insights
-- Document your cleaning and parsing decisions
-
-## What's Next?
-
-Congratulations! You've completed all the fundamental tidyverse concepts from Block 1. Before moving to machine learning, we recommend taking our **[Block 1 Assessment](quiz-block-1.qmd)** to test your understanding of the core R and tidyverse concepts you've learned.
-
-Once you've mastered these fundamentals, continue to [Chapter 8](08-tidymodels-intro.Rmd) where we transition to machine learning with tidymodels, building on your data manipulation skills.
-
-## Additional Resources
-
-- [stringr Documentation](https://stringr.tidyverse.org/)
-- [lubridate Documentation](https://lubridate.tidyverse.org/)
-- [Regular Expression Testing](https://regex101.com/)
-- [R for Data Science - Strings](https://r4ds.had.co.nz/strings.html)
-- [R for Data Science - Dates and Times](https://r4ds.had.co.nz/dates-and-times.html)
-- [Time Zone Database](https://en.wikipedia.org/wiki/List_of_tz_database_time_zones)
