@@ -187,4 +187,4 @@ Ready to begin? Start with [Chapter 1: Introduction to the Tidyverse](01-introdu
 
 ## About This Workshop
 
-This workshop was made with ❤️ by [David Sarrat González](https://davidsarratgonzalez.github.io) and [Juan R González](https://www.isglobal.org/our-team/-/profiles/18510) from the [Bioinformatic Research Group in Epidemiology](https://brge.isglobal.org) at the [Barcelona Institute for Global Health (ISGlobal)](https://www.isglobal.org) as a comprehensive resource for learning modern data science in R. 
+This workshop was made by [David Sarrat González](https://davidsarratgonzalez.github.io) and [Juan R González](https://www.isglobal.org/our-team/-/profiles/18510) from the [Bioinformatic Research Group in Epidemiology](https://brge.isglobal.org) at the [Barcelona Institute for Global Health (ISGlobal)](https://www.isglobal.org) as a comprehensive resource for learning modern data science in R. 
