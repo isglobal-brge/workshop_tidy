@@ -1,0 +1,483 @@
+// ============================================================================
+// TIDYVERSE & MACHINE LEARNING WORKSHOP - MOODLE QUIZ QUESTIONS
+// Format: GIFT (Moodle Import Format)
+// 
+// IMPORTANT: These questions are based on actual workshop content
+// They are DIFFERENT from the interactive assessments
+// ============================================================================
+
+$CATEGORY: $course$/Block 1 - Tidyverse Fundamentals
+
+// ============================================================================
+// CHAPTER 2: Data Import with readr
+// ============================================================================
+
+::Q1_parse_number:: What does the parse_number() function do in readr?{
+=It extracts numeric values from strings, removing non-numeric characters like $ and commas
+~It converts numbers to strings
+~It parses dates as numbers
+~It validates that a column contains only numbers
+####parse_number() removes non-numeric characters and extracts numbers, useful for cleaning data like "$1,234" → 1234
+}
+
+::Q2_col_types:: When using read_csv() with col_types argument, which function would you use to read a column as a date?{
+~col_date_time()
+=col_date()
+~col_datetime()
+~parse_date()
+####The correct function is col_date() as shown in the workshop examples with col_types = cols(hire_date = col_date(format = "%Y-%m-%d"))
+}
+
+::Q3_csv_options:: In read_csv(), what does the 'skip' argument do?{
+=Skips the first N lines of the file before reading
+~Skips columns with missing values
+~Skips rows with NA values
+~Skips the header row
+####The skip argument tells read_csv() to skip the first N lines before reading, useful for files with metadata at the top
+}
+
+// ============================================================================
+// CHAPTER 3: Data Wrangling with dplyr
+// ============================================================================
+
+::Q4_between:: What does the between() function do in dplyr?{
+~Calculates the difference between two columns
+=Filters rows where a value is between two bounds (inclusive)
+~Joins two tables
+~Calculates the mean between values
+####between(x, left, right) is a shortcut for x >= left & x <= right, as shown in filter(between(dep_delay, 10, 30))
+}
+
+::Q5_select_helpers:: Which select helper function would you use to select columns that end with "_mm"?{
+~starts_with("_mm")
+=ends_with("_mm")
+~contains("_mm")
+~matches("_mm$")
+####ends_with() selects columns ending with a pattern, as shown in select(ends_with("mm"))
+}
+
+::Q6_case_when:: In dplyr, what does case_when() do inside mutate()?{
+~Changes the case of text strings
+~Validates data cases
+=Implements multiple if-else conditions vectorized
+~Groups data by cases
+####case_when() creates multiple conditional transformations, like creating size_category based on body_mass_g ranges
+}
+
+::Q7_group_by_summarise:: When you use group_by() followed by summarise(), what happens?{
+=One row per group with summary statistics
+~All rows are kept with new summary columns
+~Groups are created but no aggregation happens
+~Only the first row of each group is kept
+####group_by() + summarise() creates one row per group with aggregated statistics, as shown in the workshop examples
+}
+
+// ============================================================================
+// CHAPTER 5: Visualization with ggplot2
+// ============================================================================
+
+::Q8_geom_smooth:: In ggplot2, what does geom_smooth(method = "lm") add to a plot?{
+~A smoothed density curve
+=A linear regression line with optional confidence interval
+~A moving average
+~A polynomial curve
+####geom_smooth(method = "lm") adds a linear regression line, as shown in the penguin plots
+}
+
+::Q9_facet_wrap:: What is the main purpose of facet_wrap() in ggplot2?{
+~To wrap long axis labels
+~To combine multiple plots
+=To create separate subplots for each level of a categorical variable
+~To adjust plot margins
+####facet_wrap(~variable) creates a separate panel for each unique value, as shown in facet_wrap(~island)
+}
+
+::Q10_aes_mapping:: In ggplot2, what happens when you put color inside aes() vs outside?{
+=Inside aes(): maps a variable to colors; Outside: sets a fixed color for all points
+~Inside aes(): sets RGB values; Outside: uses named colors
+~They do the same thing
+~Inside aes(): is for backgrounds; Outside: is for points
+####aes(color = species) maps data to colors; geom_point(color = "blue") sets a single color for all
+}
+
+::Q11_position_dodge:: What does position = "dodge" do in geom_col()?{
+=Places bars side-by-side instead of stacked
+~Removes overlapping bars
+~Rotates bars horizontally
+~Creates gaps between bars
+####position = "dodge" places grouped bars side-by-side, as shown in the island distribution plots
+}
+
+// ============================================================================
+// CHAPTER 6: Functional Programming with purrr
+// ============================================================================
+
+::Q12_map_variants:: What is the difference between map() and map_dbl() in purrr?{
+~map() is faster than map_dbl()
+=map() returns a list; map_dbl() returns a numeric vector
+~map() works with data frames; map_dbl() works with doubles only
+~They are identical functions
+####map() always returns a list, while map_dbl() returns a double (numeric) vector
+}
+
+::Q13_safely:: What does purrr::safely() return when wrapping a function?{
+~The function result or NULL if error
+=A list with 'result' and 'error' components
+~Only successful results
+~A logical TRUE/FALSE
+####safely() returns list(result = ..., error = ...), allowing you to handle errors gracefully
+}
+
+// ============================================================================
+// CHAPTER 7: Strings and Dates with stringr and lubridate
+// ============================================================================
+
+::Q14_str_extract:: What does str_extract() do with a regex pattern?{
+~Removes the pattern from strings
+=Extracts the first match of the pattern
+~Checks if pattern exists
+~Replaces the pattern
+####str_extract() returns the first match of a pattern in each string
+}
+
+::Q15_lubridate_parsing:: In lubridate, what does the function ymd() do?{
+=Parses dates in Year-Month-Day format
+~Calculates years, months, and days between dates
+~Extracts year, month, and day components
+~Validates date formats
+####ymd() parses dates like "2020-01-15" into proper date objects
+}
+
+
+$CATEGORY: $course$/Block 2 - Tidymodels Foundations
+
+// ============================================================================
+// CHAPTER 9: Data Splitting and Resampling
+// ============================================================================
+
+::Q16_initial_split:: What is the default proportion when using initial_split() without specifying prop?{
+~0.70 (70% training)
+=0.75 (75% training)
+~0.80 (80% training)
+~0.67 (67% training)
+####The default is 0.75, meaning 75% for training and 25% for testing
+}
+
+::Q17_stratified_split:: In initial_split(), what does the 'strata' argument do?{
+~Creates multiple splits
+=Ensures balanced representation of a variable in train/test sets
+~Stratifies by all variables
+~Removes stratification
+####strata ensures both train and test sets have similar proportions of the stratified variable, important for imbalanced data
+}
+
+::Q18_vfold_cv:: What does vfold_cv(data, v = 5) create?{
+~5 train/test splits
+=5-fold cross-validation splits where each fold is used once as test
+~5 bootstrap samples
+~5 validation sets
+####vfold_cv() creates k-fold cross-validation, with each of the k folds serving as test set once
+}
+
+::Q19_assessment_analysis:: In cross-validation with rsample, what is the difference between analysis() and assessment()?{
+=analysis() gets training folds; assessment() gets testing fold
+~analysis() is for EDA; assessment() is for testing
+~They are the same thing
+~analysis() is deprecated; use assessment() instead
+####analysis() extracts the training portion and assessment() extracts the testing portion of each fold
+}
+
+// ============================================================================
+// CHAPTER 10: Feature Engineering with recipes
+// ============================================================================
+
+::Q20_step_normalize:: What does step_normalize() do in a recipe?{
+~Removes missing values
+=Centers and scales numeric variables to mean 0 and SD 1
+~Converts to normal distribution
+~Validates numeric ranges
+####step_normalize() standardizes variables: (x - mean) / sd, creating z-scores
+}
+
+::Q21_step_dummy:: What does step_dummy(all_nominal_predictors()) create?{
+~Dummy data for testing
+=Binary indicator variables (one-hot encoding) for categorical variables
+~Placeholder variables
+~Removes categorical variables
+####step_dummy() creates binary 0/1 columns for each level of categorical variables
+}
+
+::Q22_step_other:: What is the purpose of step_other() in a recipe?{
+~Removes outliers
+=Collapses infrequent factor levels into an "other" category
+~Creates additional features
+~Handles missing values
+####step_other() groups rare categories together, useful for high-cardinality variables
+}
+
+::Q23_prep_bake:: In tidymodels recipes, what is the difference between prep() and bake()?{
+=prep() trains the recipe on data; bake() applies it to new data
+~prep() is for training data; bake() is for test data only
+~They do the same thing in different order
+~prep() validates; bake() executes
+####prep() calculates statistics (means, levels, etc.); bake() applies those transformations
+}
+
+// ============================================================================
+// CHAPTER 11: Model Specification with parsnip
+// ============================================================================
+
+::Q24_set_engine:: In parsnip, what does set_engine() specify?{
+~The type of model (regression vs classification)
+=The computational engine/package to use (e.g., "glmnet", "ranger")
+~The hardware to use (CPU vs GPU)
+~The optimization algorithm
+####set_engine() chooses which package implements the model, like set_engine("ranger") for random forests
+}
+
+::Q25_set_mode:: What does set_mode() do in a parsnip model specification?{
+=Specifies whether the model is for "regression" or "classification"
+~Sets the training mode (fast vs accurate)
+~Configures parallel processing
+~Sets the prediction mode
+####set_mode() determines if the model predicts continuous (regression) or categorical (classification) outcomes
+}
+
+// ============================================================================
+// CHAPTER 12: Workflows and Model Evaluation
+// ============================================================================
+
+::Q26_workflow_bundle:: What is the main advantage of using workflow() to bundle recipe + model?{
+~It's faster than separate steps
+=It ensures the same preprocessing is applied to training, validation, and test data
+~It's required by tidymodels
+~It automatically tunes hyperparameters
+####Workflows guarantee consistent preprocessing across all data, preventing data leakage
+}
+
+::Q27_fit_resamples:: What does fit_resamples() return?{
+~A single fitted model
+=Performance metrics across all cross-validation folds
+~The best model
+~Only the training metrics
+####fit_resamples() fits the model to each fold and returns aggregated performance metrics
+}
+
+// ============================================================================
+// CHAPTER 13: Hyperparameter Tuning
+// ============================================================================
+
+::Q28_tune_placeholder:: In a model specification, what does tune() do?{
+~Automatically finds best values
+=Marks a parameter for optimization during tuning
+~Sets parameter to default
+~Removes the parameter
+####tune() is a placeholder indicating this parameter should be optimized
+}
+
+::Q29_tune_grid:: What does tune_grid() do with a grid of hyperparameters?{
+~Selects the best grid point
+=Evaluates model performance for each combination in the grid
+~Creates a grid automatically
+~Validates the grid
+####tune_grid() fits models for each hyperparameter combination and evaluates performance
+}
+
+::Q30_select_best:: After tune_grid(), what does select_best() do?{
+=Returns the hyperparameter combination with the best performance metric
+~Selects the simplest model
+~Returns all good models
+~Validates the best model
+####select_best() identifies the hyperparameter values that achieved the best metric (e.g., lowest RMSE)
+}
+
+
+$CATEGORY: $course$/Block 3 - Advanced Machine Learning
+
+// ============================================================================
+// CHAPTER 14: Classification Models
+// ============================================================================
+
+::Q31_sigmoid_function:: In logistic regression, what does the sigmoid (logistic) function do?{
+~Calculates prediction error
+=Transforms linear combinations into probabilities between 0 and 1
+~Validates input data
+~Normalizes features
+####The sigmoid function σ(x) = 1/(1+e^-x) maps any real number to [0,1], creating probabilities
+}
+
+::Q32_odds_ratio:: In logistic regression, if P(Y=1) = 0.75, what are the odds?{
+~0.75
+~0.25
+=3.0
+~1.33
+####Odds = P/(1-P) = 0.75/0.25 = 3, meaning the event is 3 times more likely to occur than not
+}
+
+::Q33_confusion_matrix_components:: In a confusion matrix, what is a "False Positive"?{
+~Model predicts negative, actual is negative
+~Model predicts positive, actual is positive
+=Model predicts positive, actual is negative
+~Model predicts negative, actual is positive
+####False Positive (Type I error): predicted class 1 but actual class is 0
+}
+
+::Q34_roc_auc_interpretation:: What does an AUC-ROC value of 0.5 indicate?{
+~Perfect classification
+~Good classifier
+=Random guessing (no better than chance)
+~Poor classifier that inverts predictions
+####AUC = 0.5 means the model has no discriminative ability, equivalent to random guessing
+}
+
+// ============================================================================
+// CHAPTER 15: Regression Models
+// ============================================================================
+
+::Q35_rmse_interpretation:: What does RMSE (Root Mean Squared Error) measure?{
+~The percentage of correct predictions
+=The average magnitude of prediction errors in original units
+~The correlation between predicted and actual
+~The bias of the model
+####RMSE = sqrt(mean((y_true - y_pred)^2)), giving error in the same units as the target variable
+}
+
+::Q36_r_squared_interpretation:: If a regression model has R² = 0.85, what does this mean?{
+~The model is 85% accurate
+=The model explains 85% of the variance in the outcome variable
+~85% of predictions are within 1 SD
+~The correlation is 0.85
+####R² represents the proportion of variance explained by the model; 0.85 means 85% explained
+}
+
+::Q37_residuals:: In regression, what are residuals?{
+=The differences between observed and predicted values (y_actual - y_predicted)
+~The model parameters
+~The input features
+~The standardized predictions
+####Residuals = actual - predicted, representing the model's errors on each observation
+}
+
+// ============================================================================
+// CHAPTER 16: Ensemble Methods
+// ============================================================================
+
+::Q38_bagging_concept:: What is the key idea behind bagging (Bootstrap Aggregating)?{
+~Train models sequentially, each correcting previous errors
+=Train multiple models on bootstrap samples and average predictions
+~Use different algorithms and combine them
+~Select the best performing model
+####Bagging creates diverse models by training on bootstrap samples, then averages to reduce variance
+}
+
+::Q39_random_forest_vs_bagging:: What makes Random Forests different from simple bagging of decision trees?{
+~Random forests use larger trees
+=Random forests also randomly select features at each split
+~Random forests use fewer trees
+~No difference, they're the same
+####Random forests add feature randomness at each split (mtry parameter), creating more diverse trees
+}
+
+::Q40_boosting_sequential:: How does boosting differ from bagging in terms of training?{
+~Boosting is faster
+=Boosting trains models sequentially, with each model focusing on previous errors
+~Boosting uses random samples
+~Boosting trains fewer models
+####Boosting is sequential: each new model pays more attention to observations misclassified by previous models
+}
+
+::Q41_stacking_metalearner:: In model stacking, what is the role of the meta-learner?{
+~To select the best base model
+=To learn how to optimally combine predictions from base models
+~To validate all models
+~To train the base models
+####The meta-learner (blender) learns optimal weights to combine base model predictions
+}
+
+// ============================================================================
+// CHAPTER 17: Unsupervised Learning
+// ============================================================================
+
+::Q42_kmeans_objective:: What does the k-means algorithm minimize?{
+~The number of clusters
+=The within-cluster sum of squared distances
+~The between-cluster distances
+~The total number of iterations
+####K-means minimizes within-cluster SS: Σ Σ ||x - μk||², finding compact clusters
+}
+
+::Q43_pca_goal:: What is the primary goal of PCA (Principal Component Analysis)?{
+~To classify observations
+=To find uncorrelated linear combinations that capture maximum variance
+~To cluster similar points
+~To remove outliers
+####PCA finds orthogonal directions (principal components) that explain maximum variance in the data
+}
+
+::Q44_elbow_method:: The "elbow method" in clustering helps determine what?{
+~The best clustering algorithm
+=The optimal number of clusters (k)
+~The convergence criteria
+~The distance metric
+####The elbow method plots within-cluster SS vs k; the "elbow" suggests optimal k
+}
+
+::Q45_scaling_importance_kmeans:: Why is scaling features important before applying k-means?{
+~K-means requires normalized data
+~To speed up computation
+=K-means uses Euclidean distance, which can be dominated by large-scale variables
+~Scaling is not important for k-means
+####Without scaling, variables with larger ranges dominate the distance calculation, biasing clusters
+}
+
+// ============================================================================
+// CHAPTER 18: Model Deployment
+// ============================================================================
+
+::Q46_model_bundle:: What does a model bundle contain for deployment?{
+~Only the trained model
+=Model + preprocessing recipe + metadata for consistent predictions
+~Only the predictions
+~The training data
+####Bundles package everything needed for predictions: model, recipe, and metadata
+}
+
+::Q47_vetiver_purpose:: What is vetiver's main purpose in R?{
+~To create visualizations
+=To version, deploy, and monitor machine learning models
+~To tune hyperparameters
+~To clean data
+####vetiver provides tools for MLOps: versioning, deployment (APIs), and monitoring models in production
+}
+
+::Q48_plumber_api:: What does the plumber package do in R?{
+~Fixes data pipeline errors
+=Creates REST APIs from R functions for model deployment
+~Manages package dependencies
+~Connects to databases
+####plumber converts R functions into HTTP API endpoints with special comments
+}
+
+::Q49_model_drift:: What is "data drift" in production ML systems?{
+~Model becoming slower over time
+=Changes in input data distribution that can degrade model performance
+~Database connection issues
+~Model parameters changing
+####Data drift occurs when production data differs from training data, potentially reducing accuracy
+}
+
+::Q50_docker_deployment:: Why use Docker containers for model deployment?{
+~To make models run faster
+=To ensure consistent environment (dependencies, versions) across development and production
+~To automatically improve accuracy
+~Docker is required by R
+####Docker packages the model with exact dependencies, ensuring it runs identically everywhere
+}
+
+// ============================================================================
+// END OF QUIZ QUESTIONS
+// ============================================================================
+// Total: 50 questions (15 Block 1, 15 Block 2, 20 Block 3)
+// All questions based on actual workshop content
+// Ready for Moodle import via GIFT format
+// ============================================================================
