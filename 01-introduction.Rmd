@@ -26,7 +26,7 @@ The tidyverse is a collection of R packages designed for data science. All packa
 ### Core Tidyverse Packages
 
 ```{r}
-#| message: true
+#| message: false
 # Install tidyverse if you haven't already
 # install.packages("tidyverse")
 

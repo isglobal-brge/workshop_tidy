@@ -44,7 +44,7 @@ Machine learning is the science of getting computers to learn patterns from data
 ### The Learning Process
 
 ```{r}
-#| message: true
+#| message: false
 library(tidymodels)
 library(tidyverse)
 library(palmerpenguins)

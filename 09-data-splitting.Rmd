@@ -30,7 +30,7 @@ Imagine you're studying for an exam. If you only practice with questions you've 
 When we train a model on data and evaluate it on the same data, we get an overly optimistic estimate of performance. The model has essentially "memorized" the training data, including its noise and peculiarities.
 
 ```{r}
-#| message: true
+#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)

@@ -23,7 +23,7 @@ By the end of this chapter, you will:
 ## Setup
 
 ```{r}
-#| message: true
+#| message: false
 library(tidyverse)  # Includes readr
 library(readxl)     # For Excel files
 library(jsonlite)   # For JSON files

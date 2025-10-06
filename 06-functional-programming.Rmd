@@ -36,7 +36,7 @@ The `purrr` package brings functional programming to the tidyverse, replacing lo
 Let's start by understanding why we need functional programming:
 
 ```{r}
-#| message: true
+#| message: false
 library(tidyverse)
 library(purrr)
 library(broom)

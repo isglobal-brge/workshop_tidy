@@ -28,7 +28,7 @@ Imagine you're an explorer discovering a new continent. You have no map, no guid
 Unlike supervised learning where we have labels to guide us, unsupervised learning must discover patterns purely from the data itself. This makes it both challenging and powerful - we can uncover insights we didn't even know to look for.
 
 ```{r}
-#| message: true
+#| message: false
 library(tidymodels)
 library(tidyverse)
 library(tidyclust)  # For clustering with tidymodels

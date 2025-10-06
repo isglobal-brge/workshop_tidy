@@ -39,7 +39,7 @@ Consider these scenarios:
 Let's see this in action:
 
 ```{r}
-#| message: true
+#| message: false
 library(tidymodels)
 library(tidyverse)
 library(lubridate)

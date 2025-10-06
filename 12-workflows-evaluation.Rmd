@@ -37,7 +37,7 @@ This bundling ensures:
 - **Flexibility**: Easy to swap components and compare approaches
 
 ```{r}
-#| message: true
+#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)

@@ -23,7 +23,7 @@ By the end of this chapter, you will master:
 ## Setup
 
 ```{r}
-#| message: true
+#| message: false
 library(tidyverse)
 library(palmerpenguins)
 library(nycflights13)

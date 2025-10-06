@@ -29,7 +29,7 @@ Imagine you're a chef perfecting a recipe. The ingredients are your features, th
 Getting hyperparameters right can mean the difference between a model that barely works and one that achieves state-of-the-art performance. Too conservative, and you underfit. Too aggressive, and you overfit. The sweet spot lies somewhere in between.
 
 ```{r}
-#| message: true
+#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)

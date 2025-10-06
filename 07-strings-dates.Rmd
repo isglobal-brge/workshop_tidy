@@ -38,7 +38,7 @@ The tidyverse provides powerful, consistent tools to tackle these challenges. Le
 ## Setup
 
 ```{r}
-#| message: true
+#| message: false
 library(tidyverse)
 library(lubridate)  # For dates and times
 library(stringr)    # For string manipulation (loaded with tidyverse)

@@ -39,7 +39,7 @@ $$\hat{y} = \arg\max_{k} P(Y = C_k | X)$$
 ## Setup
 
 ```{r}
-#| message: true
+#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)

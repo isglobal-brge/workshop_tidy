@@ -37,7 +37,7 @@ In regression, we're essentially asking: "Given these input features, what numer
 Let's begin by loading the necessary libraries and preparing our datasets. We'll use multiple datasets throughout this chapter to illustrate different concepts and techniques.
 
 ```{r}
-#| message: true
+#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)

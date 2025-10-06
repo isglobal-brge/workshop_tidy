@@ -28,7 +28,7 @@ Imagine you're trying to guess the number of jellybeans in a jar. One person mig
 The mathematics behind this are elegant. If we have multiple independent models with uncorrelated errors, combining them reduces the overall error. This is why ensemble methods consistently win machine learning competitions.
 
 ```{r}
-#| message: true
+#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)

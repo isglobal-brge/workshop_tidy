@@ -26,7 +26,7 @@ By the end of this chapter, you will master:
 One of the most frustrating aspects of machine learning in R is the inconsistency across modeling packages. Each package has its own syntax, arguments, and output format. Let's see this problem in action:
 
 ```{r}
-#| message: true
+#| message: false
 library(tidymodels)
 library(tidyverse)
 library(modeldata)

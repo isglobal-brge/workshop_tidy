@@ -33,7 +33,7 @@ The journey from Jupyter notebook to production system involves many considerati
 - **Versioning**: How do we update without breaking things?
 
 ```{r}
-#| message: true
+#| message: false
 library(tidymodels)
 library(tidyverse)
 library(plumber)
